@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+    <!-- 指定web服务名字 -->
+    <dubbo:application name="helloworld-provider-bar" />
+    <!-- 声明服务注册中心 -->
+    <!-- 使用zookeeper作为注册中心 -->
+    <dubbo:registry protocol="zookeeper" address="${zookeeper.address}:${zookeeper.port}" />
+    <!-- 指定传输层通信协议 -->
+    <dubbo:protocol name="dubbo" host="${host.address}" port="${provider-bar.port}" />
+
+
+
+
+    <!-- 配置Bean -->
+    <bean id="barService"
+          class="services.BarServiceImpl" />
+
+   <!-- <bean id="fooService"
+          class="services.FooServiceImpl" />-->
+
+    <!-- 暴露服务地址,该服务的实现类是demoService的引用 -->
+    <dubbo:service ref="barService"
+                   interface="interfaces.BarService"
+                   protocol="dubbo"/>
+
+   <!-- <dubbo:service ref="fooService"
+                   interface="services.FooService"
+                   protocol="dubbo" />-->
+
+
+
+
+
+</beans>

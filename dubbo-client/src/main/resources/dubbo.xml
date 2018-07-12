@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 指定web应用名字 -->
+    <dubbo:application name="helloworld-consumer" />
+    <!-- 声明服务注册中心 -->
+
+    <dubbo:registry protocol="zookeeper" address="${zookeeper.address}:${zookeeper.port}" />
+    <!-- 引用服务,demoService仅用于根据接口生成动态代理，默认使用javassist生成代理对象 -->
+
+    <dubbo:protocol name="dubbo" host="${host.address}" />
+
+    <dubbo:reference id="demoService"
+                     interface="interfaces.DemoService"
+                     protocol="dubbo"/>
+
+    <dubbo:reference id="fooService"
+                     interface="interfaces.FooService"
+                     protocol="dubbo" />
+
+
+    <dubbo:reference id="barService"
+                      interface="interfaces.BarService"
+                      protocol="dubbo" />
+
+
+    <!--<bean id="brave" class="com.github.kristofa.brave.dubbo.BraveFactoryBean">
+
+        <property name="serviceName">
+            <value>helloworld-consumer</value>
+        </property>
+        <property name="zipkinHost">
+            <value>http://${zipkin.address}:${zipkin.port}/</value>
+        </property>
+        <property name="rate">
+            <value>${zipkin.sampleRate}</value>
+        </property>
+    </bean>-->
+
+</beans>

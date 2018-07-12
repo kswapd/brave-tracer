@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+    <!-- 指定web服务名字 -->
+    <dubbo:application name="helloworld-provider" />
+    <!-- 声明服务注册中心 -->
+    <!-- 使用zookeeper作为注册中心 -->
+    <dubbo:registry protocol="zookeeper" address="${zookeeper.address}:${zookeeper.port}" />
+    <!-- 指定传输层通信协议 -->
+    <dubbo:protocol name="dubbo" host="${host.address}" port="${provider.port}" />
+
+
+
+
+    <!-- 配置Bean -->
+    <bean id="demoService"
+          class="services.DemoServiceImpl" />
+
+    <bean id="fooService"
+          class="services.FooServiceImpl" />
+
+    <!-- 暴露服务地址,该服务的实现类是demoService的引用 -->
+    <dubbo:service ref="demoService"
+                   interface="interfaces.DemoService"
+                   protocol="dubbo"/>
+
+    <dubbo:service ref="fooService"
+                   interface="interfaces.FooService"
+                   protocol="dubbo" />
+
+    <dubbo:reference id="barService"
+                     interface="interfaces.BarService"
+                     protocol="dubbo" />
+
+    <!--<bean id="brave" class="com.github.kristofa.brave.dubbo.BraveFactoryBean">
+
+        <property name="serviceName">
+            <value>helloworld-provider</value>
+        </property>
+        <property name="zipkinHost">
+            <value>http://${zipkin.address}:${zipkin.port}/</value>
+        </property>
+        <property name="rate">
+            <value>${zipkin.sampleRate}</value>
+        </property>
+    </bean>-->
+</beans>
