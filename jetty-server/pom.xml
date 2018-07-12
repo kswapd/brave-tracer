@@ -92,12 +92,6 @@
         </dependency>-->
 
 
-        <dependency>
-            <groupId>dcits</groupId>
-            <artifactId>annotation-module</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
     </dependencies>
 
 

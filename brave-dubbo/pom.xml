@@ -4,11 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <artifactId>brave</artifactId>
-        <groupId>io.zipkin.brave</groupId>
-        <version>3.9.1</version>
-    </parent>
+
 
     <groupId>io.zipkin.brave</groupId>
     <artifactId>brave-dubbo</artifactId>
@@ -16,6 +12,12 @@
     <packaging>jar</packaging>
 
     <dependencies>
+    <!--    <dependency>
+
+            <groupId>io.zipkin.brave</groupId>
+         <artifactId>brave</artifactId>
+            <version>3.9.1</version>
+        </dependency>-->
         <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-core</artifactId>
@@ -57,17 +59,20 @@
         </dependency>
     </dependencies>
     <build>
-       <!-- <plugins>
-            <plugin>
+       <plugins>
+             <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
-            </plugin>
-        </plugins>-->
+            </plugin>-->
+        </plugins>
+
+
+
     </build>
 
 </project>
