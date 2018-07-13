@@ -12,11 +12,12 @@ import org.springframework.context.ApplicationContext;
 public class FooServiceImpl implements FooService {
 
 	public String sayFoo(String name) {
-		System.out.println("init : " + name);
+		System.out.println("init foo: " + name);
 
-		ApplicationContext context= ServiceBean.getSpringContext();
-		BarService bar = (BarService) context.getBean("barService");
-		String barStr = bar.sayBar("bar");
+		//ApplicationContext context= ServiceBean.getSpringContext();
+		//BarService bar = (BarService) context.getBean("barService");
+
+		//String barStr = bar.sayBar("bar");
 
 		return "foo dubbo foo provider "  + name;
 	}

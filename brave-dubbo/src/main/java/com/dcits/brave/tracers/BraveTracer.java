@@ -14,7 +14,8 @@ public class BraveTracer {
 	@PostConstruct
 	public void init()
 	{
-		System.out.println("initialing brave tracer:"+appName);
+
+		System.out.println("------initialing brave tracer:"+appName);
 	}
 
 	@Value("${zipkin.address}")
