@@ -1,6 +1,9 @@
 package services;
 
+import com.alibaba.dubbo.config.spring.ServiceBean;
 import interfaces.DemoService;
+import interfaces.FooService;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Created by kongxiangwen on 5/15/18 w:20.
@@ -19,6 +22,12 @@ public class DemoServiceImpl implements DemoService {
 		/*ApplicationContext context= ServiceBean.getSpringContext();
 		BarService bar = (BarService) context.getBean("barService");
 		String barStr = bar.sayBar("bar");*/
+
+
+		ApplicationContext context= ServiceBean.getSpringContext();
+		FooService foo = (FooService) context.getBean("fooService");
+		foo.sayFoo("foo");
+		//String barStr = bar.sayBar("bar");
 
 		return "hello from dubbo provider "  +  name;
 	}
