@@ -37,7 +37,7 @@ public class App {
 	private static Brave brave0 = null;
 	public static ClientRequestAdapterImpl imp0;
 	private static void braveInit(){
-		collector = HttpSpanCollector.create("http://10.88.2.112:9411/", new EmptySpanCollectorMetricsHandler());
+		collector = HttpSpanCollector.create("http://10.88.2.115:9411/", new EmptySpanCollectorMetricsHandler());
 
 
 		brave0 = new Brave.Builder("appgateway").spanCollector(collector).build();
