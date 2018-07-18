@@ -14,7 +14,9 @@
         <module>commons</module>
         <module>dubbo-provider-bar</module>
         <module>brave-dubbo</module>
+<!--
         <module>jetty-server</module>
+-->
         <module>brave-test</module>
     </modules>
 

@@ -59,7 +59,9 @@ public class App {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
+	private static void complicatedTest() throws Exception
+	{
+
 		braveInit();
 
 		final BlockingQueue<Task> queue = new ArrayBlockingQueue<Task>(10);
@@ -76,6 +78,9 @@ public class App {
 			}
 		};
 		thread.start();
+
+
+
 
 		{
 			ServerRequestInterceptor serverRequestInterceptor = brave.serverRequestInterceptor();
@@ -193,6 +198,90 @@ public class App {
 
 		}
 		Thread.sleep(3000);
+
+
+	}
+
+
+	private static void simpleTest() throws Exception
+	{
+
+		braveInit();
+
+		final BlockingQueue<Task> queue = new ArrayBlockingQueue<Task>(10);
+		Thread thread = new Thread(){
+			public void run() {
+				while (true) {
+					try {
+						Task task = queue.take();
+						dcHandle(task.name, task.spanId);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		thread.start();
+
+
+
+
+		{
+			ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
+			ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
+			ClientRequestInterceptor clientRequestInterceptor1 = brave.clientRequestInterceptor();
+			ClientResponseInterceptor clientResponseInterceptor1 = brave.clientResponseInterceptor();
+
+
+			ServerRequestInterceptor serverRequestInterceptor0 = brave0.serverRequestInterceptor();
+			ServerResponseInterceptor serverResponseInterceptor0 = brave0.serverResponseInterceptor();
+			ClientRequestInterceptor clientRequestInterceptor0 = brave0.clientRequestInterceptor();
+			ClientResponseInterceptor clientResponseInterceptor0 = brave0.clientResponseInterceptor();
+
+
+
+
+			imp0 = new ClientRequestAdapterImpl("aaaa");
+			clientRequestInterceptor0.handle(imp0);
+
+
+			/*ServerRequestAdapterImpl serverReq;
+			serverReq = new ServerRequestAdapterImpl("bbbb", imp0.getSpanId());
+			serverRequestInterceptor0.handle(serverReq);
+			Thread.sleep(200);
+			serverResponseInterceptor0.handle(new ServerResponseAdapterImpl());
+			System.out.println("over2");
+*/
+
+			ServerRequestAdapterImpl serverReq;
+			serverReq = new ServerRequestAdapterImpl("bbbb", imp0.getSpanId());
+			serverRequestInterceptor1.handle(serverReq);
+			Thread.sleep(200);
+			serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
+			System.out.println("over2");
+
+
+
+			Thread.sleep(200);
+			brave0.clientResponseInterceptor().handle(new ClientResponseAdapterImpl());
+			System.out.println("over2");
+
+
+
+
+		}
+		Thread.sleep(3000);
+
+
+	}
+
+
+
+
+
+	public static void main(String[] args) throws Exception {
+		//complicatedTest();
+		simpleTest();
 	}
 
 	public static void dcHandle(String spanName, SpanId spanId){
