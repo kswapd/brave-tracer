@@ -34,10 +34,10 @@ public class App {
 	private static HttpSpanCollector collector = null;
 	private static Brave brave = null;
 	private static Brave brave2 = null;
-	private static Brave brave0 = null;
-	public static ClientRequestAdapterImpl imp0;
+	private static Brave brave0 = null, brave3=null;
+	public static ClientRequestAdapterImpl imp0,imp1,imp2;
 	private static void braveInit(){
-		collector = HttpSpanCollector.create("http://10.88.2.115:9411/", new EmptySpanCollectorMetricsHandler());
+		collector = HttpSpanCollector.create("http://10.88.2.108:9411/", new EmptySpanCollectorMetricsHandler());
 
 
 		brave0 = new Brave.Builder("appgateway").spanCollector(collector).build();
@@ -45,7 +45,7 @@ public class App {
 		brave = new Brave.Builder("appserver").spanCollector(collector).build();
 
 		brave2 = new Brave.Builder("datacenter").spanCollector(collector).build();
-
+		brave3 = new Brave.Builder("omscenter").spanCollector(collector).build();
 
 	}
 
@@ -227,44 +227,165 @@ public class App {
 
 
 		{
-			ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
-			ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
-			ClientRequestInterceptor clientRequestInterceptor1 = brave.clientRequestInterceptor();
-			ClientResponseInterceptor clientResponseInterceptor1 = brave.clientResponseInterceptor();
-
 
 			ServerRequestInterceptor serverRequestInterceptor0 = brave0.serverRequestInterceptor();
 			ServerResponseInterceptor serverResponseInterceptor0 = brave0.serverResponseInterceptor();
 			ClientRequestInterceptor clientRequestInterceptor0 = brave0.clientRequestInterceptor();
 			ClientResponseInterceptor clientResponseInterceptor0 = brave0.clientResponseInterceptor();
 
+			ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
+			ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
+			ClientRequestInterceptor clientRequestInterceptor1 = brave.clientRequestInterceptor();
+			ClientResponseInterceptor clientResponseInterceptor1 = brave.clientResponseInterceptor();
 
+
+			ServerRequestInterceptor serverRequestInterceptor2 = brave2.serverRequestInterceptor();
+			ServerResponseInterceptor serverResponseInterceptor2 = brave2.serverResponseInterceptor();
+			ClientRequestInterceptor clientRequestInterceptor2 = brave2.clientRequestInterceptor();
+			ClientResponseInterceptor clientResponseInterceptor2 = brave2.clientResponseInterceptor();
+
+			ServerRequestInterceptor serverRequestInterceptor3 = brave3.serverRequestInterceptor();
+			ServerResponseInterceptor serverResponseInterceptor3 = brave3.serverResponseInterceptor();
+			ClientRequestInterceptor clientRequestInterceptor3 = brave3.clientRequestInterceptor();
+			ClientResponseInterceptor clientResponseInterceptor3 = brave3.clientResponseInterceptor();
 
 
 			imp0 = new ClientRequestAdapterImpl("aaaa");
 			clientRequestInterceptor0.handle(imp0);
 
 
-			/*ServerRequestAdapterImpl serverReq;
-			serverReq = new ServerRequestAdapterImpl("bbbb", imp0.getSpanId());
-			serverRequestInterceptor0.handle(serverReq);
+
+
+
+
+
+
+
+
+
+			new Thread(new Runnable(){
+
+			@Override
+				public void run() {
+
+
+				ServerRequestInterceptor serverRequestInterceptor0 = brave0.serverRequestInterceptor();
+				ServerResponseInterceptor serverResponseInterceptor0 = brave0.serverResponseInterceptor();
+				ClientRequestInterceptor clientRequestInterceptor0 = brave0.clientRequestInterceptor();
+				ClientResponseInterceptor clientResponseInterceptor0 = brave0.clientResponseInterceptor();
+
+				ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
+				ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
+				ClientRequestInterceptor clientRequestInterceptor1 = brave.clientRequestInterceptor();
+				ClientResponseInterceptor clientResponseInterceptor1 = brave.clientResponseInterceptor();
+
+
+				ServerRequestInterceptor serverRequestInterceptor2 = brave2.serverRequestInterceptor();
+				ServerResponseInterceptor serverResponseInterceptor2 = brave2.serverResponseInterceptor();
+				ClientRequestInterceptor clientRequestInterceptor2 = brave2.clientRequestInterceptor();
+				ClientResponseInterceptor clientResponseInterceptor2 = brave2.clientResponseInterceptor();
+
+				ServerRequestInterceptor serverRequestInterceptor3 = brave3.serverRequestInterceptor();
+				ServerResponseInterceptor serverResponseInterceptor3 = brave3.serverResponseInterceptor();
+				ClientRequestInterceptor clientRequestInterceptor3 = brave3.clientRequestInterceptor();
+				ClientResponseInterceptor clientResponseInterceptor3 = brave3.clientResponseInterceptor();
+
+
+				ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("aaaa", imp0.getSpanId());
+				serverRequestInterceptor1.handle(serverReq0);
+				try {
+					Thread.sleep(200);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+
+				imp1 = new ClientRequestAdapterImpl("bbbb");
+				clientRequestInterceptor1.handle(imp1);
+
+
+				try {
+					Thread.sleep(20);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+
+				ServerRequestAdapterImpl serverReq1 = new ServerRequestAdapterImpl("bbbb", imp1.getSpanId());
+
+				serverRequestInterceptor2.handle(serverReq1);
+				try {
+					Thread.sleep(200);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+
+				serverResponseInterceptor2.handle(new ServerResponseAdapterImpl());
+
+
+				try {
+					Thread.sleep(20);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				clientResponseInterceptor1.handle(new ClientResponseAdapterImpl());
+
+
+
+				try {
+					Thread.sleep(200);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
+				System.out.println("over2");
+
+
+			}
+
+			}).start();
+
+
+
+
+
+
+		/*	imp2 = new ClientRequestAdapterImpl("cccc");
+			clientRequestInterceptor1.handle(imp2);
+
+			Thread.sleep(20);
+
+			ServerRequestAdapterImpl serverReq3;
+			serverReq3 = new ServerRequestAdapterImpl("cccc", imp2.getSpanId());
+
+			serverRequestInterceptor3.handle(serverReq3);
 			Thread.sleep(200);
-			serverResponseInterceptor0.handle(new ServerResponseAdapterImpl());
+			serverResponseInterceptor3.handle(new ServerResponseAdapterImpl());
+
+
+			Thread.sleep(20);
+			clientResponseInterceptor1.handle(new ClientResponseAdapterImpl());*/
+
+
+
+
+
+
+
+
+
+
+			Thread.sleep(1520);
+			clientResponseInterceptor0.handle(new ClientResponseAdapterImpl());
 			System.out.println("over2");
-*/
 
-			ServerRequestAdapterImpl serverReq;
-			serverReq = new ServerRequestAdapterImpl("bbbb", imp0.getSpanId());
-			serverRequestInterceptor1.handle(serverReq);
-			Thread.sleep(200);
-			serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
-			System.out.println("over2");
-
-
-
-			Thread.sleep(200);
-			brave0.clientResponseInterceptor().handle(new ClientResponseAdapterImpl());
-			System.out.println("over2");
 
 
 
