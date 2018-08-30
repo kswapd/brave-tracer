@@ -27,7 +27,7 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
         this.rpcResult = rpcResult;
     }
 
-    @Override
+
     public Collection<KeyValueAnnotation> responseAnnotations() {
         List<KeyValueAnnotation> annotations = new ArrayList<KeyValueAnnotation>();
         if(exception != null){

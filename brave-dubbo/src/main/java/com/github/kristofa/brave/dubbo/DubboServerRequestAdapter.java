@@ -36,7 +36,7 @@ public class DubboServerRequestAdapter  implements ServerRequestAdapter {
         this.serverTracer = serverTracer;
     }
 
-    @Override
+
     public TraceData getTraceData() {
       String sampled =   invocation.getAttachment("sampled");
       if(sampled != null && sampled.equals("0")){
@@ -54,7 +54,7 @@ public class DubboServerRequestAdapter  implements ServerRequestAdapter {
 
     }
 
-    @Override
+
     public String getSpanName() {
         String spanName = spanNameProvider.resolveSpanName(RpcContext.getContext());
         //String spanName = clientNameProvider.resolveClientName(RpcContext.getContext());
@@ -62,7 +62,7 @@ public class DubboServerRequestAdapter  implements ServerRequestAdapter {
         return spanName;
     }
 
-    @Override
+
     public Collection<KeyValueAnnotation> requestAnnotations() {
 
         String ipAddr = RpcContext.getContext().getUrl().getIp();
