@@ -75,27 +75,57 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
 
             ClientRequestCommonData.attachmentData.clear();
 
+            if(!StringUtils.isEmpty(sh.getThreadNo())) {
+                ClientRequestCommonData.attachmentData.put("THREAD_NO", sh.getThreadNo());
+            }
+            if(!StringUtils.isEmpty(sh.getTranTimestamp())) {
+                ClientRequestCommonData.attachmentData.put("TRAN_TIMESTAMP", sh.getTranTimestamp());
+            }
+            if(!StringUtils.isEmpty(sh.getUserLang())) {
+                ClientRequestCommonData.attachmentData.put("USER_LANG", sh.getUserLang());
+            }
+            if(!StringUtils.isEmpty(sh.getSeqNo())) {
+                ClientRequestCommonData.attachmentData.put("SEQ_NO", sh.getSeqNo());
+            }
+            if(!StringUtils.isEmpty(sh.getProgramId())) {
+                ClientRequestCommonData.attachmentData.put("PROGRAM_ID", sh.getProgramId());
+            }
 
-            ClientRequestCommonData.attachmentData.put("THREAD_NO",sh.getThreadNo());
-            ClientRequestCommonData.attachmentData.put("TRAN_TIMESTAMP",sh.getTranTimestamp());
-            ClientRequestCommonData.attachmentData.put("USER_LANG",sh.getUserLang());
-            ClientRequestCommonData.attachmentData.put("SEQ_NO",sh.getSeqNo());
-            ClientRequestCommonData.attachmentData.put("PROGRAM_ID",sh.getProgramId());
-            ClientRequestCommonData.attachmentData.put("SOURCE_BRANCH_NO",sh.getSourceBranchNo());
+            if(!StringUtils.isEmpty(sh.getSourceBranchNo())) {
+                ClientRequestCommonData.attachmentData.put("SOURCE_BRANCH_NO",sh.getSourceBranchNo());
+            }
+            if(!StringUtils.isEmpty(sh.getDestBranchNo())) {
             ClientRequestCommonData.attachmentData.put("DEST_BRANCH_NO",sh.getDestBranchNo());
+            }
+            if(!StringUtils.isEmpty(sh.getServiceCode())) {
             ClientRequestCommonData.attachmentData.put("SERVICE_CODE",sh.getServiceCode());
+            }
+            if(!StringUtils.isEmpty(sh.getMessageType())) {
             ClientRequestCommonData.attachmentData.put("MESSAGE_TYPE",sh.getMessageType());
+            }
+            if(!StringUtils.isEmpty(sh.getMessageCode())) {
             ClientRequestCommonData.attachmentData.put("MESSAGE_CODE",sh.getMessageCode());
+            }
+            if(!StringUtils.isEmpty(sh.getTranMode())) {
             ClientRequestCommonData.attachmentData.put("TRAN_MODE",sh.getTranMode());
+            }
+            if(!StringUtils.isEmpty(sh.getSourceType())) {
             ClientRequestCommonData.attachmentData.put("SOURCE_TYPE",sh.getSourceType());
+            }
+            if(!StringUtils.isEmpty(sh.getBranchId())) {
             ClientRequestCommonData.attachmentData.put("BRANCH_ID",sh.getBranchId());
+            }
+            if(!StringUtils.isEmpty(sh.getUserId())) {
             ClientRequestCommonData.attachmentData.put("USER_ID",sh.getUserId());
-            ClientRequestCommonData.attachmentData.put("TRAN_DATE",sh.getTranDate());
+            }
+            if(!StringUtils.isEmpty(sh.getTranDate())) {
+                ClientRequestCommonData.attachmentData.put("TRAN_DATE", sh.getTranDate());
+            }
 
 
 
 
-            RpcContext.getContext().setAttachment("THREAD_NO",sh.getThreadNo());
+           /* RpcContext.getContext().setAttachment("THREAD_NO",sh.getThreadNo());
             RpcContext.getContext().setAttachment("TRAN_TIMESTAMP",sh.getTranTimestamp());
             RpcContext.getContext().setAttachment("USER_LANG",sh.getUserLang());
             RpcContext.getContext().setAttachment("SEQ_NO",sh.getSeqNo());
@@ -109,10 +139,10 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
             RpcContext.getContext().setAttachment("SOURCE_TYPE",sh.getSourceType());
             RpcContext.getContext().setAttachment("BRANCH_ID",sh.getBranchId());
             RpcContext.getContext().setAttachment("USER_ID",sh.getUserId());
-            RpcContext.getContext().setAttachment("TRAN_DATE",sh.getTranDate());
+            RpcContext.getContext().setAttachment("TRAN_DATE",sh.getTranDate());*/
 
 
-            keyValueAnnotation=  KeyValueAnnotation.create("THREAD_NO",sh.getThreadNo());
+            /*keyValueAnnotation=  KeyValueAnnotation.create("THREAD_NO",sh.getThreadNo());
             annotations.add(keyValueAnnotation);
             keyValueAnnotation=  KeyValueAnnotation.create("TRAN_TIMESTAMP",sh.getTranTimestamp());
             annotations.add(keyValueAnnotation);
@@ -142,50 +172,13 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
             keyValueAnnotation=  KeyValueAnnotation.create("USER_ID",sh.getUserId());
             annotations.add(keyValueAnnotation);
             keyValueAnnotation=  KeyValueAnnotation.create("TRAN_DATE",sh.getTranDate());
-            annotations.add(keyValueAnnotation);
+            annotations.add(keyValueAnnotation);*/
 
 
         }else{
-            /*if(!StringUtils.isEmpty(RpcContext.getContext().getAttachment("THREAD_NO"))) {
 
-                keyValueAnnotation = KeyValueAnnotation.create("THREAD_NO", RpcContext.getContext().getAttachment("THREAD_NO"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("TRAN_TIMESTAMP", RpcContext.getContext().getAttachment("TRAN_TIMESTAMP"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("USER_LANG", RpcContext.getContext().getAttachment("USER_LANG"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("SEQ_NO", RpcContext.getContext().getAttachment("SEQ_NO"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("PROGRAM_ID", RpcContext.getContext().getAttachment("PROGRAM_ID"));
-                annotations.add(keyValueAnnotation);
-
-                keyValueAnnotation = KeyValueAnnotation.create("SOURCE_BRANCH_NO", RpcContext.getContext().getAttachment("SOURCE_BRANCH_NO"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("DEST_BRANCH_NO", RpcContext.getContext().getAttachment("DEST_BRANCH_NO"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("SERVICE_CODE", RpcContext.getContext().getAttachment("SERVICE_CODE"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("MESSAGE_TYPE", RpcContext.getContext().getAttachment("MESSAGE_TYPE"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("MESSAGE_CODE", RpcContext.getContext().getAttachment("MESSAGE_CODE"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("TRAN_MODE", RpcContext.getContext().getAttachment("TRAN_MODE"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("SOURCE_TYPE", RpcContext.getContext().getAttachment("SOURCE_TYPE"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("BRANCH_ID", RpcContext.getContext().getAttachment("BRANCH_ID"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("USER_ID", RpcContext.getContext().getAttachment("USER_ID"));
-                annotations.add(keyValueAnnotation);
-                keyValueAnnotation = KeyValueAnnotation.create("TRAN_DATE", RpcContext.getContext().getAttachment("TRAN_DATE"));
-                annotations.add(keyValueAnnotation);
-
-
-
-            }*/
-
-
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("THREAD_NO"))) {
+           // if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("THREAD_NO"))) {
+            /*if(ClientRequestCommonData.attachmentData.size() > 0) {
 
                 keyValueAnnotation = KeyValueAnnotation.create("THREAD_NO", ClientRequestCommonData.attachmentData.get("THREAD_NO"));
                 annotations.add(keyValueAnnotation);
@@ -221,7 +214,45 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
 
 
 
-            }
+            }*/
+
+
+
+        }
+
+        if(ClientRequestCommonData.attachmentData.size() > 0) {
+
+            keyValueAnnotation = KeyValueAnnotation.create("THREAD_NO", ClientRequestCommonData.attachmentData.get("THREAD_NO"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("TRAN_TIMESTAMP", ClientRequestCommonData.attachmentData.get("TRAN_TIMESTAMP"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("USER_LANG", ClientRequestCommonData.attachmentData.get("USER_LANG"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("SEQ_NO", ClientRequestCommonData.attachmentData.get("SEQ_NO"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("PROGRAM_ID", ClientRequestCommonData.attachmentData.get("PROGRAM_ID"));
+            annotations.add(keyValueAnnotation);
+
+            keyValueAnnotation = KeyValueAnnotation.create("SOURCE_BRANCH_NO", ClientRequestCommonData.attachmentData.get("SOURCE_BRANCH_NO"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("DEST_BRANCH_NO", ClientRequestCommonData.attachmentData.get("DEST_BRANCH_NO"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("SERVICE_CODE", ClientRequestCommonData.attachmentData.get("SERVICE_CODE"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("MESSAGE_TYPE", ClientRequestCommonData.attachmentData.get("MESSAGE_TYPE"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("MESSAGE_CODE", ClientRequestCommonData.attachmentData.get("MESSAGE_CODE"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("TRAN_MODE", ClientRequestCommonData.attachmentData.get("TRAN_MODE"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("SOURCE_TYPE", ClientRequestCommonData.attachmentData.get("SOURCE_TYPE"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("BRANCH_ID", ClientRequestCommonData.attachmentData.get("BRANCH_ID"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("USER_ID", ClientRequestCommonData.attachmentData.get("USER_ID"));
+            annotations.add(keyValueAnnotation);
+            keyValueAnnotation = KeyValueAnnotation.create("TRAN_DATE", ClientRequestCommonData.attachmentData.get("TRAN_DATE"));
+            annotations.add(keyValueAnnotation);
 
 
 
