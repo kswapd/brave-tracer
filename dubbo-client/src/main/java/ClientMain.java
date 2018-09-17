@@ -1,9 +1,7 @@
 import interfaces.BarService;
 import interfaces.DemoService;
+import interfaces.DemoTraceService;
 import interfaces.FooService;
-import models.Book;
-import models.StaticTest;
-import models.SuperBook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -18,9 +16,12 @@ public class ClientMain {
 				new String[] { "applicationConsumer.xml" });
 		context.start();
 
-		DemoService service = (DemoService) context.getBean("demoService");
-		System.out.println(service.sayHello("hello"));
+		/*DemoService service = (DemoService) context.getBean("demoService");
+		System.out.println(service.sayHello("hello"));*/
 
+
+		DemoTraceService tservice = (DemoTraceService) context.getBean("demoTraceService");
+		System.out.println(tservice.sayParent("hello"));
 
 		/*FooService foo = (FooService) context.getBean("fooService");
 		System.out.println(foo.sayFoo("world "));

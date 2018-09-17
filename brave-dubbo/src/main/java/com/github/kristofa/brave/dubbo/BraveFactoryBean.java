@@ -65,7 +65,7 @@ public class BraveFactoryBean implements FactoryBean<Brave> {
 
 
 
-    @Override
+
     public Brave getObject() throws Exception {
         if (this.instance == null) {
             this.createInstance();
@@ -73,12 +73,12 @@ public class BraveFactoryBean implements FactoryBean<Brave> {
         return this.instance;
     }
 
-    @Override
+
     public Class<?> getObjectType() {
         return Brave.class;
     }
 
-    @Override
+
     public boolean isSingleton() {
         return true;
     }

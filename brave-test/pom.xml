@@ -12,7 +12,7 @@
         <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-core</artifactId>
-            <version>3.9.1</version>
+            <version>4.13.4</version>
             <!-- <version>4.13.4</version>-->
         </dependency>
 
@@ -25,7 +25,12 @@
         <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-spancollector-http</artifactId>
-            <version>3.9.0</version>
+            <version>4.13.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter</groupId>
+            <artifactId>zipkin-sender-okhttp3</artifactId>
+            <version>1.1.2</version>
         </dependency>
 
         <dependency>

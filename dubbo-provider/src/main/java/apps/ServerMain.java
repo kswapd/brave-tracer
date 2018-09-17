@@ -18,11 +18,7 @@ public class ServerMain{
 
 			System.setProperty("java.net.preferIPv4Stack", "true");
 			ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"applicationProvider.xml"});
-
-
 			context.start();
-
-
 			System.out.println("输入任意按键退出 ~ ");
 			System.in.read();
 

@@ -22,6 +22,9 @@
     <bean id="demoService"
           class="services.DemoServiceImpl" />
 
+    <!--<bean id="demoTraceService"
+          class="services.DemoTraceServiceImpl" />-->
+
     <bean id="fooService"
           class="services.FooServiceImpl" />
 
@@ -37,6 +40,10 @@
     <dubbo:reference id="barService"
                      interface="interfaces.BarService"
                      protocol="dubbo" />
+
+    <dubbo:service ref="demoTraceService"
+                   interface="interfaces.DemoTraceService"
+                   protocol="dubbo"/>
 
     <!--<bean id="brave" class="com.github.kristofa.brave.dubbo.BraveFactoryBean">
 

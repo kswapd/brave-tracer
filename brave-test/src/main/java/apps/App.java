@@ -30,6 +30,8 @@ import com.github.kristofa.brave.SpanId;
 import com.github.kristofa.brave.TraceData;
 import com.github.kristofa.brave.http.HttpSpanCollector;
 import com.twitter.zipkin.gen.Endpoint;
+import zipkin2.reporter.AsyncReporter;
+
 public class App {
 	private static HttpSpanCollector collector = null;
 	private static Brave brave = null;
@@ -37,7 +39,7 @@ public class App {
 	private static Brave brave0 = null, brave3=null;
 	public static ClientRequestAdapterImpl imp0,imp1,imp2;
 	private static void braveInit(){
-		collector = HttpSpanCollector.create("http://10.88.2.108:9411/", new EmptySpanCollectorMetricsHandler());
+		collector = HttpSpanCollector.create("http://127.0.0.1:9411/", new EmptySpanCollectorMetricsHandler());
 
 
 		brave0 = new Brave.Builder("appgateway").spanCollector(collector).build();
@@ -100,7 +102,7 @@ public class App {
 
 			new Thread(new Runnable()
 			{
-				@Override
+
 				public void run()
 
 				{
@@ -202,6 +204,150 @@ public class App {
 
 	}
 
+	private static void func2() throws Exception
+	{
+		Thread.sleep(1000);
+		ServerRequestInterceptor serverRequestInterceptor1 = brave2.serverRequestInterceptor();
+		ServerResponseInterceptor serverResponseInterceptor1 = brave2.serverResponseInterceptor();
+
+		ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("func2", imp1.getSpanId());
+		serverRequestInterceptor1.handle(serverReq0);
+		try {
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
+
+	}
+
+	private static void func1() throws Exception
+	{
+		Thread.sleep(1000);
+		ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
+		ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
+
+		ClientRequestInterceptor clientRequestInterceptor1 = brave.clientRequestInterceptor();
+		ClientResponseInterceptor clientResponseInterceptor1 = brave.clientResponseInterceptor();
+
+		ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("func1", imp0.getSpanId());
+		serverRequestInterceptor1.handle(serverReq0);
+		try {
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+
+
+
+
+		imp1 = new ClientRequestAdapterImpl("func2");
+
+		clientRequestInterceptor1.handle(imp1);
+
+
+		new Thread(new Runnable(){
+			public void run() {
+				try {
+					func2();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+		}).start();
+
+
+		//	func2();
+		clientResponseInterceptor1.handle(new ClientResponseAdapterImpl());
+
+
+		try {
+			Thread.sleep(5000);
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
+
+	}
+
+	private static void func3()
+	{
+		System.out.println("func3");
+		func4();
+	}
+	private static void func4()
+	{
+		System.out.println("func4");
+	}
+	private static void skyTest() throws Exception
+	{
+
+		System.out.println("hihihi");
+		func3();
+	}
+	private static void internalTest() throws Exception
+	{
+
+
+
+
+		braveInit();
+		ClientRequestInterceptor clientRequestInterceptor0 = brave0.clientRequestInterceptor();
+		ClientResponseInterceptor clientResponseInterceptor0 = brave0.clientResponseInterceptor();
+
+		imp0 = new ClientRequestAdapterImpl("func1");
+		clientRequestInterceptor0.handle(imp0);
+		func1();
+
+		/*Thread.sleep(120);
+		ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
+		ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
+
+		ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("aaaa", imp0.getSpanId());
+		serverRequestInterceptor1.handle(serverReq0);
+		try {
+			Thread.sleep(200);
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());*/
+
+
+
+		/*new Thread(new Runnable(){
+			public void run() {
+
+
+				ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
+				ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
+
+				ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("aaaa", imp0.getSpanId());
+				serverRequestInterceptor1.handle(serverReq0);
+				try {
+					Thread.sleep(200);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
+			}
+
+		}).start();*/
+
+		Thread.sleep(1000);
+		clientResponseInterceptor0.handle(new ClientResponseAdapterImpl());
+		System.out.println("over2");
+
+	}
+
 
 	private static void simpleTest() throws Exception
 	{
@@ -228,26 +374,9 @@ public class App {
 
 		{
 
-			ServerRequestInterceptor serverRequestInterceptor0 = brave0.serverRequestInterceptor();
-			ServerResponseInterceptor serverResponseInterceptor0 = brave0.serverResponseInterceptor();
+
 			ClientRequestInterceptor clientRequestInterceptor0 = brave0.clientRequestInterceptor();
 			ClientResponseInterceptor clientResponseInterceptor0 = brave0.clientResponseInterceptor();
-
-			ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
-			ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
-			ClientRequestInterceptor clientRequestInterceptor1 = brave.clientRequestInterceptor();
-			ClientResponseInterceptor clientResponseInterceptor1 = brave.clientResponseInterceptor();
-
-
-			ServerRequestInterceptor serverRequestInterceptor2 = brave2.serverRequestInterceptor();
-			ServerResponseInterceptor serverResponseInterceptor2 = brave2.serverResponseInterceptor();
-			ClientRequestInterceptor clientRequestInterceptor2 = brave2.clientRequestInterceptor();
-			ClientResponseInterceptor clientResponseInterceptor2 = brave2.clientResponseInterceptor();
-
-			ServerRequestInterceptor serverRequestInterceptor3 = brave3.serverRequestInterceptor();
-			ServerResponseInterceptor serverResponseInterceptor3 = brave3.serverResponseInterceptor();
-			ClientRequestInterceptor clientRequestInterceptor3 = brave3.clientRequestInterceptor();
-			ClientResponseInterceptor clientResponseInterceptor3 = brave3.clientResponseInterceptor();
 
 
 			imp0 = new ClientRequestAdapterImpl("aaaa");
@@ -269,10 +398,6 @@ public class App {
 				public void run() {
 
 
-				ServerRequestInterceptor serverRequestInterceptor0 = brave0.serverRequestInterceptor();
-				ServerResponseInterceptor serverResponseInterceptor0 = brave0.serverResponseInterceptor();
-				ClientRequestInterceptor clientRequestInterceptor0 = brave0.clientRequestInterceptor();
-				ClientResponseInterceptor clientResponseInterceptor0 = brave0.clientResponseInterceptor();
 
 				ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
 				ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
@@ -282,13 +407,6 @@ public class App {
 
 				ServerRequestInterceptor serverRequestInterceptor2 = brave2.serverRequestInterceptor();
 				ServerResponseInterceptor serverResponseInterceptor2 = brave2.serverResponseInterceptor();
-				ClientRequestInterceptor clientRequestInterceptor2 = brave2.clientRequestInterceptor();
-				ClientResponseInterceptor clientResponseInterceptor2 = brave2.clientResponseInterceptor();
-
-				ServerRequestInterceptor serverRequestInterceptor3 = brave3.serverRequestInterceptor();
-				ServerResponseInterceptor serverResponseInterceptor3 = brave3.serverResponseInterceptor();
-				ClientRequestInterceptor clientRequestInterceptor3 = brave3.clientRequestInterceptor();
-				ClientResponseInterceptor clientResponseInterceptor3 = brave3.clientResponseInterceptor();
 
 
 				ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("aaaa", imp0.getSpanId());
@@ -317,7 +435,7 @@ public class App {
 
 				serverRequestInterceptor2.handle(serverReq1);
 				try {
-					Thread.sleep(200);
+					Thread.sleep(2000);
 				}
 				catch (InterruptedException e) {
 					e.printStackTrace();
@@ -403,6 +521,8 @@ public class App {
 	public static void main(String[] args) throws Exception {
 		//complicatedTest();
 		simpleTest();
+		//internalTest();
+		//skyTest();
 	}
 
 	public static void dcHandle(String spanName, SpanId spanId){
