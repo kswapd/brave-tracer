@@ -1,7 +1,7 @@
-package com.github.kristofa.brave.dubbo.support;
+package com.dcits.brave.dubbo.support;
 
 import com.alibaba.dubbo.rpc.RpcContext;
-import com.github.kristofa.brave.dubbo.DubboServerNameProvider;
+import com.dcits.brave.dubbo.DubboServerNameProvider;
 
 /**
  * Created by chenjg on 16/8/22.

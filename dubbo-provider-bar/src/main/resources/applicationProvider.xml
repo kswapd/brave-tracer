@@ -12,7 +12,7 @@
 
     <context:property-placeholder location="classpath*:commons.properties" />
 
-    <bean id="brave" class="com.github.kristofa.brave.dubbo.BraveFactoryBean">
+    <bean id="brave" class="com.dcits.brave.dubbo.BraveFactoryBean">
 
         <property name="serviceName">
             <value>helloworld-provider-bar</value>

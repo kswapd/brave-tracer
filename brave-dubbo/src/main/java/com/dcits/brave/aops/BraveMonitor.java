@@ -1,5 +1,6 @@
-package com.dcits.aops;
+package com.dcits.brave.aops;
 
+import com.dcits.brave.dubbo.BraveProviderFilter;
 import com.github.kristofa.brave.Brave;
 import com.github.kristofa.brave.ClientRequestAdapter;
 import com.github.kristofa.brave.ClientRequestInterceptor;
@@ -31,6 +32,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import static org.aspectj.weaver.AdviceKind.Around;
@@ -40,6 +43,7 @@ import static org.aspectj.weaver.AdviceKind.Around;
  */
 class ClientRequestAdapterImpl implements ClientRequestAdapter {
 
+	private static final Logger logger = LoggerFactory.getLogger(ClientRequestAdapterImpl.class);
 	String spanName;
 	SpanId spanId;
 
@@ -63,9 +67,9 @@ class ClientRequestAdapterImpl implements ClientRequestAdapter {
 		//System.out.println(spanId);
 		if (spanId != null) {
 			this.spanId = spanId;
-			System.out.println(String.format("ClientRequestAdapterImpl:addSpanIdToRequest:trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
+			logger.debug(String.format("ClientRequestAdapterImpl:addSpanIdToRequest:trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
 		}else {
-			System.out.println(String.format("ClientRequestAdapterImpl:addSpanIdToRequest: null"));
+			logger.debug(String.format("ClientRequestAdapterImpl:addSpanIdToRequest: null"));
 		}
 
 	}
@@ -98,53 +102,52 @@ class ClientResponseAdapterImpl implements ClientResponseAdapter {
 }
 
 
+class ServerRequestAdapterImpl implements ServerRequestAdapter {
+	private static final Logger logger = LoggerFactory.getLogger(ServerRequestAdapterImpl.class);
+   Random randomGenerator = new Random();
+   SpanId spanId;
+   String spanName;
 
- class ServerRequestAdapterImpl implements ServerRequestAdapter {
+   ServerRequestAdapterImpl(String spanName){
+	   this.spanName = spanName;
+	   long startId = randomGenerator.nextLong();
+	   SpanId spanId = SpanId.builder().spanId(startId).traceId(startId).parentId(startId).build();
+	   this.spanId = spanId;
+	   logger.debug(String.format("ServerRequestAdapterImpl:trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
 
-	Random randomGenerator = new Random();
-	SpanId spanId;
-	String spanName;
+   }
 
-	ServerRequestAdapterImpl(String spanName){
-		this.spanName = spanName;
-		long startId = randomGenerator.nextLong();
-		SpanId spanId = SpanId.builder().spanId(startId).traceId(startId).parentId(startId).build();
-		this.spanId = spanId;
-		System.out.println(String.format("ServerRequestAdapterImpl:trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
-
-	}
-
-	ServerRequestAdapterImpl(String spanName, SpanId spanId){
-		this.spanName = spanName;
-		this.spanId = spanId;
-	}
-
-
-	public TraceData getTraceData() {
-		if (this.spanId != null) {
-			System.out.println(String.format("ServerRequestAdapterImpl:getTraceData trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
-
-			return TraceData.builder().spanId(this.spanId).build();
-		}
-		System.out.println(String.format("ServerRequestAdapterImpl:getTraceData generate trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
-
-		long startId = randomGenerator.nextLong();
-		SpanId spanId = SpanId.builder().spanId(startId).traceId(startId).parentId(startId).build();
-		return TraceData.builder().spanId(spanId).build();
-	}
+   ServerRequestAdapterImpl(String spanName, SpanId spanId){
+	   this.spanName = spanName;
+	   this.spanId = spanId;
+   }
 
 
-	public String getSpanName() {
-		return spanName;
-	}
+   public TraceData getTraceData() {
+	   if (this.spanId != null) {
+		   logger.debug(String.format("ServerRequestAdapterImpl:getTraceData trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
+
+		   return TraceData.builder().spanId(this.spanId).build();
+	   }
+	   logger.debug(String.format("ServerRequestAdapterImpl:getTraceData generate trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
+
+	   long startId = randomGenerator.nextLong();
+	   SpanId spanId = SpanId.builder().spanId(startId).traceId(startId).parentId(startId).build();
+	   return TraceData.builder().spanId(spanId).build();
+   }
 
 
-	public Collection<KeyValueAnnotation> requestAnnotations() {
-		Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
-		KeyValueAnnotation kv = KeyValueAnnotation.create("server-request", "222222");
-		collection.add(kv);
-		return collection;
-	}
+   public String getSpanName() {
+	   return spanName;
+   }
+
+
+   public Collection<KeyValueAnnotation> requestAnnotations() {
+	   Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
+	   KeyValueAnnotation kv = KeyValueAnnotation.create("server-request", "222222");
+	   collection.add(kv);
+	   return collection;
+   }
 
 }
 
@@ -160,9 +163,10 @@ class ClientResponseAdapterImpl implements ClientResponseAdapter {
 
 }
 
-//@Aspect
-//@Component
+@Aspect
+@Component
 public class BraveMonitor {
+	private static final Logger logger = LoggerFactory.getLogger(BraveMonitor.class);
 
 	private static HttpSpanCollector collector = null;
 	private static Brave brave = null;
@@ -180,33 +184,33 @@ public class BraveMonitor {
 	private void init()
 	{
 		collector = HttpSpanCollector.create("http://192.168.246.129:9411/", new EmptySpanCollectorMetricsHandler());
-		System.out.println("initing monitor...");
+		logger.debug("initing monitor collector ");
 	}
 
 	//@Pointcut("execution(public * com.oumyye.service..*.add(..))")
 	//@Pointcut("execution(* get*(..))")
-	@Pointcut("execution(* com.dcits.processes..*.*(..))")
+	@Pointcut("execution(* com.dcits.processes..*.Process(..))")
 	public void myMethod(){};
 
 
 	/*@Before("execution(public void com.oumyye.dao.impl.UserDAOImpl.save(com.oumyye.model.User))")*/
 	@Before("myMethod()")
 	public void before() {
-		System.out.println("method start"+this.getClass().getName());
+		logger.debug("method start"+this.getClass().getName());
 
 	}
 	@After("myMethod()")
 	public void after() {
-		System.out.println("method after");
+		logger.debug("method after");
 
 	}
 	//@AfterReturning("execution(public * com.oumyye.dao..*.*(..))")
 	public void AfterReturning() {
-		System.out.println("method AfterReturning");
+		logger.debug("method AfterReturning");
 	}
 	//@AfterThrowing("execution(public * com.oumyye.dao..*.*(..))")
 	public void AfterThrowing() {
-		System.out.println("method AfterThrowing");
+		logger.debug("method AfterThrowing");
 	}
 
 	private void clientReq(Brave curBrave,String spanName)
@@ -230,7 +234,7 @@ public class BraveMonitor {
 
 	private void serverReq(Brave curBrave, ClientRequestAdapterImpl parentImp)
 	{
-		System.out.println("::::"+parentImp.getSpanName());
+		logger.debug("::::"+parentImp.getSpanName());
 		ServerRequestAdapterImpl serverReq1 = new ServerRequestAdapterImpl(parentImp.getSpanName(), parentImp.getSpanId());
 		ServerRequestInterceptor serverRequestInterceptor2 = curBrave.serverRequestInterceptor();
 		serverRequestInterceptor2.handle(serverReq1);
@@ -252,7 +256,7 @@ public class BraveMonitor {
 		String spanName =  method.getName();
 		String braveToken = className+"-"+spanName;
 		//initBrave(className);
-		System.out.println("---------------@Around前----------------"+spanName);
+		logger.debug("---------------@Around前----------------"+spanName);
 		imp = null;
 		if(imp == null){
 			braveContextData.put(braveToken+"_hasParent","0");
@@ -287,7 +291,7 @@ public class BraveMonitor {
 		try {
 			result = pjp.proceed();
 		} catch (Throwable throwable) {
-			System.out.println("---------------@Around异常----------------");
+			logger.debug("---------------@Around异常----------------");
 			// 监听参数为true则抛出异常，为false则捕获并不抛出异常
 			if (pjp.getArgs().length > 0 && !(Boolean) pjp.getArgs()[0]) {
 				result = null;
@@ -313,7 +317,7 @@ public class BraveMonitor {
 
 		}
 
-		System.out.println("---------------@Around后----------------");
+		logger.debug("---------------@Around后----------------");
 
 
 

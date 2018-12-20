@@ -5,6 +5,8 @@ import interfaces.DemoService;
 import interfaces.DemoTraceService;
 import interfaces.FooService;
 import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -16,27 +18,27 @@ import org.springframework.stereotype.Service;
 
 @Component("demoTraceService")
 public class DemoTraceServiceImpl implements DemoTraceService {
-
+	private static final Logger logger = LoggerFactory.getLogger(DemoTraceServiceImpl.class);
 	@Autowired
 	private DemoTraceAnotherService another;
 
 	@PostConstruct
 	public void init()
 	{
-		System.out.println("initing...");
+		logger.info("initing...");
 	}
 
 
 
 	public String sayParent(String name) {
-		System.out.println("init : " + name);
+		logger.info("sayParent : " + name);
 		//sayChild("child");
-		another.sayAnother("another...");
+		//another.sayAnother("another...");
 		return "hello from parent "  +  name;
 	}
 
 	public String sayChild(String name) {
-		System.out.println("init : " + name);
+		logger.info("init : " + name);
 		return "hello from child "  +  name;
 	}
 

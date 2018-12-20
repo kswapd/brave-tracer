@@ -1,4 +1,4 @@
-package com.github.kristofa.brave.dubbo;
+package com.dcits.brave.dubbo;
 
 import com.alibaba.dubbo.rpc.Result;
 import com.github.kristofa.brave.ClientResponseAdapter;

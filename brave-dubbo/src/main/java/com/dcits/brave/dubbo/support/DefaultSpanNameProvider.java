@@ -1,9 +1,7 @@
-package com.github.kristofa.brave.dubbo.support;
+package com.dcits.brave.dubbo.support;
 
-import com.alibaba.dubbo.rpc.Invocation;
-import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.RpcContext;
-import com.github.kristofa.brave.dubbo.DubboSpanNameProvider;
+import com.dcits.brave.dubbo.DubboSpanNameProvider;
 
 /**
  * Created by chenjg on 16/8/22.

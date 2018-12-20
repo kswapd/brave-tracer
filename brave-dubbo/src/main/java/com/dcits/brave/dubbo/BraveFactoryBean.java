@@ -1,4 +1,4 @@
-package com.github.kristofa.brave.dubbo;
+package com.dcits.brave.dubbo;
 
 import com.github.kristofa.brave.*;
 import com.github.kristofa.brave.http.HttpSpanCollector;

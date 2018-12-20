@@ -3,6 +3,8 @@ package services;
 import com.alibaba.dubbo.config.spring.ServiceBean;
 import interfaces.DemoService;
 import interfaces.FooService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -11,9 +13,9 @@ import org.springframework.context.ApplicationContext;
 
 public class DemoServiceImpl implements DemoService {
 
-
+	private static final Logger logger = LoggerFactory.getLogger(DemoServiceImpl.class);
 	public String sayHello(String name) {
-		System.out.println("init : " + name);
+		logger.info("sayHello : " + name);
 
 		//ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"applicationProvider.xml"});
 		//context.start();

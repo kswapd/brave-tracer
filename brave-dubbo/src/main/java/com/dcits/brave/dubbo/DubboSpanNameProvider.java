@@ -1,7 +1,5 @@
-package com.github.kristofa.brave.dubbo;
+package com.dcits.brave.dubbo;
 
-import com.alibaba.dubbo.rpc.Invocation;
-import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.RpcContext;
 
 /**

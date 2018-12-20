@@ -1,14 +1,12 @@
-package com.github.kristofa.brave.dubbo.support;
+package com.dcits.brave.dubbo.support;
 
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.github.kristofa.brave.SpanId;
-import com.github.kristofa.brave.dubbo.DubboClientNameProvider;
-import com.github.kristofa.brave.dubbo.DubboServerNameProvider;
-import com.github.kristofa.brave.internal.Nullable;
+import com.dcits.brave.dubbo.DubboClientNameProvider;
 
 /**
  *   解析dubbo consumer applicationName
- *   @see com.github.kristofa.brave.dubbo.DubboClientRequestAdapter#addSpanIdToRequest(SpanId spanId)
+ *   @see com.dcits.brave.dubbo.DubboClientRequestAdapter#addSpanIdToRequest(SpanId spanId)
  *   RpcContext.getContext().setAttachment("clientName", application);
 
  */

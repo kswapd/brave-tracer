@@ -13,8 +13,10 @@ public class ClientMain {
 	//@Resource(name="serviceProcess")
 	//public static ServiceProcess serviceProcess;
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
-				new String[] { "applicationConsumer.xml" });
+		//ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath*:META-INF/spring/*.xml","applicationConsumer.xml" });
+
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath*:META-INF/spring/brave-context.xml","applicationConsumer.xml"});
+
 		context.start();
 
 		/*DemoService service = (DemoService) context.getBean("demoService");

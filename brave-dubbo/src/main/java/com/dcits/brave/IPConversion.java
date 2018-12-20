@@ -1,4 +1,4 @@
-package com.github.kristofa.brave;
+package com.dcits.brave;
 
 /**
  * Created by chenjg on 16/8/4.

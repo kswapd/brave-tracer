@@ -1,14 +1,13 @@
-package com.github.kristofa.brave.dubbo;
+package com.dcits.brave.dubbo;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.rpc.*;
+import com.dcits.brave.tracers.BraveTracer;
 import com.github.kristofa.brave.*;
-import com.twitter.zipkin.gen.Span;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import javax.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import static com.github.kristofa.brave.IdConversion.convertToLong;
@@ -20,7 +19,11 @@ import static com.github.kristofa.brave.IdConversion.convertToLong;
 @Activate(group = Constants.PROVIDER)
 public class BraveProviderFilter implements Filter {
 
+    private static final Logger logger = LoggerFactory.getLogger(BraveProviderFilter.class);
 
+
+    //@Resource(name="brave")
+    //private Brave brave;
     private static volatile Brave brave;
     private static volatile ServerRequestInterceptor serverRequestInterceptor;
     private static volatile ServerResponseInterceptor serverResponseInterceptor;
@@ -29,6 +32,7 @@ public class BraveProviderFilter implements Filter {
 
 
     public static void setBrave(Brave brave) {
+        logger.debug("Setting brave for BraveProviderFilter.");
         BraveProviderFilter.brave = brave;
         BraveProviderFilter.serverRequestInterceptor = brave.serverRequestInterceptor();
         BraveProviderFilter.serverResponseInterceptor = brave.serverResponseInterceptor();
