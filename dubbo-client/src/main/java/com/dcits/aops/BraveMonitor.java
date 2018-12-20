@@ -272,6 +272,7 @@ public class BraveMonitor {
 		if(braveContextData.get(braveToken+"_hasParent").equals("0")) {
 			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
 			clientReq(curBrave,spanName);
+			serverReq(curBrave,imp);
 			braveContextData.put(braveToken+"_curClientRequestAdapter",imp);
 		}else if(braveContextData.get(braveToken+"_hasParent").equals("1")) {
 			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
@@ -303,6 +304,7 @@ public class BraveMonitor {
 
 		if(braveContextData.get(braveToken+"_hasParent").equals("0")) {
 			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
+			serverResp(curBrave);
 			clientResp(curBrave);
 		}else if(braveContextData.get(braveToken+"_hasParent").equals("1")) {
 			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");

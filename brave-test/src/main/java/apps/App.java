@@ -37,6 +37,7 @@ public class App {
 	private static Brave brave = null;
 	private static Brave brave2 = null;
 	private static Brave brave0 = null, brave3=null;
+	private static Brave brave_gw = null, brave_server=null;
 	public static ClientRequestAdapterImpl imp0,imp1,imp2;
 	private static void braveInit(){
 		collector = HttpSpanCollector.create("http://127.0.0.1:9411/", new EmptySpanCollectorMetricsHandler());
@@ -352,64 +353,33 @@ public class App {
 	private static void simpleTest() throws Exception
 	{
 
-		braveInit();
 
-		final BlockingQueue<Task> queue = new ArrayBlockingQueue<Task>(10);
-		Thread thread = new Thread(){
+		collector = HttpSpanCollector.create("http://192.168.246.129:9411/", new EmptySpanCollectorMetricsHandler());
+		brave_gw = new Brave.Builder("appgateway").spanCollector(collector).build();
+		brave_server = new Brave.Builder("appserver").spanCollector(collector).build();
+
+		ClientRequestInterceptor clientRequestInterceptor0 = brave_gw.clientRequestInterceptor();
+		ClientResponseInterceptor clientResponseInterceptor0 = brave_gw.clientResponseInterceptor();
+
+
+		imp0 = new ClientRequestAdapterImpl("span-name-1");
+		clientRequestInterceptor0.handle(imp0);
+
+
+
+		new Thread(new Runnable(){
+			//@Override
 			public void run() {
-				while (true) {
-					try {
-						Task task = queue.take();
-						dcHandle(task.name, task.spanId);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		};
-		thread.start();
 
 
 
-
-		{
-
-
-			ClientRequestInterceptor clientRequestInterceptor0 = brave0.clientRequestInterceptor();
-			ClientResponseInterceptor clientResponseInterceptor0 = brave0.clientResponseInterceptor();
+				ServerRequestInterceptor serverRequestInterceptor1 = brave_server.serverRequestInterceptor();
+				ServerResponseInterceptor serverResponseInterceptor1 = brave_server.serverResponseInterceptor();
+				ClientRequestInterceptor clientRequestInterceptor1 = brave_server.clientRequestInterceptor();
+				ClientResponseInterceptor clientResponseInterceptor1 = brave_server.clientResponseInterceptor();
 
 
-			imp0 = new ClientRequestAdapterImpl("aaaa");
-			clientRequestInterceptor0.handle(imp0);
-
-
-
-
-
-
-
-
-
-
-
-			new Thread(new Runnable(){
-
-			@Override
-				public void run() {
-
-
-
-				ServerRequestInterceptor serverRequestInterceptor1 = brave.serverRequestInterceptor();
-				ServerResponseInterceptor serverResponseInterceptor1 = brave.serverResponseInterceptor();
-				ClientRequestInterceptor clientRequestInterceptor1 = brave.clientRequestInterceptor();
-				ClientResponseInterceptor clientResponseInterceptor1 = brave.clientResponseInterceptor();
-
-
-				ServerRequestInterceptor serverRequestInterceptor2 = brave2.serverRequestInterceptor();
-				ServerResponseInterceptor serverResponseInterceptor2 = brave2.serverResponseInterceptor();
-
-
-				ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("aaaa", imp0.getSpanId());
+				ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("span-name-1", imp0.getSpanId());
 				serverRequestInterceptor1.handle(serverReq0);
 				try {
 					Thread.sleep(200);
@@ -418,11 +388,8 @@ public class App {
 					e.printStackTrace();
 				}
 
-
-				imp1 = new ClientRequestAdapterImpl("bbbb");
+				/*imp1 = new ClientRequestAdapterImpl("bbbb");
 				clientRequestInterceptor1.handle(imp1);
-
-
 				try {
 					Thread.sleep(20);
 				}
@@ -440,10 +407,7 @@ public class App {
 				catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
-
 				serverResponseInterceptor2.handle(new ServerResponseAdapterImpl());
-
 
 				try {
 					Thread.sleep(20);
@@ -451,7 +415,7 @@ public class App {
 				catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				clientResponseInterceptor1.handle(new ClientResponseAdapterImpl());
+				clientResponseInterceptor1.handle(new ClientResponseAdapterImpl());*/
 
 
 
@@ -463,53 +427,20 @@ public class App {
 				}
 
 				serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
-				System.out.println("over2");
+				System.out.println("over in thread");
+
+
+
 
 
 			}
 
-			}).start();
+		}).start();
 
 
-
-
-
-
-		/*	imp2 = new ClientRequestAdapterImpl("cccc");
-			clientRequestInterceptor1.handle(imp2);
-
-			Thread.sleep(20);
-
-			ServerRequestAdapterImpl serverReq3;
-			serverReq3 = new ServerRequestAdapterImpl("cccc", imp2.getSpanId());
-
-			serverRequestInterceptor3.handle(serverReq3);
-			Thread.sleep(200);
-			serverResponseInterceptor3.handle(new ServerResponseAdapterImpl());
-
-
-			Thread.sleep(20);
-			clientResponseInterceptor1.handle(new ClientResponseAdapterImpl());*/
-
-
-
-
-
-
-
-
-
-
-			Thread.sleep(1520);
-			clientResponseInterceptor0.handle(new ClientResponseAdapterImpl());
-			System.out.println("over2");
-
-
-
-
-
-		}
-		Thread.sleep(3000);
+		Thread.sleep(1520);
+		clientResponseInterceptor0.handle(new ClientResponseAdapterImpl());
+		System.out.println("over all");
 
 
 	}
