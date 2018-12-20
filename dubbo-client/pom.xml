@@ -21,13 +21,35 @@
         <!-- spring end -->
 
         <!-- dubbo begin -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo</artifactId>
             <version>2.5.8</version>
-        </dependency>
+        </dependency>-->
         <!-- dubbo end -->
+        <dependency>
+            <groupId>com.dcits.galaxy</groupId>
+            <artifactId>galaxy-dubbo</artifactId>
+            <version>2.3.2</version>
+            <!--<exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>dubbo</artifactId>
+                </exclusion>
+            </exclusions>-->
+        </dependency>
 
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.8.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.8.10</version>
+        </dependency>
         <!-- 注册中心zookeeper begin -->
         <dependency>
             <groupId>org.apache.zookeeper</groupId>

@@ -16,9 +16,6 @@
     <context:property-placeholder location="classpath*:commons.properties" />
     <context:component-scan base-package="services,com.dcits.aops,com.dcits.brave.tracers"></context:component-scan>
 
-    <aop:aspectj-autoproxy/>
-
-
     <!-- 引入服务提供者配置文件 -->
     <import resource="classpath:dubbo.xml" />
 

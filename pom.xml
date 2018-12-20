@@ -32,6 +32,16 @@
         <module>brave-test</module>
     </modules>
 
+
+    <properties>
+        <project.encoding>UTF-8</project.encoding>
+        <galaxy.version>2.3.2</galaxy.version>
+        <orion.version>2.3.2</orion.version>
+        <jdk.version>1.8</jdk.version>
+        <slf4j.version>1.7.12</slf4j.version>
+        <logback.version>1.2.3</logback.version>
+    </properties>
+
     <dependencyManagement>
     <dependencies>
     <dependency>
@@ -46,7 +56,16 @@
         <pluginManagement>
             <plugins>
                 <!-- compiler插件, 设定JDK版本 -->
-
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.2</version>
+                    <configuration>
+                        <source>${jdk.version}</source>
+                        <target>${jdk.version}</target>
+                        <encoding>${project.encoding}</encoding>
+                    </configuration>
+                </plugin>
 
                 <!-- clean插件 -->
                 <plugin>

@@ -85,15 +85,15 @@ class ClientRequestAdapterImpl implements ClientRequestAdapter {
 
 }
 
- class ClientResponseAdapterImpl implements ClientResponseAdapter {
+class ClientResponseAdapterImpl implements ClientResponseAdapter {
 
 
-	public Collection<KeyValueAnnotation> responseAnnotations() {
-		Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
-		KeyValueAnnotation kv = KeyValueAnnotation.create("client-response", "444444");
-		collection.add(kv);
-		return collection;
-	}
+   public Collection<KeyValueAnnotation> responseAnnotations() {
+	   Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
+	   KeyValueAnnotation kv = KeyValueAnnotation.create("client-response", "444444");
+	   collection.add(kv);
+	   return collection;
+   }
 
 }
 
@@ -179,13 +179,13 @@ public class BraveMonitor {
 	@PostConstruct
 	private void init()
 	{
-		collector = HttpSpanCollector.create("http://127.0.0.1:9411/", new EmptySpanCollectorMetricsHandler());
+		collector = HttpSpanCollector.create("http://192.168.246.129:9411/", new EmptySpanCollectorMetricsHandler());
 		System.out.println("initing monitor...");
 	}
 
 	//@Pointcut("execution(public * com.oumyye.service..*.add(..))")
 	//@Pointcut("execution(* get*(..))")
-	@Pointcut("execution(* services..*.*(..))")
+	@Pointcut("execution(* com.dcits.processes..*.*(..))")
 	public void myMethod(){};
 
 
@@ -200,11 +200,11 @@ public class BraveMonitor {
 		System.out.println("method after");
 
 	}
-	@AfterReturning("execution(public * com.oumyye.dao..*.*(..))")
+	//@AfterReturning("execution(public * com.oumyye.dao..*.*(..))")
 	public void AfterReturning() {
 		System.out.println("method AfterReturning");
 	}
-	@AfterThrowing("execution(public * com.oumyye.dao..*.*(..))")
+	//@AfterThrowing("execution(public * com.oumyye.dao..*.*(..))")
 	public void AfterThrowing() {
 		System.out.println("method AfterThrowing");
 	}
@@ -253,7 +253,7 @@ public class BraveMonitor {
 		String braveToken = className+"-"+spanName;
 		//initBrave(className);
 		System.out.println("---------------@Around前----------------"+spanName);
-
+		imp = null;
 		if(imp == null){
 			braveContextData.put(braveToken+"_hasParent","0");
 			brave = new Brave.Builder(className).spanCollector(collector).build();
@@ -273,11 +273,7 @@ public class BraveMonitor {
 			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
 			clientReq(curBrave,spanName);
 			braveContextData.put(braveToken+"_curClientRequestAdapter",imp);
-		}
-
-
-
-		if(braveContextData.get(braveToken+"_hasParent").equals("1")) {
+		}else if(braveContextData.get(braveToken+"_hasParent").equals("1")) {
 			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
 			serverReq(curBrave,imp);
 			clientReq(curBrave, spanName);
@@ -308,9 +304,7 @@ public class BraveMonitor {
 		if(braveContextData.get(braveToken+"_hasParent").equals("0")) {
 			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
 			clientResp(curBrave);
-		}
-
-		if(braveContextData.get(braveToken+"_hasParent").equals("1")) {
+		}else if(braveContextData.get(braveToken+"_hasParent").equals("1")) {
 			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
 			clientResp(curBrave);
 			serverResp(curBrave);

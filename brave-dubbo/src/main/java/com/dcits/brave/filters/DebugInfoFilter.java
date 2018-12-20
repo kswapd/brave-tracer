@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.rpc.*;
-@Activate(group = {Constants.PROVIDER, Constants.CONSUMER})
+//@Activate(group = {Constants.PROVIDER, Constants.CONSUMER})
 public class DebugInfoFilter implements Filter {
 
 

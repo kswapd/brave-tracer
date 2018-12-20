@@ -1,8 +1,7 @@
-import interfaces.BarService;
+import com.dcits.processes.ServiceProcess;
 import interfaces.DemoService;
 import interfaces.DemoTraceService;
-import interfaces.FooService;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -11,17 +10,23 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class ClientMain {
 
 
+	//@Resource(name="serviceProcess")
+	//public static ServiceProcess serviceProcess;
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
 				new String[] { "applicationConsumer.xml" });
 		context.start();
 
 		/*DemoService service = (DemoService) context.getBean("demoService");
-		System.out.println(service.sayHello("hello"));*/
+		System.out.println(service.sayHello("hello"));
 
 
 		DemoTraceService tservice = (DemoTraceService) context.getBean("demoTraceService");
-		System.out.println(tservice.sayParent("hello"));
+		System.out.println(tservice.sayParent("hello"));*/
+
+		ServiceProcess process = (ServiceProcess)context.getBean("serviceProcess");
+		process.setContext(context);
+		process.Process();
 
 		/*FooService foo = (FooService) context.getBean("fooService");
 		System.out.println(foo.sayFoo("world "));

@@ -23,10 +23,10 @@ public class DemoServiceImpl implements DemoService {
 		BarService bar = (BarService) context.getBean("barService");
 		String barStr = bar.sayBar("bar");*/
 
-
+/*
 		ApplicationContext context= ServiceBean.getSpringContext();
 		FooService foo = (FooService) context.getBean("fooService");
-		foo.sayFoo("foo");
+		foo.sayFoo("foo");*/
 		//String barStr = bar.sayBar("bar");
 
 		return "hello from dubbo provider "  +  name;
