@@ -3,6 +3,8 @@ package apps;
 /**
  * Created by kongxiangwen on 7/10/18 w:28.
  */
+
+import com.github.kristofa.brave.ServerSpan;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -30,23 +32,22 @@ import com.github.kristofa.brave.SpanId;
 import com.github.kristofa.brave.TraceData;
 import com.github.kristofa.brave.http.HttpSpanCollector;
 import com.twitter.zipkin.gen.Endpoint;
-import zipkin2.reporter.AsyncReporter;
+
 
 public class App {
+
+	private static String zipkinUrl = "http://127.0.0.1:9411";
 	private static HttpSpanCollector collector = null;
 	private static Brave brave = null;
 	private static Brave brave2 = null;
 	private static Brave brave0 = null, brave3=null;
-	private static Brave brave_gw = null, brave_server=null;
-	public static ClientRequestAdapterImpl imp0,imp1,imp2;
+	private static Brave brave_gw = null, brave_server=null,brave_server1=null, brave_server2 = null, brave_server3 = null;
+
+	public static ClientRequestAdapterImpl imp0,imp1,imp2,req_from_gw,req_from_server1, req_from_server2;
 	private static void braveInit(){
-		collector = HttpSpanCollector.create("http://127.0.0.1:9411/", new EmptySpanCollectorMetricsHandler());
-
-
+		collector = HttpSpanCollector.create(zipkinUrl, new EmptySpanCollectorMetricsHandler());
 		brave0 = new Brave.Builder("appgateway").spanCollector(collector).build();
-
 		brave = new Brave.Builder("appserver").spanCollector(collector).build();
-
 		brave2 = new Brave.Builder("datacenter").spanCollector(collector).build();
 		brave3 = new Brave.Builder("omscenter").spanCollector(collector).build();
 
@@ -61,6 +62,18 @@ public class App {
 			this.spanId = spanId;
 		}
 	}
+
+
+
+	public static void main(String[] args) throws Exception {
+		//complicatedTest();
+		//simpleTest();
+		singleThrdTest();
+		//newTest();
+		//internalTest();
+		//skyTest();
+	}
+
 
 	private static void complicatedTest() throws Exception
 	{
@@ -350,13 +363,16 @@ public class App {
 	}
 
 
+
+
+
 	private static void simpleTest() throws Exception
 	{
-
-
-		collector = HttpSpanCollector.create("http://192.168.246.129:9411/", new EmptySpanCollectorMetricsHandler());
+		collector = HttpSpanCollector.create(zipkinUrl+"/", new EmptySpanCollectorMetricsHandler());
 		brave_gw = new Brave.Builder("appgateway").spanCollector(collector).build();
 		brave_server = new Brave.Builder("appserver").spanCollector(collector).build();
+
+
 
 		ClientRequestInterceptor clientRequestInterceptor0 = brave_gw.clientRequestInterceptor();
 		ClientResponseInterceptor clientResponseInterceptor0 = brave_gw.clientResponseInterceptor();
@@ -446,15 +462,318 @@ public class App {
 	}
 
 
+	private static void singleThrdTest() throws Exception
+	{
+		collector = HttpSpanCollector.create(zipkinUrl+"/", new EmptySpanCollectorMetricsHandler());
+		brave_gw = new Brave.Builder("appgateway").spanCollector(collector).build();
+		brave_server1 = new Brave.Builder("appserver1").spanCollector(collector).build();
+		brave_server2 = new Brave.Builder("appserver2").spanCollector(collector).build();
+		brave_server3 = new Brave.Builder("appserver3").spanCollector(collector).build();
+		ClientRequestInterceptor clientRequestInterceptor0 = brave_gw.clientRequestInterceptor();
+		ClientResponseInterceptor clientResponseInterceptor0 = brave_gw.clientResponseInterceptor();
+
+
+		//span gateway->server1
+
+		req_from_gw = new ClientRequestAdapterImpl("span-gw-s1");
+		clientRequestInterceptor0.handle(req_from_gw);
+
+		//brave_server = brave_gw;
+
+		//new Thread(new Runnable(){public void run() {
 
 
 
-	public static void main(String[] args) throws Exception {
-		//complicatedTest();
-		simpleTest();
-		//internalTest();
-		//skyTest();
+			ServerRequestInterceptor serverRequestInterceptor1 = brave_server1.serverRequestInterceptor();
+			ServerResponseInterceptor serverResponseInterceptor1 = brave_server1.serverResponseInterceptor();
+			ClientRequestInterceptor clientRequestInterceptor1 = brave_server1.clientRequestInterceptor();
+			ClientResponseInterceptor clientResponseInterceptor1 = brave_server1.clientResponseInterceptor();
+
+
+			ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("span-gw-s1", req_from_gw.getSpanId());
+			serverRequestInterceptor1.handle(serverReq0);
+			try {
+				Thread.sleep(200);
+			}
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+
+			//--------------------span server1->server2-----------------
+
+				req_from_server1 = new ClientRequestAdapterImpl("span-s1-s2");
+				clientRequestInterceptor1.handle(req_from_server1);
+
+				//new Thread(new Runnable(){public void run() {
+
+
+
+						ServerRequestInterceptor serverRequestInterceptor2 = brave_server2.serverRequestInterceptor();
+						ServerResponseInterceptor serverResponseInterceptor2 = brave_server2.serverResponseInterceptor();
+
+						try {
+							Thread.sleep(20);
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+
+						ServerRequestAdapterImpl serverReq1 = new ServerRequestAdapterImpl("span-s1-s2", req_from_server1.getSpanId());
+
+						serverRequestInterceptor2.handle(serverReq1);
+						try {
+							Thread.sleep(400);
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						serverResponseInterceptor2.handle(new ServerResponseAdapterImpl());
+
+						try {
+							Thread.sleep(20);
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+
+
+
+
+				//}}).start();
+
+
+						try {
+							Thread.sleep(420);
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+
+						clientResponseInterceptor1.handle(new ClientResponseAdapterImpl());
+
+
+						System.out.println("over s1->s2");
+
+						//-------------------------s1->s2 finish----------------
+
+
+
+
+						//--------------------span server1->server3-----------------
+
+						req_from_server1 = new ClientRequestAdapterImpl("span-s1-s3");
+						clientRequestInterceptor1.handle(req_from_server1);
+
+
+				//new Thread(new Runnable(){public void run() {
+
+
+						ServerRequestInterceptor serverRequestInterceptor3 = brave_server3.serverRequestInterceptor();
+						ServerResponseInterceptor serverResponseInterceptor3 = brave_server3.serverResponseInterceptor();
+
+						try {
+							Thread.sleep(20);
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+
+						ServerRequestAdapterImpl serverReq2 = new ServerRequestAdapterImpl("span-s1-s3", req_from_server1.getSpanId());
+
+						serverRequestInterceptor3.handle(serverReq2);
+						try {
+							Thread.sleep(400);
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						serverResponseInterceptor3.handle(new ServerResponseAdapterImpl());
+
+						try {
+							Thread.sleep(20);
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+
+
+
+
+				//}}).start();
+
+
+						try {
+							Thread.sleep(520);
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+
+						clientResponseInterceptor1.handle(new ClientResponseAdapterImpl());
+
+
+						System.out.println("over s1->s3");
+
+						//-------------------------s1->s3 finish----------------
+
+
+
+
+
+
+						try {
+							Thread.sleep(200);
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+						serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
+
+
+
+
+
+
+		//}}).start();
+
+
+		Thread.sleep(4520);
+		clientResponseInterceptor0.handle(new ClientResponseAdapterImpl());
+		System.out.println("over gw->s1");
+
+
+
+
+
+
+
+
 	}
+
+
+	private static void singleThrdTestbk() throws Exception
+	{
+		collector = HttpSpanCollector.create(zipkinUrl+"/", new EmptySpanCollectorMetricsHandler());
+		brave_gw = new Brave.Builder("appgateway").spanCollector(collector).build();
+		brave_server = new Brave.Builder("appserver").spanCollector(collector).build();
+		brave_server2 = new Brave.Builder("appserver2").spanCollector(collector).build();
+
+		ClientRequestInterceptor clientRequestInterceptor0 = brave_gw.clientRequestInterceptor();
+		ClientResponseInterceptor clientResponseInterceptor0 = brave_gw.clientResponseInterceptor();
+
+
+		imp0 = new ClientRequestAdapterImpl("span-name-1");
+		clientRequestInterceptor0.handle(imp0);
+
+		brave_server = brave_gw;
+
+		//new Thread(new Runnable(){public void run() {
+
+
+
+				ServerRequestInterceptor serverRequestInterceptor1 = brave_server.serverRequestInterceptor();
+				ServerResponseInterceptor serverResponseInterceptor1 = brave_server.serverResponseInterceptor();
+				ClientRequestInterceptor clientRequestInterceptor1 = brave_server.clientRequestInterceptor();
+				ClientResponseInterceptor clientResponseInterceptor1 = brave_server.clientResponseInterceptor();
+
+
+				ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("span-name-1", imp0.getSpanId());
+				serverRequestInterceptor1.handle(serverReq0);
+				try {
+					Thread.sleep(200);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+
+
+
+			//--------------------span 2-----------------
+
+
+
+				ServerRequestInterceptor serverRequestInterceptor2 = brave_server2.serverRequestInterceptor();
+				ServerResponseInterceptor serverResponseInterceptor2 = brave_server2.serverResponseInterceptor();
+
+				imp1 = new ClientRequestAdapterImpl("span-name-2");
+				clientRequestInterceptor1.handle(imp1);
+				try {
+					Thread.sleep(20);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+		//ServerSpan a;
+				//a.getSpan() == null;
+
+				ServerRequestAdapterImpl serverReq1 = new ServerRequestAdapterImpl("span-name-2", imp1.getSpanId());
+
+				serverRequestInterceptor2.handle(serverReq1);
+				try {
+					Thread.sleep(2000);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				serverResponseInterceptor2.handle(new ServerResponseAdapterImpl());
+
+				try {
+					Thread.sleep(20);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+
+				clientResponseInterceptor1.handle(new ClientResponseAdapterImpl());
+
+
+
+
+
+
+
+
+		//-------------------------
+
+				try {
+					Thread.sleep(200);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
+				System.out.println("over in thread");
+
+
+
+
+
+			//}}).start();
+
+
+		Thread.sleep(1520);
+		clientResponseInterceptor0.handle(new ClientResponseAdapterImpl());
+		System.out.println("over all");
+
+
+	}
+
+
+
+
+
+
 
 	public static void dcHandle(String spanName, SpanId spanId){
 		ServerRequestInterceptor serverRequestInterceptor = brave2.serverRequestInterceptor();
@@ -522,6 +841,8 @@ public class App {
 		}
 
 	}
+
+
 
 	static class ServerResponseAdapterImpl implements ServerResponseAdapter {
 

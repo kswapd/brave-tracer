@@ -20,6 +20,7 @@ import static com.github.kristofa.brave.IdConversion.convertToLong;
 public class BraveProviderFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(BraveProviderFilter.class);
+    private static final String INVOKE_LEVEL="invoke_level";
 
 
     //@Resource(name="brave")
@@ -42,6 +43,19 @@ public class BraveProviderFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+
+
+        if(RpcContext.getContext().get(INVOKE_LEVEL) == null){
+            logger.debug("brave filter server request null invoke level");
+        }else{
+            int ref = (int)RpcContext.getContext().get(INVOKE_LEVEL);
+            logger.debug("brave filter server request invoke level:{}", ref);
+        }
+
+
+        logger.debug("brave filter server request spans:{},{},{}", invocation.getAttachment("parentId"),invocation.getAttachment("spanId"),invocation.getAttachment("traceId"));
+
+        logger.debug("brave filter server request:{}", RpcContext.getContext().getMethodName());
         serverRequestInterceptor.handle(new DubboServerRequestAdapter(invoker,invocation,brave.serverTracer()));
 
         /*final String parentId = invocation.getAttachment("parentId");
@@ -55,7 +69,18 @@ public class BraveProviderFilter implements Filter {
           serverResponseInterceptor.handle(new DubboServerResponseAdapter(rpcResult));
 
 
+        if(RpcContext.getContext().get(INVOKE_LEVEL) == null){
+            logger.debug("brave filter server response null invoke level");
+        }else{
+            int ref = (int)RpcContext.getContext().get(INVOKE_LEVEL);
+            logger.debug("brave filter server response invoke level:{}", ref);
+        }
 
+
+
+        logger.debug("brave filter server response spans:{},{},{}", invocation.getAttachment("parentId"),invocation.getAttachment("spanId"),invocation.getAttachment("traceId"));
+
+        logger.debug("brave filter server response:{}", RpcContext.getContext().getMethodName());
 
 
 

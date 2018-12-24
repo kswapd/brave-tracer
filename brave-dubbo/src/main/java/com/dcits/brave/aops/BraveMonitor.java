@@ -163,8 +163,8 @@ class ServerRequestAdapterImpl implements ServerRequestAdapter {
 
 }
 
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class BraveMonitor {
 	private static final Logger logger = LoggerFactory.getLogger(BraveMonitor.class);
 
@@ -189,7 +189,9 @@ public class BraveMonitor {
 
 	//@Pointcut("execution(public * com.oumyye.service..*.add(..))")
 	//@Pointcut("execution(* get*(..))")
-	@Pointcut("execution(* com.dcits.processes..*.Process(..))")
+	//com.sishuok.common.BaseService+.*()
+	//@Pointcut("execution(* com.dcits.processes..*.Process(..))")
+	@Pointcut("execution(* com.dcits.orion.api.IProcess+.process(..))")
 	public void myMethod(){};
 
 
@@ -256,7 +258,7 @@ public class BraveMonitor {
 		String spanName =  method.getName();
 		String braveToken = className+"-"+spanName;
 		//initBrave(className);
-		logger.debug("---------------@Around前----------------"+spanName);
+		logger.debug("---------------@Around前----------------"+braveToken);
 		imp = null;
 		if(imp == null){
 			braveContextData.put(braveToken+"_hasParent","0");

@@ -14,11 +14,14 @@ import static com.github.kristofa.brave.IdConversion.convertToLong;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by chenjg on 16/7/24.
  */
 public class DubboServerRequestAdapter  implements ServerRequestAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(DubboServerRequestAdapter.class);
 
     private Invoker<?> invoker;
     private Invocation invocation;
@@ -39,17 +42,24 @@ public class DubboServerRequestAdapter  implements ServerRequestAdapter {
     public TraceData getTraceData() {
       String sampled =   invocation.getAttachment("sampled");
       if(sampled != null && sampled.equals("0")){
+          logger.debug("brave filter server request adapter null sample,{}", RpcContext.getContext().getMethodName());
           return TraceData.builder().sample(false).build();
+
       }else {
           final String parentId = invocation.getAttachment("parentId");
           final String spanId = invocation.getAttachment("spanId");
           final String traceId = invocation.getAttachment("traceId");
+          logger.debug("brave filter server request adapter spans:{},{}-{}-{}", RpcContext.getContext().getMethodName(),parentId,spanId,traceId);
+
           if (traceId != null && spanId != null) {
               SpanId span = getSpanId(traceId, spanId, parentId);
               return TraceData.builder().sample(true).spanId(span).build();
           }
       }
-       return TraceData.builder().build();
+        TraceData td = TraceData.builder().build();
+        logger.debug("brave filter server request adapter new trace {},{}", RpcContext.getContext().getMethodName(),td.getSpanId());
+
+        return td;
 
     }
 

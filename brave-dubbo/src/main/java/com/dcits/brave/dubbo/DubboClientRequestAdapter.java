@@ -16,12 +16,15 @@ import com.twitter.zipkin.gen.Endpoint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
  * Created by chenjg on 16/7/24.
  */
 public class DubboClientRequestAdapter implements ClientRequestAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(DubboClientRequestAdapter.class);
     private Invoker<?> invoker;
     private Invocation invocation;
     private final static DubboSpanNameProvider spanNameProvider = new DefaultSpanNameProvider();
@@ -32,6 +35,7 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
     public DubboClientRequestAdapter(Invoker<?> invoker, Invocation invocation) {
         this.invoker = invoker;
         this.invocation = invocation;
+
 
     }
 
@@ -49,16 +53,64 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
         String application = RpcContext.getContext().getUrl().getParameter("application");
         //System.out.println(application + ".......");
         RpcContext.getContext().setAttachment("clientName", application);
+
+        logger.debug("brave filter client request adapter spans:{},{}", RpcContext.getContext().getMethodName(),spanId);
         if (spanId == null) {
-            RpcContext.getContext().setAttachment("sampled", "0");
+            //RpcContext.getContext().setAttachment("sampled", "0");
 
         }else{
+
+            /*if(RpcContext.getContext().getMethodName().equals(BraveTracerFilter.PROCESS_METHOD)){
+                logger.debug("save process info:{},{},{}",spanId.traceId,spanId.spanId,spanId.parentId);
+                BraveTracerFilter.getGlobalContext().put(BraveTracerFilter.PROCESS_SPAN_ID,spanId.spanId);
+                BraveTracerFilter.getGlobalContext().put(BraveTracerFilter.PROCESS_TRACE_ID,spanId.traceId);
+                if (spanId.nullableParentId() != null) {
+                    BraveTracerFilter.getGlobalContext().put(BraveTracerFilter.PROCESS_PARENT_ID, spanId.parentId);
+                }
+
+            }*/
+
 
             RpcContext.getContext().setAttachment("traceId", IdConversion.convertToString(spanId.traceId));
             RpcContext.getContext().setAttachment("spanId", IdConversion.convertToString(spanId.spanId));
             if (spanId.nullableParentId() != null) {
                 RpcContext.getContext().setAttachment("parentId", IdConversion.convertToString(spanId.parentId));
             }
+
+
+
+            long processSpanId = -1, processParentId = -1,processTraceId = -1;
+
+
+            if( BraveTracerFilter.getGlobalContext().get(BraveTracerFilter.PROCESS_PARENT_ID) != null) {
+                processParentId = (long) BraveTracerFilter.getGlobalContext().get(BraveTracerFilter.PROCESS_PARENT_ID);
+                RpcContext.getContext().setAttachment("parentId", IdConversion.convertToString(processParentId));
+
+            }
+
+            if( BraveTracerFilter.getGlobalContext().get(BraveTracerFilter.PROCESS_TRACE_ID) != null) {
+                processTraceId = (long) BraveTracerFilter.getGlobalContext().get(BraveTracerFilter.PROCESS_TRACE_ID);
+                RpcContext.getContext().setAttachment("traceId", IdConversion.convertToString(processTraceId));
+            }
+
+            if( BraveTracerFilter.getGlobalContext().get(BraveTracerFilter.PROCESS_SPAN_ID) != null){
+                processSpanId = (long)BraveTracerFilter.getGlobalContext().get(BraveTracerFilter.PROCESS_SPAN_ID);
+
+            }
+
+            if(processParentId != -1 || processSpanId != -1 || processTraceId != -1){
+                logger.debug("brave filter get process info {},{},{}",
+                        BraveTracerFilter.getGlobalContext().get(BraveTracerFilter.PROCESS_PARENT_ID),
+                        BraveTracerFilter.getGlobalContext().get(BraveTracerFilter.PROCESS_SPAN_ID),
+                        BraveTracerFilter.getGlobalContext().get(BraveTracerFilter.PROCESS_TRACE_ID));
+            }
+
+
+
+
+
+
+
         }
     }
 
