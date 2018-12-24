@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 /**
  * Created by jack-cooper on 2017/2/20.
  */
-@Component
+//@Component
 public class BraveFactoryBean implements FactoryBean<Brave> {
     private static final Logger LOGGER = Logger.getLogger(BraveFactoryBean.class.getName());
     /**服务名*/

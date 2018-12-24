@@ -2,6 +2,7 @@ package com.dcits.brave.dubbo;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.config.spring.ServiceBean;
 import com.alibaba.dubbo.rpc.Filter;
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
@@ -18,8 +19,10 @@ import com.github.kristofa.brave.ServerResponseInterceptor;
 import com.github.kristofa.brave.ServerSpanThreadBinder;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Created by chenjg on 16/7/24.
@@ -34,6 +37,7 @@ public class BraveTracerFilter implements Filter {
             return new HashMap();
         }
     };
+
 
     public static Map<String,Object>globalContext = new HashMap();
 
@@ -52,9 +56,8 @@ public class BraveTracerFilter implements Filter {
     public static final String PROCESS_SPAN_ID = "process_span_id";
 
     private static String tagInfo ="CR";
-    //@Resource(name="brave")
-    //private Brave brave;
-    private static volatile Brave brave;
+    @Resource(name="brave")
+    private static volatile Brave brave = null;
     private static volatile ServerRequestInterceptor serverRequestInterceptor;
     private static volatile ServerResponseInterceptor serverResponseInterceptor;
     private static volatile ServerSpanThreadBinder serverSpanThreadBinder;
@@ -272,12 +275,17 @@ public class BraveTracerFilter implements Filter {
         if(invokeInfo.get().get("stat_info") == null){
             logger.debug("init invoke info");
             invokeInfo.get().put("stat_info","start");
-            invokeInfo.get().put("stat_info_cr",0);
-            invokeInfo.get().put("stat_info_sr",0);
-            invokeInfo.get().put("stat_info_ss",0);
-            invokeInfo.get().put("stat_info_cs",0);
+            invokeInfo.get().put(KEY_CR,0);
+            invokeInfo.get().put(KEY_SR,0);
+            invokeInfo.get().put(KEY_SS,0);
+            invokeInfo.get().put(KEY_CS,0);
         }
 
+        if(BraveTracerFilter.brave == null) {
+            ApplicationContext context = ServiceBean.getSpringContext();
+            Brave brave = (Brave) context.getBean("brave");
+            setBrave(brave);
+        }
 
         String side = invoker.getUrl().getParameter(Constants.SIDE_KEY);
         if (Constants.CONSUMER_SIDE.equals(side)) {
