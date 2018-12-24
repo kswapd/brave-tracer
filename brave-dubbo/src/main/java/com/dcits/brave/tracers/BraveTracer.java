@@ -1,6 +1,7 @@
 package com.dcits.brave.tracers;
 
 import com.dcits.brave.dubbo.BraveFactoryBean;
+import com.github.kristofa.brave.Brave;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class BraveTracer {
 	private String appName;
 
 	@Bean(name="brave")
-	public BraveFactoryBean getBrave()
+	public Brave getBrave()
 	{
 		BraveFactoryBean bfb = new BraveFactoryBean();
 		String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
@@ -40,7 +41,14 @@ public class BraveTracer {
 		bfb.setRate(zipkinSampleRate);
 		bfb.setServiceName(appName);
 		logger.info("setting zipkin address:{}", zipkinAddr);
-		return bfb;
+		Brave br = null;
+		try {
+			br = bfb.getObject();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return br;
 
 	}
 }
