@@ -22,11 +22,11 @@ public class ServerResponseInterceptor
       for (KeyValueAnnotation annotation : adapter.responseAnnotations()) {
         this.serverTracer.submitBinaryAnnotation(annotation.getKey(), annotation.getValue());
       }
-      //this.serverTracer.setServerSend();
+      this.serverTracer.setServerSend();
     }
     finally
     {
-      this.serverTracer.clearCurrentSpan();
+      //this.serverTracer.clearCurrentSpan();
     }
   }
 }
