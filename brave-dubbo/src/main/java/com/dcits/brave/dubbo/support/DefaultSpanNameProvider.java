@@ -11,7 +11,8 @@ public class DefaultSpanNameProvider implements DubboSpanNameProvider {
     public String resolveSpanName(RpcContext rpcContext) {
         String className = rpcContext.getUrl().getPath();
         String simpleName = className.substring(className.lastIndexOf(".")+1);
-        return simpleName+"."+rpcContext.getMethodName();
+        String method = rpcContext.getMethodName();
+        return simpleName+"."+method;
 
     }
 }
