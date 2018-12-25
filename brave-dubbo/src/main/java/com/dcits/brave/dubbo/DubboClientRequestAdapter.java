@@ -3,6 +3,8 @@ package com.dcits.brave.dubbo;
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.RpcContext;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dcits.galaxy.base.data.BaseRequest;
 import com.dcits.galaxy.base.data.ISysHead;
 import com.github.kristofa.brave.*;
@@ -15,7 +17,9 @@ import com.twitter.zipkin.gen.Endpoint;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -118,7 +122,31 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
     public Collection<KeyValueAnnotation> requestAnnotations() {
         List<KeyValueAnnotation> annotations = new ArrayList();
         KeyValueAnnotation keyValueAnnotation;
-        if(RpcContext.getContext().getMethodName().equals("process") || RpcContext.getContext().getMethodName().equals("$invoke")){
+        String methodName = RpcContext.getContext().getMethodName();
+
+
+        /*public static final String BASE_REQUEST_CLASS = BaseRequest.class.getName();
+        Map<String, Object> reqMap = (Map<String, Object>) invocation.getRequest();
+        String out = (String) process.$invoke(PROCESS_METHOD,
+                new String[]{BASE_REQUEST_CLASS},
+                new Object[]{JSON.toJSONString(reqMap)});*/
+        /*if(methodName.equals("$invoke")){
+            String genClassName = null;
+            String genMethod = null;
+            BaseRequest br = null;
+
+            genMethod  = (String)RpcContext.getContext().getArguments()[0];
+            if(RpcContext.getContext().getArguments()[1] instanceof Object[]){
+                genClassName = (String)((Object[])RpcContext.getContext().getArguments()[1])[0];
+            }
+            if(RpcContext.getContext().getArguments()[2] instanceof Object[]){
+                Map<String, Object> genParamMap = (Map<String, Object>)((Object[])RpcContext.getContext().getArguments()[2])[0];
+                JSONObject jobj = JSONObject.parseObject(JSON.toJSONString(genParamMap));
+                br = (BaseRequest)JSONObject.toJavaObject(jobj, BaseRequest.class);
+            }
+            //JSON.parse
+        }*/
+        if(methodName.equals("process")){
             BaseRequest br = (BaseRequest)RpcContext.getContext().getArguments()[0];
             ISysHead sh = br.getSysHead();
 
