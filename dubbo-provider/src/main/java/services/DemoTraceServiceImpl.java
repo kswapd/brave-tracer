@@ -5,10 +5,13 @@ import interfaces.DemoService;
 import interfaces.DemoTraceService;
 import interfaces.FooService;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +20,14 @@ import org.springframework.stereotype.Service;
  */
 
 @Component("demoTraceService")
-public class DemoTraceServiceImpl implements DemoTraceService {
+public class DemoTraceServiceImpl implements DemoTraceService, ApplicationContextAware {
 	private static final Logger logger = LoggerFactory.getLogger(DemoTraceServiceImpl.class);
 	@Autowired
 	private DemoTraceAnotherService another;
+
+	private ApplicationContext context;
+	//@Resource(name="fooServiceRef")
+	private FooService fooService;
 
 	@PostConstruct
 	public void init()
@@ -33,7 +40,9 @@ public class DemoTraceServiceImpl implements DemoTraceService {
 	public String sayParent(String name) {
 		logger.info("sayParent : " + name);
 		//sayChild("child");
-		//another.sayAnother("another...");
+		//fooService.sayFoo("foo...");
+		fooService = (FooService)context.getBean("fooServiceRef");
+		fooService.sayFoo("foo..");
 		return "hello from parent "  +  name;
 	}
 
@@ -42,4 +51,8 @@ public class DemoTraceServiceImpl implements DemoTraceService {
 		return "hello from child "  +  name;
 	}
 
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		context = applicationContext;
+	}
 }

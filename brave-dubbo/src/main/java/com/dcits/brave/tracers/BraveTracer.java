@@ -1,14 +1,21 @@
 package com.dcits.brave.tracers;
 
+import brave.Tracing;
+import brave.propagation.B3Propagation;
+import brave.propagation.ExtraFieldPropagation;
 import com.dcits.brave.dubbo.BraveFactoryBean;
 import com.github.kristofa.brave.Brave;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import zipkin2.codec.SpanBytesEncoder;
+import zipkin2.reporter.AsyncReporter;
+import zipkin2.reporter.Sender;
+import zipkin2.reporter.okhttp3.OkHttpSender;
 /**
  * Created by kongxiangwen on 7/12/18 w:28.
  */
@@ -51,4 +58,30 @@ public class BraveTracer {
 		return br;
 
 	}
+
+
+
+
+
+	@Bean(name="tracing")
+	public Tracing getTracing() {
+		String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
+		Sender sender = OkHttpSender.create(zipkinAddr+"api/v2/spans");
+
+
+		AsyncReporter asyncReporter = AsyncReporter.builder(sender)
+				.closeTimeout(5000, TimeUnit.MILLISECONDS)
+				.build(SpanBytesEncoder.JSON_V2);
+
+		Tracing gw_tracing = Tracing.newBuilder()
+				.localServiceName(appName)
+				.spanReporter(asyncReporter)
+				.propagationFactory(ExtraFieldPropagation.newFactory(B3Propagation.FACTORY, "user-name"))
+				.build();
+		return gw_tracing;
+	}
+
+
+
+
 }

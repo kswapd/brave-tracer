@@ -37,13 +37,21 @@
                    interface="interfaces.FooService"
                    protocol="dubbo" />
 
-    <dubbo:reference id="barService"
-                     interface="interfaces.BarService"
-                     protocol="dubbo" />
+
 
     <dubbo:service ref="demoTraceService"
                    interface="interfaces.DemoTraceService"
                    protocol="dubbo"/>
+
+
+
+    <dubbo:reference id="fooServiceRef"
+                     interface="interfaces.FooService"
+                     protocol="dubbo" />
+
+    <dubbo:reference id="barService"
+                     interface="interfaces.BarService"
+                     protocol="dubbo" />
 
     <!--<bean id="brave" class="com.github.kristofa.brave.dubbo.BraveFactoryBean">
 
