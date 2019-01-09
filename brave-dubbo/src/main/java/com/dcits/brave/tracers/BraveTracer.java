@@ -65,7 +65,8 @@ public class BraveTracer {
 
 	@Bean(name="tracing")
 	public Tracing getTracing() {
-		String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
+		return null;
+		/*String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
 		Sender sender = OkHttpSender.create(zipkinAddr+"api/v2/spans");
 
 
@@ -78,7 +79,7 @@ public class BraveTracer {
 				.spanReporter(asyncReporter)
 				.propagationFactory(ExtraFieldPropagation.newFactory(B3Propagation.FACTORY, "user-name"))
 				.build();
-		return gw_tracing;
+		return gw_tracing;*/
 	}
 
 
