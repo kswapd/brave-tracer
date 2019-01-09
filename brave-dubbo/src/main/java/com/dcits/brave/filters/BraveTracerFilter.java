@@ -23,6 +23,8 @@ import com.github.kristofa.brave.ServerSpanThreadBinder;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Resource;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -99,8 +101,16 @@ public class BraveTracerFilter implements Filter {
 
     public static void prtInvokeInfo()
     {
-        logger.debug("invoke info {},{},{},{},{},{}", Thread.currentThread().getId(), tagInfo,invokeInfo.get().get(KEY_CR),invokeInfo.get().get(KEY_SR),
-                invokeInfo.get().get(KEY_SS),invokeInfo.get().get(KEY_CS));
+       // logger.debug("aa:{},{},{}", "a","b","b");
+        logger.debug("invoke info {},{},{},{},{},{}",String.valueOf(Thread.currentThread().getId()),
+                tagInfo,
+                (String) invokeInfo.get().get(KEY_CR),
+                (String)invokeInfo.get().get(KEY_SR),
+                (String)invokeInfo.get().get(KEY_SS),
+                (String)invokeInfo.get().get(KEY_CS));
+
+       // logger.debug("invoke info {},{},{}", "a","aa","a");
+
     }
     public void incCR()
     {
