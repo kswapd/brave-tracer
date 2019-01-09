@@ -1,4 +1,4 @@
 #braveConsumerFilter=com.dcits.brave.dubbo.BraveConsumerFilter
 #braveProviderFilter=com.dcits.brave.dubbo.BraveProviderFilter
-#braveTracerFilter=com.dcits.brave.filters.BraveTracerFilter
-newBraveDubboFilter=com.dcits.brave.filters.NewBraveDubboFilter
+braveTracerFilter=com.dcits.brave.filters.BraveTracerFilter
+#newBraveDubboFilter=com.dcits.brave.filters.NewBraveDubboFilter
