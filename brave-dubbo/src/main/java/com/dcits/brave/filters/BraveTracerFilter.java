@@ -9,6 +9,7 @@ import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
+import com.alibaba.fastjson.JSON;
 import com.dcits.brave.dubbo.DubboClientRequestAdapter;
 import com.dcits.brave.dubbo.DubboClientResponseAdapter;
 import com.dcits.brave.dubbo.DubboServerRequestAdapter;
@@ -20,11 +21,13 @@ import com.github.kristofa.brave.ClientSpanThreadBinder;
 import com.github.kristofa.brave.ServerRequestInterceptor;
 import com.github.kristofa.brave.ServerResponseInterceptor;
 import com.github.kristofa.brave.ServerSpanThreadBinder;
+import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -102,6 +105,24 @@ public class BraveTracerFilter implements Filter {
         logger.debug("invoke info {},{},{},{},{},{}", Thread.currentThread().getId(), tagInfo,invokeInfo.get().get(KEY_CR),invokeInfo.get().get(KEY_SR),
                 invokeInfo.get().get(KEY_SS),invokeInfo.get().get(KEY_CS));
     }
+
+    public static String getObjectJsonStr(Object obj)
+    {
+        String jsonStr = null;
+        BeanMap beanMap = BeanMap.create(obj);
+        Map<String, Object> map = Maps.newHashMap();
+        for (Object key : beanMap.keySet()) {
+            map.put(key + "", beanMap.get(key));
+        }
+
+
+        if (map.size() > 0) {
+            jsonStr = JSON.toJSONString(map);
+        }
+        return jsonStr;
+    }
+
+
     public void incCR()
     {
         tagInfo = "CR";
@@ -168,10 +189,7 @@ public class BraveTracerFilter implements Filter {
         try{
             Result rpcResult = invoker.invoke(invocation);
 
-
-
-            clientResponseInterceptor.handle(new DubboClientResponseAdapter(rpcResult));
-
+            clientResponseInterceptor.handle(new DubboClientResponseAdapter(rpcResult, invocation));
 
             incCS();
             prtInvokeInfo();

@@ -1,6 +1,9 @@
 package com.dcits.brave.dubbo;
 
+import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Result;
+import com.alibaba.dubbo.rpc.RpcContext;
+import com.dcits.brave.filters.BraveTracerFilter;
 import com.github.kristofa.brave.ClientResponseAdapter;
 import com.github.kristofa.brave.KeyValueAnnotation;
 
@@ -14,6 +17,7 @@ import java.util.List;
 public class DubboClientResponseAdapter implements ClientResponseAdapter {
 
     private Result rpcResult ;
+    private Invocation invocation;
 
     private Exception exception;
 
@@ -23,13 +27,16 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
 
 
 
-    public DubboClientResponseAdapter(Result rpcResult) {
+    public DubboClientResponseAdapter(Result rpcResult, Invocation invocation) {
         this.rpcResult = rpcResult;
+        this.invocation = invocation;
     }
 
 
     public Collection<KeyValueAnnotation> responseAnnotations() {
         List<KeyValueAnnotation> annotations = new ArrayList<KeyValueAnnotation>();
+
+
         if(exception != null){
             KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("exception",exception.getMessage());
             annotations.add(keyValueAnnotation);
@@ -39,6 +46,14 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
                 annotations.add(keyValueAnnotation);
             }else{
                 KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("status","success");
+                annotations.add(keyValueAnnotation);
+
+            }
+        }
+        if(invocation.getMethodName() != null && invocation.getMethodName().equals("process")){
+            String jsonStr = BraveTracerFilter.getObjectJsonStr(rpcResult.getResult());
+            if(jsonStr != null){
+                KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("RESPONSE_INFO",jsonStr);
                 annotations.add(keyValueAnnotation);
             }
         }
