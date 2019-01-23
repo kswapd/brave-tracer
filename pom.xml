@@ -11,6 +11,36 @@
     <version>1.0-SNAPSHOT</version>
 
 
+    <developers>
+        <developer>
+            <name>Kong XiangWen</name>
+            <email>konsunwin@163.com</email>
+            <url>https://github.com/kswapd</url>
+            <roles>
+                <role>Founder</role>
+                <role>PMC member</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/kswapd/brave-tracer</url>
+        <connection>scm:git:https://github.com/kswapd/brave-tracer.git</connection>
+        <developerConnection>scm:git:https://github.com/kswapd/brave-tracer.git</developerConnection>
+        <tag>v1.0</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/kswapd/brave-tracer/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
     <distributionManagement>
         <snapshotRepository>
