@@ -23,6 +23,8 @@
         </developer>
     </developers>
 
+    <name>brave-tracer</name>
+    <url>https://github.com/kswapd/brave-tracer</url>
     <scm>
         <url>https://github.com/kswapd/brave-tracer</url>
         <connection>scm:git:https://github.com/kswapd/brave-tracer.git</connection>
@@ -43,11 +45,18 @@
     </licenses>
 
     <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://192.168.161.224:8889/nexus/content/repositories/Galaxy</url>
+        </repository>
         <snapshotRepository>
             <id>nexus-snapshots</id>
-            <url>http://123.139.43.244:9081/nexus/content/repositories/poc-snapshot</url>
+            <url>http://192.168.161.224:8889/nexus/content/repositories/galaxy-shapashots</url>
         </snapshotRepository>
     </distributionManagement>
+
+
+
 
 
     <modules>
