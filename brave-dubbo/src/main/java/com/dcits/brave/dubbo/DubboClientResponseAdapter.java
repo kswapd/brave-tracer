@@ -56,6 +56,12 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
                 KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("RESPONSE_INFO",jsonStr);
                 annotations.add(keyValueAnnotation);
             }
+        }else if(invocation.getMethodName() != null &&  invocation.getMethodName().equals("$invoke")){
+            String jsonStr = BraveTracerFilter.getObjectMapStr(rpcResult.getResult());
+            if(jsonStr != null){
+                KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("RESPONSE_INFO",jsonStr);
+                annotations.add(keyValueAnnotation);
+            }
         }
         return annotations;
     }

@@ -122,6 +122,17 @@ public class BraveTracerFilter implements Filter {
         return jsonStr;
     }
 
+    public static String getObjectMapStr(Object obj)
+    {
+        String jsonStr = null;
+        Map map = (Map)obj;
+
+        if (map.size() > 0) {
+            jsonStr = JSON.toJSONString(map);
+        }
+        return jsonStr;
+    }
+
 
     public void incCR()
     {
