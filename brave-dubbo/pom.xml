@@ -50,6 +50,11 @@
             <!--<version>4.9.1</version>-->
         </dependency>
         <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-instrumentation-mysql</artifactId>
+            <version>5.6.0</version>
+        </dependency>
+        <dependency>
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-sender-okhttp3</artifactId>
             <version>2.0.0</version>
@@ -66,7 +71,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>3.2.13.RELEASE</version>
+            <version>5.0.2.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -75,10 +80,10 @@
             <version>4.13.4</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.dcits.galaxy</groupId>
             <artifactId>galaxy-dubbo</artifactId>
-            <version>2.3.2</version>
+            <version>2.</version>
             <exclusions>
             <exclusion>
                 <groupId>com.alibaba</groupId>
@@ -86,6 +91,23 @@
             </exclusion>
             </exclusions>
 
+        </dependency>-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dubbo</artifactId>
+            <version>2.5.3-gz-bank</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.12</version>
         </dependency>
 
         <dependency>
