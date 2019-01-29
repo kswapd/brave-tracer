@@ -268,7 +268,6 @@ public final class NewBraveDubboFilter implements Filter {
 			}
 
 			if (kind.equals(Kind.CLIENT)) {
-
 				if (invocation.getMethodName() != null && invocation.getMethodName().equals("process")) {
 					String jsonStr = getObjectJsonStr(result.getResult());
 					if (jsonStr != null) {
@@ -280,6 +279,11 @@ public final class NewBraveDubboFilter implements Filter {
 					if (jsonStr != null) {
 						span.tag("RESPONSE_INFO", jsonStr);
 					}
+				}
+				if(result.hasException()){
+					span.tag("exception",	result.getException().getMessage());
+				}else{
+					span.tag("status","success");
 				}
 			}
 
