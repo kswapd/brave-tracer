@@ -121,28 +121,6 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
         KeyValueAnnotation keyValueAnnotation;
         String methodName = RpcContext.getContext().getMethodName();
 
-
-        /*public static final String BASE_REQUEST_CLASS = BaseRequest.class.getName();
-        Map<String, Object> reqMap = (Map<String, Object>) invocation.getRequest();
-        String out = (String) process.$invoke(PROCESS_METHOD,
-                new String[]{BASE_REQUEST_CLASS},
-                new Object[]{JSON.toJSONString(reqMap)});*/
-        /*if(methodName.equals("$invoke")){
-            String genClassName = null;
-            String genMethod = null;
-            BaseRequest br = null;
-
-            genMethod  = (String)RpcContext.getContext().getArguments()[0];
-            if(RpcContext.getContext().getArguments()[1] instanceof Object[]){
-                genClassName = (String)((Object[])RpcContext.getContext().getArguments()[1])[0];
-            }
-            if(RpcContext.getContext().getArguments()[2] instanceof Object[]){
-                Map<String, Object> genParamMap = (Map<String, Object>)((Object[])RpcContext.getContext().getArguments()[2])[0];
-                JSONObject jobj = JSONObject.parseObject(JSON.toJSONString(genParamMap));
-                br = (BaseRequest)JSONObject.toJavaObject(jobj, BaseRequest.class);
-            }
-            //JSON.parse
-        }*/
         if(methodName.equals("process")){
             BaseRequest br = (BaseRequest)RpcContext.getContext().getArguments()[0];
             ISysHead sh = br.getSysHead();
@@ -199,73 +177,73 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
         }
 
         if(ClientRequestCommonData.attachmentData.size() > 0) {
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("THREAD_NO"))) {    
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("THREAD_NO"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("THREAD_NO", ClientRequestCommonData.attachmentData.get("THREAD_NO"));
                 annotations.add(keyValueAnnotation);
             }
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("TRAN_TIMESTAMP"))) { 
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("TRAN_TIMESTAMP"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("TRAN_TIMESTAMP", ClientRequestCommonData.attachmentData.get("TRAN_TIMESTAMP"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("USER_LANG"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("USER_LANG"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("USER_LANG", ClientRequestCommonData.attachmentData.get("USER_LANG"));
                 annotations.add(keyValueAnnotation);
             }
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("SEQ_NO"))) { 
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("SEQ_NO"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("SEQ_NO", ClientRequestCommonData.attachmentData.get("SEQ_NO"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("PROGRAM_ID"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("PROGRAM_ID"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("PROGRAM_ID", ClientRequestCommonData.attachmentData.get("PROGRAM_ID"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("SOURCE_BRANCH_NO"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("SOURCE_BRANCH_NO"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("SOURCE_BRANCH_NO", ClientRequestCommonData.attachmentData.get("SOURCE_BRANCH_NO"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("DEST_BRANCH_NO"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("DEST_BRANCH_NO"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("DEST_BRANCH_NO", ClientRequestCommonData.attachmentData.get("DEST_BRANCH_NO"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("SERVICE_CODE"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("SERVICE_CODE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("SERVICE_CODE", ClientRequestCommonData.attachmentData.get("SERVICE_CODE"));
                 annotations.add(keyValueAnnotation);
             }
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("MESSAGE_TYPE"))) { 
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("MESSAGE_TYPE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("MESSAGE_TYPE", ClientRequestCommonData.attachmentData.get("MESSAGE_TYPE"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("MESSAGE_CODE"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("MESSAGE_CODE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("MESSAGE_CODE", ClientRequestCommonData.attachmentData.get("MESSAGE_CODE"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("TRAN_MODE"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("TRAN_MODE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("TRAN_MODE", ClientRequestCommonData.attachmentData.get("TRAN_MODE"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("SOURCE_TYPE"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("SOURCE_TYPE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("SOURCE_TYPE", ClientRequestCommonData.attachmentData.get("SOURCE_TYPE"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("BRANCH_ID"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("BRANCH_ID"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("BRANCH_ID", ClientRequestCommonData.attachmentData.get("BRANCH_ID"));
                 annotations.add(keyValueAnnotation);
             }
-            
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("USER_ID"))) { 
+
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("USER_ID"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("USER_ID", ClientRequestCommonData.attachmentData.get("USER_ID"));
                 annotations.add(keyValueAnnotation);
             }
-            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("TRAN_DATE"))) { 
+            if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get("TRAN_DATE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("TRAN_DATE", ClientRequestCommonData.attachmentData.get("TRAN_DATE"));
                 annotations.add(keyValueAnnotation);
             }
