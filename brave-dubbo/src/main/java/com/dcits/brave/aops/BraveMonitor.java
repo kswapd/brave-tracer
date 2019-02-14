@@ -25,139 +25,17 @@ import javax.annotation.PostConstruct;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-/**
- * Created by kongxiangwen on 9/17/18 w:38.
- */
-class ClientRequestAdapterImpl implements ClientRequestAdapter {
-
-	private static final Logger logger = LoggerFactory.getLogger(ClientRequestAdapterImpl.class);
-	String spanName;
-	SpanId spanId;
-
-	ClientRequestAdapterImpl(String spanName){
-		this.spanName = spanName;
-	}
+import org.springframework.stereotype.Component;
 
 
-	public SpanId getSpanId() {
-		return spanId;
-	}
-
-
-	public String getSpanName() {
-		return this.spanName;
-	}
-
-
-	public void addSpanIdToRequest(SpanId spanId) {
-		//记录传输到远程服务
-		//System.out.println(spanId);
-		if (spanId != null) {
-			this.spanId = spanId;
-			logger.debug(String.format("ClientRequestAdapterImpl:addSpanIdToRequest:trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
-		}else {
-			logger.debug(String.format("ClientRequestAdapterImpl:addSpanIdToRequest: null"));
-		}
-
-	}
-
-
-	public Collection<KeyValueAnnotation> requestAnnotations() {
-		Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
-		KeyValueAnnotation kv = KeyValueAnnotation.create("client-request", "111111");
-		collection.add(kv);
-		return collection;
-	}
-
-
-	public Endpoint serverAddress() {
-		return null;
-	}
-
-}
-
-class ClientResponseAdapterImpl implements ClientResponseAdapter {
-
-
-   public Collection<KeyValueAnnotation> responseAnnotations() {
-	   Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
-	   KeyValueAnnotation kv = KeyValueAnnotation.create("client-response", "444444");
-	   collection.add(kv);
-	   return collection;
-   }
-
-}
-
-
-class ServerRequestAdapterImpl implements ServerRequestAdapter {
-	private static final Logger logger = LoggerFactory.getLogger(ServerRequestAdapterImpl.class);
-   Random randomGenerator = new Random();
-   SpanId spanId;
-   String spanName;
-
-   ServerRequestAdapterImpl(String spanName){
-	   this.spanName = spanName;
-	   long startId = randomGenerator.nextLong();
-	   SpanId spanId = SpanId.builder().spanId(startId).traceId(startId).parentId(startId).build();
-	   this.spanId = spanId;
-	   logger.debug(String.format("ServerRequestAdapterImpl:trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
-
-   }
-
-   ServerRequestAdapterImpl(String spanName, SpanId spanId){
-	   this.spanName = spanName;
-	   this.spanId = spanId;
-   }
-
-
-   public TraceData getTraceData() {
-	   if (this.spanId != null) {
-		   logger.debug(String.format("ServerRequestAdapterImpl:getTraceData trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
-
-		   return TraceData.builder().spanId(this.spanId).build();
-	   }
-	   logger.debug(String.format("ServerRequestAdapterImpl:getTraceData generate trace_id=%s, parent_id=%s, span_id=%s", Long.toHexString(spanId.traceId),  Long.toHexString(spanId.parentId),  Long.toHexString(spanId.spanId)));
-
-	   long startId = randomGenerator.nextLong();
-	   SpanId spanId = SpanId.builder().spanId(startId).traceId(startId).parentId(startId).build();
-	   return TraceData.builder().spanId(spanId).build();
-   }
-
-
-   public String getSpanName() {
-	   return spanName;
-   }
-
-
-   public Collection<KeyValueAnnotation> requestAnnotations() {
-	   Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
-	   KeyValueAnnotation kv = KeyValueAnnotation.create("server-request", "222222");
-	   collection.add(kv);
-	   return collection;
-   }
-
-}
-
- class ServerResponseAdapterImpl implements ServerResponseAdapter {
-
-
-	public Collection<KeyValueAnnotation> responseAnnotations() {
-		Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
-		KeyValueAnnotation kv = KeyValueAnnotation.create("server-response", "333333");
-		collection.add(kv);
-		return collection;
-	}
-
-}
-
-//@Aspect
-//@Component
+@Aspect
+@Component
 public class BraveMonitor {
 	private static final Logger logger = LoggerFactory.getLogger(BraveMonitor.class);
 
@@ -176,7 +54,7 @@ public class BraveMonitor {
 	@PostConstruct
 	private void init()
 	{
-		collector = HttpSpanCollector.create("http://192.168.246.129:9411/", new EmptySpanCollectorMetricsHandler());
+		collector = HttpSpanCollector.create("http://127.0.0.1:9411/", new EmptySpanCollectorMetricsHandler());
 		logger.debug("initing monitor collector ");
 	}
 
@@ -184,7 +62,9 @@ public class BraveMonitor {
 	//@Pointcut("execution(* get*(..))")
 	//com.sishuok.common.BaseService+.*()
 	//@Pointcut("execution(* com.dcits.processes..*.Process(..))")
-	@Pointcut("execution(* com.dcits.orion.api.IProcess+.process(..))")
+	//@Pointcut("execution(* com.dcits.orion.api.IProcess+.process(..))")
+	//@Pointcut("execution(* com.dcits.orion.api.IProcess+.process(..))")
+	@Pointcut("@annotation(com.dcits.brave.annotations.ChainMonitor)")
 	public void myMethod(){};
 
 
@@ -253,14 +133,13 @@ public class BraveMonitor {
 		//initBrave(className);
 		logger.debug("---------------@Around前----------------"+braveToken);
 		imp = null;
-		if(imp == null){
+		if(imp == null)
+		{
 			braveContextData.put(braveToken+"_hasParent","0");
 			brave = new Brave.Builder(className).spanCollector(collector).build();
-
 			braveContextData.put(braveToken+"_brave",brave);
-
-
-		}else{
+		}
+		else{
 
 			braveContextData.put(braveToken+"_hasParent","1");
 			brave = new Brave.Builder(className).spanCollector(collector).build();
