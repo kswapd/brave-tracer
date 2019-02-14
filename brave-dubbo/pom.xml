@@ -60,6 +60,13 @@
             <artifactId>brave-instrumentation-mysql</artifactId>
             <version>5.6.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-instrumentation-http</artifactId>
+            <version>5.6.0</version>
+        </dependency>
+
         <dependency>
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-sender-okhttp3</artifactId>
