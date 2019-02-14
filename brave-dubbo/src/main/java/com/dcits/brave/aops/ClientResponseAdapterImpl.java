@@ -10,8 +10,8 @@ class ClientResponseAdapterImpl implements ClientResponseAdapter {
 
    public Collection<KeyValueAnnotation> responseAnnotations() {
 	   Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
-	   KeyValueAnnotation kv = KeyValueAnnotation.create("client-response", "444444");
-	   collection.add(kv);
+	  /* KeyValueAnnotation kv = KeyValueAnnotation.create("client-response", "444444");
+	   collection.add(kv);*/
 	   return collection;
    }
 

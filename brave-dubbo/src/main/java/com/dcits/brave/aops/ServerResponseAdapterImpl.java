@@ -10,8 +10,8 @@ class ServerResponseAdapterImpl implements ServerResponseAdapter {
 
 	public Collection<KeyValueAnnotation> responseAnnotations() {
 		Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
-		KeyValueAnnotation kv = KeyValueAnnotation.create("server-response", "333333");
-		collection.add(kv);
+		/*KeyValueAnnotation kv = KeyValueAnnotation.create("server-response", "333333");
+		collection.add(kv);*/
 		return collection;
 	}
 

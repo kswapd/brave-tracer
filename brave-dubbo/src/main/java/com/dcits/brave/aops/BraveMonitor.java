@@ -31,12 +31,26 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
 @Aspect
 @Component
 public class BraveMonitor {
+
+
+	@Value("${zipkin.address}")
+	private String zipkinAddress;
+	@Value("${zipkin.port}")
+	private String zipkinPort;
+	@Value("${zipkin.sampleRate}")
+	private String zipkinSampleRate;
+
+
+	@Value("${zipkin.service.name}")
+	private String appName;
+
 	private static final Logger logger = LoggerFactory.getLogger(BraveMonitor.class);
 
 	private static HttpSpanCollector collector = null;
@@ -54,7 +68,9 @@ public class BraveMonitor {
 	@PostConstruct
 	private void init()
 	{
-		collector = HttpSpanCollector.create("http://127.0.0.1:9411/", new EmptySpanCollectorMetricsHandler());
+		String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
+		collector = HttpSpanCollector.create(zipkinAddr, new EmptySpanCollectorMetricsHandler());
+		brave = new Brave.Builder(appName).spanCollector(collector).build();
 		logger.debug("initing monitor collector ");
 	}
 
@@ -126,40 +142,25 @@ public class BraveMonitor {
 		Object result;
 		MethodSignature signature = (MethodSignature) pjp.getSignature();
 
-		Method method = signature.getMethod();
+		String methodName = signature.getMethod().getName();
 		String className = signature.getDeclaringType().getCanonicalName();
-		String spanName =  method.getName();
-		String braveToken = className+"-"+spanName;
+		//String spanName =  method.getName();
+		//String braveToken = className+"-"+spanName;
+
+		//String className = rpcContext.getUrl().getPath();
+		String simpleClassName = className.substring(className.lastIndexOf(".")+1);
+		//String method = rpcContext.getMethodName();
+
+		String spanName = simpleClassName + "."+ methodName;
+
 		//initBrave(className);
-		logger.debug("---------------@Around前----------------"+braveToken);
-		imp = null;
-		if(imp == null)
-		{
-			braveContextData.put(braveToken+"_hasParent","0");
-			brave = new Brave.Builder(className).spanCollector(collector).build();
-			braveContextData.put(braveToken+"_brave",brave);
-		}
-		else{
-
-			braveContextData.put(braveToken+"_hasParent","1");
-			brave = new Brave.Builder(className).spanCollector(collector).build();
-			braveContextData.put(braveToken+"_brave",brave);
-		}
+		logger.debug("---------------@Around前----------------");
 
 
-		if(braveContextData.get(braveToken+"_hasParent").equals("0")) {
-			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
+
+			Brave curBrave = brave;
 			clientReq(curBrave,spanName);
 			serverReq(curBrave,imp);
-			braveContextData.put(braveToken+"_curClientRequestAdapter",imp);
-		}else if(braveContextData.get(braveToken+"_hasParent").equals("1")) {
-			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
-			serverReq(curBrave,imp);
-			clientReq(curBrave, spanName);
-			braveContextData.put(braveToken+"_curClientRequestAdapter",imp);
-		}
-
-
 
 
 		try {
@@ -174,27 +175,10 @@ public class BraveMonitor {
 			}
 		}
 
-		 signature = (MethodSignature) pjp.getSignature();
-		 method = signature.getMethod();
-		 className = signature.getDeclaringType().getCanonicalName();
-		 spanName =  method.getName();
-		 braveToken = className+"-"+spanName;
-
-		if(braveContextData.get(braveToken+"_hasParent").equals("0")) {
-			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
-			serverResp(curBrave);
-			clientResp(curBrave);
-		}else if(braveContextData.get(braveToken+"_hasParent").equals("1")) {
-			Brave curBrave = (Brave)braveContextData.get(braveToken+"_brave");
-			clientResp(curBrave);
-			serverResp(curBrave);
-
-		}
+		 serverResp(curBrave);
+		 clientResp(curBrave);
 
 		logger.debug("---------------@Around后----------------");
-
-
-
 
 		return result;
 	}

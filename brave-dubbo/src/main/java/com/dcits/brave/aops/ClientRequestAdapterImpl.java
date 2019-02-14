@@ -48,8 +48,8 @@ class ClientRequestAdapterImpl implements ClientRequestAdapter {
 
 	public Collection<KeyValueAnnotation> requestAnnotations() {
 		Collection<KeyValueAnnotation> collection = new ArrayList<KeyValueAnnotation>();
-		KeyValueAnnotation kv = KeyValueAnnotation.create("client-request", "111111");
-		collection.add(kv);
+		/*KeyValueAnnotation kv = KeyValueAnnotation.create("client-request", "111111");
+		collection.add(kv);*/
 		return collection;
 	}
 
