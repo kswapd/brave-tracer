@@ -36,7 +36,7 @@ import com.twitter.zipkin.gen.Endpoint;
 
 public class App {
 
-	private static String zipkinUrl = "http://127.0.0.1:9411";
+	private static String zipkinUrl = "http://10.88.2.119:9411";
 	private static HttpSpanCollector collector = null;
 	private static Brave brave = null;
 	private static Brave brave2 = null;
@@ -461,8 +461,70 @@ public class App {
 
 	}
 
-
 	private static void singleThrdTest() throws Exception
+	{
+		collector = HttpSpanCollector.create(zipkinUrl+"/", new EmptySpanCollectorMetricsHandler());
+		brave_gw = new Brave.Builder("appgateway").spanCollector(collector).build();
+		brave_server1 = new Brave.Builder("appserver1").spanCollector(collector).build();
+		brave_server2 = new Brave.Builder("appserver2").spanCollector(collector).build();
+		brave_server3 = new Brave.Builder("appserver3").spanCollector(collector).build();
+		ClientRequestInterceptor clientRequestInterceptor0 = brave_gw.clientRequestInterceptor();
+		ClientResponseInterceptor clientResponseInterceptor0 = brave_gw.clientResponseInterceptor();
+
+
+		//span gateway->server1
+
+		req_from_gw = new ClientRequestAdapterImpl("span-gw-s1");
+		clientRequestInterceptor0.handle(req_from_gw);
+
+		//brave_server = brave_gw;
+
+		//new Thread(new Runnable(){public void run() {
+
+
+
+		ServerRequestInterceptor serverRequestInterceptor1 = brave_server1.serverRequestInterceptor();
+		ServerResponseInterceptor serverResponseInterceptor1 = brave_server1.serverResponseInterceptor();
+		ClientRequestInterceptor clientRequestInterceptor1 = brave_server1.clientRequestInterceptor();
+		ClientResponseInterceptor clientResponseInterceptor1 = brave_server1.clientResponseInterceptor();
+
+
+		ServerRequestAdapterImpl serverReq0 = new ServerRequestAdapterImpl("span-gw-s1", req_from_gw.getSpanId());
+		serverRequestInterceptor1.handle(serverReq0);
+		try {
+			Thread.sleep(200);
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+
+
+		serverResponseInterceptor1.handle(new ServerResponseAdapterImpl());
+
+
+
+
+
+
+		//}}).start();
+
+
+		Thread.sleep(4520);
+		clientResponseInterceptor0.handle(new ClientResponseAdapterImpl());
+		System.out.println("over gw->s1");
+
+
+
+
+
+
+
+
+	}
+
+
+	private static void singleThrdTestbk2() throws Exception
 	{
 		collector = HttpSpanCollector.create(zipkinUrl+"/", new EmptySpanCollectorMetricsHandler());
 		brave_gw = new Brave.Builder("appgateway").spanCollector(collector).build();

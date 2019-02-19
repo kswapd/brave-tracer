@@ -212,6 +212,7 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
                 if (!StringUtils.isEmpty(sh.getTranDate())) {
                     ClientRequestCommonData.attachmentData.put("TRAN_DATE", sh.getTranDate());
                 }
+
             }
 
         }else if(methodName.equals("$invoke")){
