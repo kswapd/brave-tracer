@@ -1,5 +1,7 @@
 package com.dcits.brave.aops;
 
+import com.dcits.brave.annotations.ChainMonitor;
+import com.dcits.brave.annotations.ChainTags;
 import com.github.kristofa.brave.Brave;
 import com.github.kristofa.brave.ClientRequestAdapter;
 import com.github.kristofa.brave.ClientRequestInterceptor;
@@ -15,9 +17,11 @@ import com.github.kristofa.brave.SpanId;
 import com.github.kristofa.brave.TraceData;
 import com.github.kristofa.brave.http.HttpSpanCollector;
 import com.twitter.zipkin.gen.Endpoint;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,6 +61,7 @@ public class BraveMonitor {
 	private static Brave brave = null;
 	private static ClientRequestAdapterImpl imp = null;
 	private Map<String, Object> braveContextData = new ConcurrentHashMap<String, Object>();
+	Map<String,String> tagMap = new HashMap<>();
 	private void initBrave(String endpointName)
 	{
 
@@ -108,7 +113,7 @@ public class BraveMonitor {
 	{
 
 		ClientRequestInterceptor clientRequestInterceptor0 = curBrave.clientRequestInterceptor();
-		imp = new ClientRequestAdapterImpl(spanName);
+		imp = new ClientRequestAdapterImpl(spanName,tagMap);
 
 		clientRequestInterceptor0.handle(imp);
 
@@ -154,31 +159,49 @@ public class BraveMonitor {
 		String spanName = simpleClassName + "."+ methodName;
 
 		//initBrave(className);
-		logger.debug("---------------@Around前----------------");
+		logger.debug("chain monitor start");
 
 
+			//if(signature.getMethod().isAnnotationPresent(ChainMonitor.class))
+			//{
 
+				ChainMonitor cm = (ChainMonitor)signature.getMethod().getAnnotation(ChainMonitor.class);
+
+				if(cm.tags() != null && cm.tags().length > 0){
+					for(ChainTags tags:cm.tags()) {
+						logger.debug("tags {}:{}", tags.key(),tags.value());
+						tagMap.put(tags.key(),tags.value());
+					}
+
+				}
+
+
+			//}
 			Brave curBrave = brave;
 			clientReq(curBrave,spanName);
+			tagMap.clear();
 			serverReq(curBrave,imp);
 
 
-		try {
-			result = pjp.proceed();
-		} catch (Throwable throwable) {
-			logger.debug("---------------@Around异常----------------");
-			// 监听参数为true则抛出异常，为false则捕获并不抛出异常
-			if (pjp.getArgs().length > 0 && !(Boolean) pjp.getArgs()[0]) {
-				result = null;
-			} else {
-				throw throwable;
+			try {
+				result = pjp.proceed();
+			} catch (Throwable throwable) {
+				logger.debug("chain monitor has exceptions");
+				// 监听参数为true则抛出异常，为false则捕获并不抛出异常
+				if (pjp.getArgs().length > 0 && !(Boolean) pjp.getArgs()[0]) {
+					result = null;
+				} else {
+					throw throwable;
+				}
+			}finally {
+				serverResp(curBrave);
+				clientResp(curBrave);
 			}
-		}
 
-		 serverResp(curBrave);
-		 clientResp(curBrave);
 
-		logger.debug("---------------@Around后----------------");
+
+
+		logger.debug("chain monitor stop");
 
 		return result;
 	}
