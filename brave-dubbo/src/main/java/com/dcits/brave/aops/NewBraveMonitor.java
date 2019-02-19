@@ -1,26 +1,22 @@
 package com.dcits.brave.aops;
 
+import brave.Span;
+import brave.Tracing;
+import brave.propagation.B3Propagation;
+import brave.propagation.CurrentTraceContext;
+import brave.propagation.ExtraFieldPropagation;
+import brave.propagation.TraceContext;
 import com.github.kristofa.brave.Brave;
-import com.github.kristofa.brave.ClientRequestAdapter;
 import com.github.kristofa.brave.ClientRequestInterceptor;
-import com.github.kristofa.brave.ClientResponseAdapter;
 import com.github.kristofa.brave.ClientResponseInterceptor;
 import com.github.kristofa.brave.EmptySpanCollectorMetricsHandler;
-import com.github.kristofa.brave.KeyValueAnnotation;
-import com.github.kristofa.brave.ServerRequestAdapter;
 import com.github.kristofa.brave.ServerRequestInterceptor;
-import com.github.kristofa.brave.ServerResponseAdapter;
 import com.github.kristofa.brave.ServerResponseInterceptor;
-import com.github.kristofa.brave.SpanId;
-import com.github.kristofa.brave.TraceData;
 import com.github.kristofa.brave.http.HttpSpanCollector;
-import com.twitter.zipkin.gen.Endpoint;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Random;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
@@ -33,11 +29,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import zipkin2.codec.SpanBytesEncoder;
+import zipkin2.reporter.AsyncReporter;
+import zipkin2.reporter.Sender;
+import zipkin2.reporter.okhttp3.OkHttpSender;
 
 
-//@Aspect
-//@Component
-public class BraveMonitor {
+@Aspect
+@Component
+public class NewBraveMonitor {
 
 
 	@Value("${zipkin.address}")
@@ -51,12 +51,18 @@ public class BraveMonitor {
 	@Value("${zipkin.service.name}")
 	private String appName;
 
-	private static final Logger logger = LoggerFactory.getLogger(BraveMonitor.class);
+	private static final Logger logger = LoggerFactory.getLogger(NewBraveMonitor.class);
 
-	private static HttpSpanCollector collector = null;
-	private static Brave brave = null;
+
 	private static ClientRequestAdapterImpl imp = null;
 	private Map<String, Object> braveContextData = new ConcurrentHashMap<String, Object>();
+
+	Sender sender;
+	AsyncReporter asyncReporter;
+	Tracing tracing;
+
+	ThreadLocal<Stack<Span>> spanInfo = new ThreadLocal<>();
+
 	private void initBrave(String endpointName)
 	{
 
@@ -68,10 +74,28 @@ public class BraveMonitor {
 	@PostConstruct
 	private void init()
 	{
+		//String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
+		//collector = HttpSpanCollector.create(zipkinAddr, new EmptySpanCollectorMetricsHandler());
+		//brave = new Brave.Builder(appName).spanCollector(collector).build();
+
+
+
 		String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
-		collector = HttpSpanCollector.create(zipkinAddr, new EmptySpanCollectorMetricsHandler());
-		brave = new Brave.Builder(appName).spanCollector(collector).build();
-		logger.debug("initing monitor collector ");
+		sender = OkHttpSender.create(zipkinAddr+"api/v2/spans");
+
+
+		asyncReporter = AsyncReporter.builder(sender)
+				.closeTimeout(5000, TimeUnit.MILLISECONDS)
+				.build(SpanBytesEncoder.JSON_V2);
+
+		tracing = Tracing.newBuilder()
+				.localServiceName(appName)
+				.spanReporter(asyncReporter)
+				.propagationFactory(ExtraFieldPropagation.newFactory(B3Propagation.FACTORY, "user-name"))
+				.build();
+
+
+		logger.debug("initing new monitor collector ");
 
 
 
@@ -79,6 +103,8 @@ public class BraveMonitor {
 
 
 
+
+		
 	}
 
 	//@Pointcut("execution(public * com.oumyye.service..*.add(..))")
@@ -111,38 +137,7 @@ public class BraveMonitor {
 		logger.debug("method AfterThrowing");
 	}
 
-	private void clientReq(Brave curBrave,String spanName)
-	{
 
-		ClientRequestInterceptor clientRequestInterceptor0 = curBrave.clientRequestInterceptor();
-		imp = new ClientRequestAdapterImpl(spanName);
-
-		clientRequestInterceptor0.handle(imp);
-
-	}
-
-	private void clientResp(Brave curBrave)
-	{
-		ClientResponseInterceptor clientResponseInterceptor0 = curBrave.clientResponseInterceptor();
-		clientResponseInterceptor0.handle(new ClientResponseAdapterImpl());
-	}
-
-
-
-
-	private void serverReq(Brave curBrave, ClientRequestAdapterImpl parentImp)
-	{
-		logger.debug("::::"+parentImp.getSpanName());
-		ServerRequestAdapterImpl serverReq1 = new ServerRequestAdapterImpl(parentImp.getSpanName(), parentImp.getSpanId());
-		ServerRequestInterceptor serverRequestInterceptor2 = curBrave.serverRequestInterceptor();
-		serverRequestInterceptor2.handle(serverReq1);
-	}
-
-	private void serverResp(Brave curBrave)
-	{
-		ServerResponseInterceptor serverResponseInterceptor2 = curBrave.serverResponseInterceptor();
-		serverResponseInterceptor2.handle(new ServerResponseAdapterImpl());
-	}
 
 	@Around("myMethod()")
 	public Object around(ProceedingJoinPoint pjp) throws Throwable {
@@ -161,29 +156,49 @@ public class BraveMonitor {
 		String spanName = simpleClassName + "."+ methodName;
 
 		//initBrave(className);
-		logger.debug("---------------@Around前----------------");
 
-
-
-			Brave curBrave = brave;
-			clientReq(curBrave,spanName);
-			serverReq(curBrave,imp);
+		Span span;
+		if( spanInfo.get() == null ) {
+			spanInfo.set(new Stack<Span>());
+		}
+		if( spanInfo.get().size() == 0) {
+			TraceContext context = tracing.currentTraceContext().get();
+			if(context == null) {
+				span = tracing.tracer().newTrace().name(spanName).start();
+			}else{
+				span = tracing.tracer().newChild(tracing.currentTraceContext().get()).name(spanName).start();
+			}
+			spanInfo.get().push(span);
+			logger.debug("chain monitor new stack.{}", Thread.currentThread().getId());
+		}else{
+			Span parentSpan = spanInfo.get().peek();
+			span = tracing.tracer().newChild(parentSpan.context()).name(spanName).start();
+			spanInfo.get().push(span);
+			logger.debug("chain monitor add stack.{},{}", spanInfo.get().size(),Thread.currentThread().getId());
+		}
 
 
 		try {
 			result = pjp.proceed();
 		} catch (Throwable throwable) {
-			logger.debug("---------------@Around异常----------------");
+			logger.debug("chain monitor  exception");
 			// 监听参数为true则抛出异常，为false则捕获并不抛出异常
 			if (pjp.getArgs().length > 0 && !(Boolean) pjp.getArgs()[0]) {
 				result = null;
 			} else {
 				throw throwable;
 			}
+		}finally {
+			span.finish();
+			if(spanInfo.get() != null && spanInfo.get().size() > 0){
+				logger.debug("chain monitor pop stack.{},{}", spanInfo.get().size(),Thread.currentThread().getId());
+				spanInfo.get().pop();
+				if(spanInfo.get().size() == 0){
+					spanInfo.remove();
+				}
+			}
 		}
 
-		 serverResp(curBrave);
-		 clientResp(curBrave);
 
 		logger.debug("---------------@Around后----------------");
 

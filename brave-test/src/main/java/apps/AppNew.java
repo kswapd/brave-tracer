@@ -226,44 +226,39 @@ public class AppNew {
 
 		Span twoPhase = tracer.newTrace().name("twoPhase").start();
 		try {
+
 			Span prepare = tracer.newChild(twoPhase.context()).name("prepare").start();
 			try {
-				try {
 
-					Thread.sleep(1000);
-
-
-					//Span prepare2 = tracer.newChild(prepare.context()).name("prepare2").start();
-					System.out.println(tracer.currentSpan());
-					Span prepare2 = tracer.newChild(tracer.currentSpan().context()).name("prepare2").start();
-
-					try {
-
-						Thread.sleep(1000);
-
-					}catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					prepare2.finish();
-
-
-				}catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			} finally {
-				prepare.finish();
+				Thread.sleep(2000);
+			}catch (InterruptedException e) {
+				e.printStackTrace();
 			}
+			prepare.finish();
+
+
+			//gw_tracing.currentTraceContext().newScope()
+
+
 			Span commit = tracer.newChild(twoPhase.context()).name("commit").start();
-			try {
+
+
 				try {
 
 					Thread.sleep(2000);
 				}catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-			} finally {
+
 				commit.finish();
-			}
+
+
+
+
+
+
+
+
 		} finally {
 			twoPhase.finish();
 		}

@@ -43,7 +43,7 @@ import org.springframework.util.StringUtils;
 public final class NewBraveDubboFilter implements Filter {
 
 
-
+	Tracing tracing = null;
 	Tracer tracer = null;
 	TraceContext.Extractor<Map<String, String>> extractor;
 	TraceContext.Injector<Map<String, String>> injector;
@@ -54,6 +54,7 @@ public final class NewBraveDubboFilter implements Filter {
 	 * injected.
 	 */
 	public void setTracing(Tracing tracing) {
+		this.tracing = tracing;
 		tracer = tracing.tracer();
 		extractor = tracing.propagation().extractor(GETTER);
 		injector = tracing.propagation().injector(SETTER);
@@ -243,6 +244,10 @@ public final class NewBraveDubboFilter implements Filter {
 			span = extracted.context() != null
 					? tracer.joinSpan(extracted.context())
 					: tracer.nextSpan(extracted);
+
+			//tracing.currentTraceContext().newScope(span.context());
+			tracer.withSpanInScope(span);
+
 		}
 
 		if (!span.isNoop()) {
