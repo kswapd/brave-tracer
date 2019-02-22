@@ -57,7 +57,7 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
 
             }
         }
-        if(invocation.getMethodName() != null && invocation.getMethodName().equals("process")){
+        if(invocation != null && invocation.getMethodName() != null && invocation.getMethodName().equals("process")){
             String jsonStr = BraveTracerFilter.getObjectJsonStr(rpcResult.getResult());
             if(jsonStr != null){
                 KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("RESPONSE_INFO",jsonStr);
@@ -96,7 +96,7 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
 
 
             }
-        }else if(invocation.getMethodName() != null &&  invocation.getMethodName().equals("$invoke")){
+        }else if(invocation != null && invocation.getMethodName() != null &&  invocation.getMethodName().equals("$invoke")){
             String jsonStr = BraveTracerFilter.getObjectMapStr(rpcResult.getResult());
             if(jsonStr != null){
                 KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("RESPONSE_INFO",jsonStr);
