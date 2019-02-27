@@ -39,6 +39,18 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.zipkin.zipkin2</groupId>
+                    <artifactId>zipkin</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>2.3.1</version>
+        </dependency>
+
 
         <dependency>
             <groupId>io.zipkin.brave</groupId>
@@ -73,10 +85,13 @@
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-sender-okhttp3</artifactId>
             <version>2.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.zipkin.zipkin2</groupId>
+                    <artifactId>zipkin</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
-
-
 
 
 
