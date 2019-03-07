@@ -23,7 +23,7 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
     private Result rpcResult ;
     private Invocation invocation;
 
-    private Exception exception;
+    private Exception exception = null;
     private static  Pattern pattern_ret = Pattern.compile("\"retCode\"\\s*:\\s*\"(.*?)\\s*\",.*retMsg\"\\s*:\\s*\"(.*?)\\s*\"");
     private static  Pattern pattern_status = Pattern.compile("\"retStatus\"\\s*:\\s*\"(.*?)\\s*\"");
     public DubboClientResponseAdapter(Exception exception) {
@@ -43,14 +43,17 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
 
 
         if(exception != null){
-            KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("exception",exception.getMessage());
-            annotations.add(keyValueAnnotation);
-        }else{
-            if(rpcResult.hasException()){
-                KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("exception",rpcResult.getException().getMessage());
+            if(exception.getMessage() != null) {
+                KeyValueAnnotation keyValueAnnotation = KeyValueAnnotation.create("exception", exception.getMessage());
                 annotations.add(keyValueAnnotation);
-                KeyValueAnnotation kStatus=  KeyValueAnnotation.create("status","failed");
-                annotations.add(kStatus);
+            }
+
+        }else{
+            if(rpcResult.hasException() && rpcResult.getException().getMessage() != null){
+                    KeyValueAnnotation keyValueAnnotation = KeyValueAnnotation.create("exception", rpcResult.getException().getMessage());
+                    annotations.add(keyValueAnnotation);
+                    KeyValueAnnotation kStatus = KeyValueAnnotation.create("status", "failed");
+                    annotations.add(kStatus);
             }else{
                 KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("status","success");
                 annotations.add(keyValueAnnotation);

@@ -36,7 +36,7 @@ import com.twitter.zipkin.gen.Endpoint;
 
 public class App {
 
-	private static String zipkinUrl = "http://10.88.2.119:9411";
+	private static String zipkinUrl = "http://10.7.20.108:9411";
 	private static HttpSpanCollector collector = null;
 	private static Brave brave = null;
 	private static Brave brave2 = null;
