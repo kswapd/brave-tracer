@@ -76,7 +76,7 @@
         <project.encoding>UTF-8</project.encoding>
         <galaxy.version>2.3.2</galaxy.version>
         <orion.version>2.3.2</orion.version>
-        <jdk.version>1.8</jdk.version>
+        <jdk.version>1.7</jdk.version>
         <slf4j.version>1.7.12</slf4j.version>
         <logback.version>1.2.3</logback.version>
     </properties>

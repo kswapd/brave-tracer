@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,13 +40,17 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
 
 
     public Collection<KeyValueAnnotation> responseAnnotations() {
-        List<KeyValueAnnotation> annotations = new ArrayList<KeyValueAnnotation>();
 
-
-        if(exception != null){
+        List<KeyValueAnnotation> annotations = new CopyOnWriteArrayList<KeyValueAnnotation>();
+        /*if(exception != null){
             if(exception.getMessage() != null) {
                 KeyValueAnnotation keyValueAnnotation = KeyValueAnnotation.create("exception", exception.getMessage());
                 annotations.add(keyValueAnnotation);
+                return annotations;
+            }else{
+                KeyValueAnnotation kStatus = KeyValueAnnotation.create("status", "failed");
+                annotations.add(kStatus);
+                return annotations;
             }
 
         }else{
@@ -54,18 +59,22 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
                     annotations.add(keyValueAnnotation);
                     KeyValueAnnotation kStatus = KeyValueAnnotation.create("status", "failed");
                     annotations.add(kStatus);
+                    return annotations;
             }else{
                 KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("status","success");
                 annotations.add(keyValueAnnotation);
+                return annotations;
 
             }
-        }
-        if(invocation != null && invocation.getMethodName() != null && invocation.getMethodName().equals("process")){
+        }*/
+
+
+        /*if(invocation != null && invocation.getMethodName() != null && invocation.getMethodName().equals("process")){
             String jsonStr = BraveTracerFilter.getObjectJsonStr(rpcResult.getResult());
             if(jsonStr != null){
                 KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("RESPONSE_INFO",jsonStr);
                 annotations.add(keyValueAnnotation);
-                /*Map<String,Object> map = BraveTracerFilter.getObjectMap(rpcResult.getResult());
+                *//*Map<String,Object> map = BraveTracerFilter.getObjectMap(rpcResult.getResult());
                 if(map.get("rs") != null ){
 
                     String code = (String)((Map)(((JSONArray)((Map)map.get("rs")).get("ret")).get(0))).get("retCode");
@@ -81,7 +90,7 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
                     KeyValueAnnotation kStatus=  KeyValueAnnotation.create("RET_STATUS",retStatus);
                     annotations.add(kStatus);
 
-                }*/
+                }*//*
 
                 Matcher matcher = pattern_ret.matcher(jsonStr);
                 if(matcher.find() && matcher.groupCount() > 1) {
@@ -104,14 +113,14 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
             if(jsonStr != null){
                 KeyValueAnnotation keyValueAnnotation=  KeyValueAnnotation.create("RESPONSE_INFO",jsonStr);
                 annotations.add(keyValueAnnotation);
-                /*Map map = (Map)rpcResult.getResult();
+                *//*Map map = (Map)rpcResult.getResult();
                 if(map.get("retJsonObject") != null ){
                     KeyValueAnnotation kCode=  KeyValueAnnotation.create("RETCODE",(String)((Map)map.get("retJsonObject")).get("retCode"));
                     annotations.add(kCode);
 
                     KeyValueAnnotation kMsg=  KeyValueAnnotation.create("RETMSG",(String)((Map)map.get("retJsonObject")).get("retMsg"));
                     annotations.add(kCode);
-                }*/
+                }*//*
                 Matcher matcher = pattern_ret.matcher(jsonStr);
                 if(matcher.find() && matcher.groupCount() > 1) {
                     KeyValueAnnotation kCode=  KeyValueAnnotation.create("RET_CODE",matcher.group(1));
@@ -125,7 +134,10 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
                     annotations.add(kStatus);
                 }
             }
-        }
+        }*/
+
+
+
         return annotations;
     }
 

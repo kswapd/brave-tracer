@@ -9,6 +9,7 @@ import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
+import com.alibaba.dubbo.rpc.RpcResult;
 import com.alibaba.fastjson.JSON;
 import com.dcits.brave.dubbo.DubboClientRequestAdapter;
 import com.dcits.brave.dubbo.DubboClientResponseAdapter;
@@ -38,11 +39,11 @@ import org.springframework.context.ApplicationContext;
 public class BraveTracerFilter implements Filter {
 
 
-    public static ThreadLocal<Map<String, Object>>  invokeInfo = new ThreadLocal<Map<String, Object>>() {
+    /*public static ThreadLocal<Map<String, Object>>  invokeInfo = new ThreadLocal<Map<String, Object>>() {
         protected Map<String, Object> initialValue() {
             return new HashMap();
         }
-    };
+    };*/
 
 
     public static Map<String,Object>globalContext = new HashMap();
@@ -100,11 +101,11 @@ public class BraveTracerFilter implements Filter {
 
 
 
-    public static void prtInvokeInfo()
+    /*public static void prtInvokeInfo()
     {
         logger.debug("invoke info {},{},{},{},{},{}", Thread.currentThread().getId(), tagInfo,invokeInfo.get().get(KEY_CR),invokeInfo.get().get(KEY_SR),
                 invokeInfo.get().get(KEY_SS),invokeInfo.get().get(KEY_CS));
-    }
+    }*/
 
     public static String getObjectJsonStr(Object obj)
     {
@@ -145,7 +146,7 @@ public class BraveTracerFilter implements Filter {
     }
 
 
-    public void incCR()
+    /*public void incCR()
     {
         tagInfo = "CR";
         incKey(KEY_CR);
@@ -172,11 +173,11 @@ public class BraveTracerFilter implements Filter {
         int ref = (int)invokeInfo.get().get(key);
         ref = ref + 1;
         invokeInfo.get().put(key,ref);
-    }
+    }*/
 
     public Result consumerInvoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 
-        if(RpcContext.getContext().getMethodName().equals(PROCESS_METHOD)){
+        /*if(RpcContext.getContext().getMethodName().equals(PROCESS_METHOD)){
             logger.debug("clear invoke info");
             invokeInfo.get().clear();
             invokeInfo.get().put("stat_info","start");
@@ -184,76 +185,22 @@ public class BraveTracerFilter implements Filter {
             invokeInfo.get().put(KEY_SR,0);
             invokeInfo.get().put(KEY_SS,0);
             invokeInfo.get().put(KEY_CS,0);
-        }
-
-
-        incCR();
-        prtInvokeInfo();
-
-        /*if(RpcContext.getContext().get(INVOKE_LEVEL) == null){
-            logger.debug("brave filter client request init invoke level");
-            RpcContext.getContext().set(INVOKE_LEVEL, 0);
-        }else{
-            logger.debug("brave filter client request increment invoke level");
-            int ref = (int)RpcContext.getContext().get(INVOKE_LEVEL);
-            RpcContext.getContext().set(INVOKE_LEVEL, ref+1);
-            logger.debug("brave filter client request current invoke level:{}", (int)RpcContext.getContext().get(INVOKE_LEVEL));
-
         }*/
-
-
-
 
         logger.debug("brave filter client request:{}", RpcContext.getContext().getMethodName());
         DubboClientRequestAdapter adapter = new DubboClientRequestAdapter(invoker,invocation);
-
+        Result rpcResult = null;
         clientRequestInterceptor.handle(adapter);
         try{
-            Result rpcResult = invoker.invoke(invocation);
-
+             rpcResult = invoker.invoke(invocation);
             clientResponseInterceptor.handle(new DubboClientResponseAdapter(rpcResult, invocation));
-
-            incCS();
-            prtInvokeInfo();
-
-            /*if(RpcContext.getContext().get(INVOKE_LEVEL) == null){
-                logger.debug("brave filter client response invoke level null");
-                // RpcContext.getContext().set(INVOKE_LEVEL, 0);
-            }else{
-                logger.debug("brave filter client response decrement invoke level");
-                int ref = (int)RpcContext.getContext().get(INVOKE_LEVEL);
-                RpcContext.getContext().set(INVOKE_LEVEL, ref-1);
-                logger.debug("brave filter client response current invoke level:{}", (int)RpcContext.getContext().get(INVOKE_LEVEL));
-            }*/
-
-
-
             logger.debug("brave filter client response:{}", RpcContext.getContext().getMethodName());
             return rpcResult;
         }catch (Exception ex){
             clientResponseInterceptor.handle(new DubboClientResponseAdapter(ex));
-
-
-            incCS();
-            prtInvokeInfo();
-            /*if(RpcContext.getContext().get(INVOKE_LEVEL) == null){
-                logger.debug("brave filter client response exception invoke level null");
-                // RpcContext.getContext().set(INVOKE_LEVEL, 0);
-            }else{
-                logger.debug("brave filter client response exception decrement invoke level");
-                int ref = (int)RpcContext.getContext().get(INVOKE_LEVEL);
-                RpcContext.getContext().set(INVOKE_LEVEL, ref-1);
-                logger.debug("brave filter client response current exception invoke level:{}", (int)RpcContext.getContext().get(INVOKE_LEVEL));
-            }*/
-
             logger.debug("brave filter client response exception:{}", RpcContext.getContext().getMethodName());
-            // throw  ex;
-        }finally {
-
-           // clientSpanThreadBinder.setCurrentSpan(null);
-           // serverSpanThreadBinder.s
+            throw ex;
         }
-        return null;
     }
 
 
@@ -266,8 +213,8 @@ public class BraveTracerFilter implements Filter {
     private Result providerInvoke(Invoker<?> invoker, Invocation invocation) throws RpcException{
 
 
-        incSR();
-        prtInvokeInfo();
+        /*incSR();
+        prtInvokeInfo();*/
         /* if(RpcContext.getContext().get(INVOKE_LEVEL) == null){
             logger.debug("brave filter server request null invoke level");
         }else{
@@ -288,8 +235,8 @@ public class BraveTracerFilter implements Filter {
 
 
 
-        incSS();
-        prtInvokeInfo();
+       /* incSS();
+        prtInvokeInfo();*/
         /*if(RpcContext.getContext().get(INVOKE_LEVEL) == null){
             logger.debug("brave filter server response null invoke level");
         }else{
@@ -314,14 +261,14 @@ public class BraveTracerFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 
-        if(invokeInfo.get().get("stat_info") == null){
+        /*if(invokeInfo.get().get("stat_info") == null){
             logger.debug("init invoke info");
             invokeInfo.get().put("stat_info","start");
             invokeInfo.get().put(KEY_CR,0);
             invokeInfo.get().put(KEY_SR,0);
             invokeInfo.get().put(KEY_SS,0);
             invokeInfo.get().put(KEY_CS,0);
-        }
+        }*/
 
         if(BraveTracerFilter.brave == null) {
             ApplicationContext context = ServiceBean.getSpringContext();
@@ -332,8 +279,10 @@ public class BraveTracerFilter implements Filter {
         String side = invoker.getUrl().getParameter(Constants.SIDE_KEY);
         if (Constants.CONSUMER_SIDE.equals(side)) {
             return consumerInvoke(invoker, invocation);
+            //return invoker.invoke(invocation);
         } else if (Constants.PROVIDER_SIDE.equals(side)) {
             return providerInvoke(invoker, invocation);
+            //return invoker.invoke(invocation);
         }
         return invoker.invoke(invocation);
 

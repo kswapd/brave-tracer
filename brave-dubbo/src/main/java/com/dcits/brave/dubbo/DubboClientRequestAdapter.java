@@ -154,13 +154,20 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
         }*/
 
 
+
+
+
+
+
+        /*
+
+
         if(methodName.equals("process")){
             BaseRequest br = null;//(BaseRequest)RpcContext.getContext().getArguments()[0];
             if(ClientRequestCommonData.attachmentData.get() == null) {
                 ClientRequestCommonData.attachmentData.set(new HashMap<String,String>());
             }
             ClientRequestCommonData.attachmentData.get().clear();
-            Map<String, Object> map = Maps.newHashMap();
             if (RpcContext.getContext().getArguments() != null && RpcContext.getContext().getArguments()[0] != null) {
                 br = (BaseRequest) RpcContext.getContext().getArguments()[0];
                 String jsonStr = BraveTracerFilter.getObjectJsonStr(RpcContext.getContext().getArguments()[0]);
@@ -227,7 +234,6 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
 
             }
             ClientRequestCommonData.attachmentData.get().clear();
-            Map<String, Object> map = Maps.newHashMap();
             if (RpcContext.getContext().getArguments() != null && RpcContext.getContext().getArguments()[2] != null) {
                 //br = (BaseRequest) RpcContext.getContext().getArguments()[0];
                 String jsonStr = BraveTracerFilter.getObjectMapStr(((Object[])(RpcContext.getContext().getArguments()[2]))[0]);
@@ -308,7 +314,7 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
                 keyValueAnnotation = KeyValueAnnotation.create("TRAN_TIMESTAMP", ClientRequestCommonData.attachmentData.get().get("TRAN_TIMESTAMP"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("USER_LANG"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("USER_LANG", ClientRequestCommonData.attachmentData.get().get("USER_LANG"));
                 annotations.add(keyValueAnnotation);
@@ -317,22 +323,22 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
                 keyValueAnnotation = KeyValueAnnotation.create("SEQ_NO", ClientRequestCommonData.attachmentData.get().get("SEQ_NO"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("PROGRAM_ID"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("PROGRAM_ID", ClientRequestCommonData.attachmentData.get().get("PROGRAM_ID"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("SOURCE_BRANCH_NO"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("SOURCE_BRANCH_NO", ClientRequestCommonData.attachmentData.get().get("SOURCE_BRANCH_NO"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("DEST_BRANCH_NO"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("DEST_BRANCH_NO", ClientRequestCommonData.attachmentData.get().get("DEST_BRANCH_NO"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("SERVICE_CODE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("SERVICE_CODE", ClientRequestCommonData.attachmentData.get().get("SERVICE_CODE"));
                 annotations.add(keyValueAnnotation);
@@ -341,27 +347,27 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
                 keyValueAnnotation = KeyValueAnnotation.create("MESSAGE_TYPE", ClientRequestCommonData.attachmentData.get().get("MESSAGE_TYPE"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("MESSAGE_CODE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("MESSAGE_CODE", ClientRequestCommonData.attachmentData.get().get("MESSAGE_CODE"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("TRAN_MODE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("TRAN_MODE", ClientRequestCommonData.attachmentData.get().get("TRAN_MODE"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("SOURCE_TYPE"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("SOURCE_TYPE", ClientRequestCommonData.attachmentData.get().get("SOURCE_TYPE"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("BRANCH_ID"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("BRANCH_ID", ClientRequestCommonData.attachmentData.get().get("BRANCH_ID"));
                 annotations.add(keyValueAnnotation);
             }
-            
+
             if(!StringUtils.isEmpty(ClientRequestCommonData.attachmentData.get().get("USER_ID"))) {
                 keyValueAnnotation = KeyValueAnnotation.create("USER_ID", ClientRequestCommonData.attachmentData.get().get("USER_ID"));
                 annotations.add(keyValueAnnotation);
@@ -373,7 +379,10 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
 
 
 
-        }
+        }*/
+
+
+
         return annotations;
         //return Collections.singletonList(KeyValueAnnotation.create("url", RpcContext.getContext().getUrl().toString()));
     }
