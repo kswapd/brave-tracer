@@ -6,6 +6,8 @@ import brave.propagation.B3Propagation;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.ExtraFieldPropagation;
 import brave.propagation.TraceContext;
+import com.dcits.brave.annotations.ChainMonitor;
+import com.dcits.brave.annotations.ChainTags;
 import com.github.kristofa.brave.Brave;
 import com.github.kristofa.brave.ClientRequestInterceptor;
 import com.github.kristofa.brave.ClientResponseInterceptor;
@@ -157,6 +159,13 @@ public class NewBraveMonitor {
 
 		//initBrave(className);
 
+
+
+
+
+
+
+
 		Span span;
 		if( spanInfo.get() == null ) {
 			spanInfo.set(new Stack<Span>());
@@ -168,14 +177,34 @@ public class NewBraveMonitor {
 			}else{
 				span = tracing.tracer().newChild(tracing.currentTraceContext().get()).name(spanName).start();
 			}
-			spanInfo.get().push(span);
+
+
+
+
+
+
+
 			logger.debug("chain monitor new stack.{}", Thread.currentThread().getId());
 		}else{
 			Span parentSpan = spanInfo.get().peek();
 			span = tracing.tracer().newChild(parentSpan.context()).name(spanName).start();
-			spanInfo.get().push(span);
+			//spanInfo.get().push(span);
 			logger.debug("chain monitor add stack.{},{}", spanInfo.get().size(),Thread.currentThread().getId());
 		}
+
+
+
+		ChainMonitor cm = (ChainMonitor)signature.getMethod().getAnnotation(ChainMonitor.class);
+
+		if(cm.tags() != null && cm.tags().length > 0){
+			for(ChainTags tags:cm.tags()) {
+				logger.debug("tags {}:{}", tags.key(),tags.value());
+				span.tag(tags.key(), tags.value());
+			}
+
+		}
+
+		spanInfo.get().push(span);
 
 
 		try {

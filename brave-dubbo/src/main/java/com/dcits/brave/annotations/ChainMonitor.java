@@ -11,4 +11,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface ChainMonitor {
 	String value() default "";
+	public ChainTags[] tags() default {};
 }

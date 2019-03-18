@@ -161,7 +161,7 @@ public class BraveMonitor {
 		String spanName = simpleClassName + "."+ methodName;
 
 		//initBrave(className);
-		logger.debug("---------------@Around前----------------");
+		logger.debug("chain monitor v2 start");
 
 
 
@@ -173,7 +173,7 @@ public class BraveMonitor {
 		try {
 			result = pjp.proceed();
 		} catch (Throwable throwable) {
-			logger.debug("---------------@Around异常----------------");
+			logger.debug("chain monitor v2 has exceptions");;
 			// 监听参数为true则抛出异常，为false则捕获并不抛出异常
 			if (pjp.getArgs().length > 0 && !(Boolean) pjp.getArgs()[0]) {
 				result = null;
@@ -185,7 +185,7 @@ public class BraveMonitor {
 		 serverResp(curBrave);
 		 clientResp(curBrave);
 
-		logger.debug("---------------@Around后----------------");
+		logger.debug("chain monitor stop");
 
 		return result;
 	}
