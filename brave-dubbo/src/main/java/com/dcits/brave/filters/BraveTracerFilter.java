@@ -14,6 +14,7 @@ import com.dcits.brave.dubbo.DubboClientRequestAdapter;
 import com.dcits.brave.dubbo.DubboClientResponseAdapter;
 import com.dcits.brave.dubbo.DubboServerRequestAdapter;
 import com.dcits.brave.dubbo.DubboServerResponseAdapter;
+import com.dcits.brave.tracers.BraveTracer;
 import com.github.kristofa.brave.Brave;
 import com.github.kristofa.brave.ClientRequestInterceptor;
 import com.github.kristofa.brave.ClientResponseInterceptor;
@@ -324,9 +325,16 @@ public class BraveTracerFilter implements Filter {
         }
 
         if(BraveTracerFilter.brave == null) {
+            logger.debug("Setting brave as filter brave is null");
             ApplicationContext context = ServiceBean.getSpringContext();
-            Brave brave = (Brave) context.getBean("brave");
-            setBrave(brave);
+            if(context != null && context.getBean(Brave.class) != null) {
+                Brave brave = (Brave) context.getBean(Brave.class);
+                setBrave(brave);
+            }else{
+                logger.debug("Setting brave as context is null");
+                Brave brave = BraveTracer.getBraveInst();
+                setBrave(brave);
+            }
         }
 
         String side = invoker.getUrl().getParameter(Constants.SIDE_KEY);

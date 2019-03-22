@@ -29,15 +29,18 @@ public class BraveTracer {
 	}
 
 	@Value("${zipkin.address}")
-	private String zipkinAddress;
+	private  String zipkinAddress;
 	@Value("${zipkin.port}")
-	private String zipkinPort;
+	private  String zipkinPort;
 	@Value("${zipkin.sampleRate}")
-	private String zipkinSampleRate;
+	private  String zipkinSampleRate;
 
 
 	@Value("${zipkin.service.name}")
-	private String appName;
+	private  String appName;
+
+
+	private static Brave sbrave = null;
 
 	@Bean(name="brave")
 	public Brave getBrave()
@@ -55,7 +58,14 @@ public class BraveTracer {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		sbrave = br;
 		return br;
+
+	}
+
+	public static Brave getBraveInst()
+	{
+		return sbrave;
 
 	}
 
