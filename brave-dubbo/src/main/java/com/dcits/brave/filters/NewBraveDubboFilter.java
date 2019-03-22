@@ -188,7 +188,7 @@ public final class NewBraveDubboFilter implements Filter {
 						span.tag("THREAD_NO", (String)sysHead.get("threadNo"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("tranTimestamp"))) {
-						span.tag("TRAN_TIMESTAMP", (String)sysHead.get("threadNo"));
+						span.tag("TRAN_TIMESTAMP", (String)sysHead.get("tranTimestamp"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("userLang"))) {
 						span.tag("USER_LANG", (String)sysHead.get("userLang"));

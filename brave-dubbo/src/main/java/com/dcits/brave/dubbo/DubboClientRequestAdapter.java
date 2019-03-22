@@ -246,7 +246,7 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
                     ClientRequestCommonData.attachmentData.get().put("THREAD_NO", (String)sysHead.get("threadNo"));
                 }
                 if (!StringUtils.isEmpty(sysHead.get("tranTimestamp"))) {
-                    ClientRequestCommonData.attachmentData.get().put("TRAN_TIMESTAMP", (String)sysHead.get("threadNo"));
+                    ClientRequestCommonData.attachmentData.get().put("TRAN_TIMESTAMP", (String)sysHead.get("tranTimestamp"));
                 }
                 if (!StringUtils.isEmpty(sysHead.get("userLang"))) {
                     ClientRequestCommonData.attachmentData.get().put("USER_LANG", (String)sysHead.get("userLang"));
