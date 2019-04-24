@@ -220,8 +220,81 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
 
             }
 
+        }else if(methodName.equals("handle")){
+            /*BaseRequest br = null;//(BaseRequest)RpcContext.getContext().getArguments()[0];
+            boolean isRet = true;
+            if(isRet) {
+                return annotations;
+            }*/
+            if(ClientRequestCommonData.attachmentData.get() == null) {
+                ClientRequestCommonData.attachmentData.set(new HashMap<String,String>());
+
+            }
+            ClientRequestCommonData.attachmentData.get().clear();
+            Map<String, Object> map = Maps.newHashMap();
+            if (RpcContext.getContext().getArguments() != null && RpcContext.getContext().getArguments()[0] != null) {
+                //br = (BaseRequest) RpcContext.getContext().getArguments()[0];
+                String jsonStr = BraveTracerFilter.getObjectMapStr(RpcContext.getContext().getArguments()[0]);
+                if(jsonStr != null){
+                    ClientRequestCommonData.attachmentData.get().put("REQUEST_INFO", jsonStr);
+                }
+
+                Map params = (Map)(RpcContext.getContext().getArguments()[0]);
+                Map sysHead = null;
+                if(params.get("SYS_HEAD") != null){
+                    sysHead = (Map)params.get("SYS_HEAD");
+                }
+
+
+                if (!StringUtils.isEmpty(sysHead.get("THREAD_NO"))) {
+                    ClientRequestCommonData.attachmentData.get().put("THREAD_NO", (String)sysHead.get("THREAD_NO"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("TRAN_TIMESTAMP"))) {
+                    ClientRequestCommonData.attachmentData.get().put("TRAN_TIMESTAMP", (String)sysHead.get("TRAN_TIMESTAMP"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("USER_LANG"))) {
+                    ClientRequestCommonData.attachmentData.get().put("USER_LANG", (String)sysHead.get("USER_LANG"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("SEQ_NO"))) {
+                    ClientRequestCommonData.attachmentData.get().put("SEQ_NO", (String)sysHead.get("SEQ_NO"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("PROGRAM_ID"))) {
+                    ClientRequestCommonData.attachmentData.get().put("PROGRAM_ID", (String)sysHead.get("PROGRAM_ID"));
+                }
+
+                if (!StringUtils.isEmpty(sysHead.get("SOURCE_BRANCH_NO"))) {
+                    ClientRequestCommonData.attachmentData.get().put("SOURCE_BRANCH_NO", (String)sysHead.get("SOURCE_BRANCH_NO"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("DEST_BRANCH_NO"))) {
+                    ClientRequestCommonData.attachmentData.get().put("DEST_BRANCH_NO", (String)sysHead.get("DEST_BRANCH_NO"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("SERVICE_CODE"))) {
+                    ClientRequestCommonData.attachmentData.get().put("SERVICE_CODE", (String)sysHead.get("SERVICE_CODE"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("MESSAGE_TYPE"))) {
+                    ClientRequestCommonData.attachmentData.get().put("MESSAGE_TYPE", (String)sysHead.get("MESSAGE_TYPE"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("MESSAGE_CODE"))) {
+                    ClientRequestCommonData.attachmentData.get().put("MESSAGE_CODE", (String)sysHead.get("MESSAGE_CODE"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("TRAN_MODE"))) {
+                    ClientRequestCommonData.attachmentData.get().put("TRAN_MODE", (String)sysHead.get("TRAN_MODE"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("SOURCE_TYPE"))) {
+                    ClientRequestCommonData.attachmentData.get().put("SOURCE_TYPE", (String)sysHead.get("SOURCE_TYPE"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("BRANCH_ID"))) {
+                    ClientRequestCommonData.attachmentData.get().put("BRANCH_ID", (String)sysHead.get("BRANCH_ID"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("USER_ID"))) {
+                    ClientRequestCommonData.attachmentData.get().put("USER_ID", (String)sysHead.get("USER_ID"));
+                }
+                if (!StringUtils.isEmpty(sysHead.get("TRAN_DATE"))) {
+                    ClientRequestCommonData.attachmentData.get().put("TRAN_DATE", (String)sysHead.get("TRAN_DATE"));
+                }
+            }
+
         }else if(methodName.equals("$invoke")){
-            BaseRequest br = null;//(BaseRequest)RpcContext.getContext().getArguments()[0];
             if(ClientRequestCommonData.attachmentData.get() == null) {
                 ClientRequestCommonData.attachmentData.set(new HashMap<String,String>());
 
