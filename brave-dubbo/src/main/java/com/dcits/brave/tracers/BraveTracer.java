@@ -3,12 +3,16 @@ package com.dcits.brave.tracers;
 import brave.Tracing;
 import brave.propagation.B3Propagation;
 import brave.propagation.ExtraFieldPropagation;
+import brave.spring.rabbit.SpringRabbitTracing;
 import com.dcits.brave.dubbo.BraveFactoryBean;
 import com.github.kristofa.brave.Brave;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,6 +86,42 @@ public class BraveTracer {
 	}
 
 
+	@Bean
+	public SpringRabbitTracing springRabbitTracing(Tracing tracing) {
+
+		logger.info("building springRabbitTracing");
+		return SpringRabbitTracing.newBuilder(tracing)
+				//.writeB3SingleFormat(true) // for more efficient propagation
+				.remoteServiceName("my-mq-service")
+				.build();
+	}
+
+	@Bean(name="rabbitTemplateTracing")
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
+										 SpringRabbitTracing springRabbitTracing) {
+		logger.info("building rabbitTemplate");
+		RabbitTemplate rabbitTemplate = springRabbitTracing.newRabbitTemplate(connectionFactory);
+
+		// other customizations as required
+		return rabbitTemplate;
+	}
+
+	//@Bean(name="simpleRabbitListenerContainerFactory")
+	@Bean
+	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+			ConnectionFactory connectionFactory,
+			SpringRabbitTracing springRabbitTracing
+	) {
+
+		//MessageListenerAdapter listener = new MessageListenerAdapter(somePojo);
+		//listener.setDefaultListenerMethod("myMethod");
+		logger.info("building simpleRabbitListenerContainerFactory");
+		SimpleRabbitListenerContainerFactory fact;
+		//fact.setC
+		return springRabbitTracing.newSimpleMessageListenerContainerFactory(connectionFactory);
+
+		//return springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
+	}
 
 
 }
