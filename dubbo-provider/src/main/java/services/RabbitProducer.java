@@ -3,15 +3,20 @@ package services;
 import brave.spring.rabbit.SpringRabbitTracing;
 import com.rabbitmq.client.Consumer;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.AbstractMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+
+@Configuration
 public class RabbitProducer {
 
     public static void main(String[] args) throws InterruptedException {
@@ -21,6 +26,8 @@ public class RabbitProducer {
         //AmqpTemplate template = (AmqpTemplate)ctx.getBean("amqpTemplate");
         AmqpTemplate template = (AmqpTemplate)ctx.getBean("rabbitTemplateTracing");
 
+       // SpringRabbitTracing rabbitTracing = (SpringRabbitTracing) ctx.getBean(SpringRabbitTracing.class);
+        //rabbitTracing.decorateRabbitTemplate((RabbitTemplate)template);
       //  SimpleRabbitListenerContainerFactory  listenerContainerFactory = (SimpleRabbitListenerContainerFactory )ctx.getBean("simpleRabbitListenerContainerFactoryTracing");
 
       //  SimpleMessageListenerContainer listenerContainer = listenerContainerFactory.createContainerInstance();
@@ -53,10 +60,47 @@ public class RabbitProducer {
         container.setMessageListener(listener);
 */
         //SpringRabbitTracing
+        //SimpleRabbitListenerContainerFactory listenerFactory = (SimpleRabbitListenerContainerFactory)ctx.getBean(SimpleRabbitListenerContainerFactory.class);
+        //rabbitTracing.decorateSimpleRabbitListenerContainerFactory(listenerFactory);
 
 
-        template.convertAndSend("Hello, world!");
+        /*System.out.println("Received: " + template.receiveAndConvert());
+
+        System.out.println("222");
+        Thread.sleep(3000);
+        System.out.println("333");*/
+
+        SimpleRabbitListenerContainerFactory listenerFactory = (SimpleRabbitListenerContainerFactory)ctx.getBean(SimpleRabbitListenerContainerFactory.class);
+        SimpleMessageListenerContainer container = listenerFactory.createListenerContainer();
+
+        //SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        ConnectionFactory connectionFactory = (ConnectionFactory)ctx.getBean(ConnectionFactory.class);
+        container.setConnectionFactory(connectionFactory);
+        container.setQueueNames("kxwQueue");
+       // Queue queue = ctx.getBean(Queue.class);
+       // container.setQueues(queue);
+        RabbitConsumer2 c2 = new RabbitConsumer2();
+
+        MessageListenerAdapter listener = new MessageListenerAdapter(c2,"listen");
+        //listener.setDefaultListenerMethod("listen");
+        container.setMessageListener(listener);
+        container.start();
+
+
+
+
         Thread.sleep(1000);
+        template.convertAndSend("kxwExchange","foo.bar","Hello, world!");
+
+       // template.convertAndSend("Hello, world!");
+
+        System.out.println("111");
+        Thread.sleep(1000);
+        System.out.println("222");
+        Thread.sleep(10000);
         ctx.destroy();
+
+
     }
+
 }

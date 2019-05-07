@@ -10,9 +10,17 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,18 +30,18 @@ import zipkin2.codec.SpanBytesEncoder;
 import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Sender;
 import zipkin2.reporter.okhttp3.OkHttpSender;
+
 /**
  * Created by kongxiangwen on 7/12/18 w:28.
  */
 @Configuration
-//@EnableRabbit
-//@ComponentScan(basePackages="services")
-public class BraveTracer {
-	private static final Logger logger = LoggerFactory.getLogger(BraveTracer.class);
+@EnableRabbit
+public class RabbitTracer {
+	private static final Logger logger = LoggerFactory.getLogger(RabbitTracer.class);
 	@PostConstruct
 	public void init()
 	{
-		logger.info("initialing brave tracer:{}", appName);
+		logger.info("initialing rabbit tracer:{}", appName);
 	}
 
 	@Value("${zipkin.address}")
@@ -47,50 +55,38 @@ public class BraveTracer {
 	@Value("${zipkin.service.name}")
 	private String appName;
 
-	@Bean(name="brave")
-	public Brave getBrave()
-	{
-		BraveFactoryBean bfb = new BraveFactoryBean();
-		String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
-		bfb.setZipkinHost(zipkinAddr);
-		bfb.setRate(zipkinSampleRate);
-		bfb.setServiceName(appName);
-		logger.info("setting zipkin address:{}", zipkinAddr);
-		Brave br = null;
-		try {
-			br = bfb.getObject();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return br;
 
+	@Bean
+	public ConnectionFactory connectionFactory() {
+		CachingConnectionFactory connectionFactory = new CachingConnectionFactory("10.88.2.112");
+		connectionFactory.setUsername("guest");
+		connectionFactory.setPassword("guest");
+
+		return connectionFactory;
 	}
 
-
-
-
-
-	@Bean(name="tracing")
-	public Tracing getTracing() {
-		String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
-		Sender sender = OkHttpSender.create(zipkinAddr+"api/v2/spans");
-
-
-		AsyncReporter asyncReporter = AsyncReporter.builder(sender)
-				.closeTimeout(5000, TimeUnit.MILLISECONDS)
-				.build(SpanBytesEncoder.JSON_V2);
-
-		Tracing gw_tracing = Tracing.newBuilder()
-				.localServiceName(appName)
-				.spanReporter(asyncReporter)
-				.propagationFactory(ExtraFieldPropagation.newFactory(B3Propagation.FACTORY, "user-name"))
-				.build();
-		return gw_tracing;
+	@Bean
+	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+		return new RabbitAdmin(connectionFactory);
 	}
-
 
 	/*@Bean
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+		return new RabbitTemplate(connectionFactory);
+	}*/
+
+	@Bean
+	public Queue queue() {
+		return new Queue("kxwQueue");
+	}
+	/*@Bean(name="rabbitListenerContainerFactory")
+	public SimpleRabbitListenerContainerFactory rabbitListenerContainerlistenerFactory(ConnectionFactory connectionFactory){
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		factory.setConnectionFactory(connectionFactory);
+		return factory;
+	}*/
+
+	@Bean
 	public SpringRabbitTracing springRabbitTracing(Tracing tracing) {
 
 		logger.info("building springRabbitTracing");
@@ -100,12 +96,41 @@ public class BraveTracer {
 				.build();
 	}
 
+
+/*	 <rabbit:topic-exchange name="myExchange">
+        <rabbit:bindings>
+            <rabbit:binding queue="myQueue" pattern="foo.*" />
+        </rabbit:bindings>
+    </rabbit:topic-exchange>*/
+
+
+	@Bean(name="topicExchange")
+	public TopicExchange topicExchange(
+										) {
+		logger.info("building topicExchange");
+		TopicExchange exchange = new TopicExchange("kxwExchange");
+
+		// other customizations as required
+		return exchange;
+	}
+
+
+	@Bean
+	public Binding bindings(TopicExchange topicExchange,
+							 Queue queue) {
+		return BindingBuilder.bind(queue)
+				.to(topicExchange)
+				.with("foo.*");
+	}
+
+
 	@Bean(name="rabbitTemplateTracing")
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
 										 SpringRabbitTracing springRabbitTracing) {
 		logger.info("building rabbitTemplate");
 		RabbitTemplate rabbitTemplate = springRabbitTracing.newRabbitTemplate(connectionFactory);
-
+		//RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+		rabbitTemplate.setRoutingKey("foo.bar");
 		// other customizations as required
 		return rabbitTemplate;
 	}
@@ -128,7 +153,7 @@ public class BraveTracer {
 		fact.setMaxConcurrentConsumers(10);
 		return fact;
 		//return springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
-	}*/
+	}
 
 
 

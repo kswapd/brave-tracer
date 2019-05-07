@@ -18,14 +18,14 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.1.6.RELEASE</version>
+            <version>5.0.2.RELEASE</version>
         </dependency>
         <!-- spring end -->
 
         <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>
-        <version>4.1.6.RELEASE</version>
+        <version>5.0.2.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -120,16 +120,6 @@
 
 
 
-            <dependency>
-                <groupId>org.springframework.amqp</groupId>
-                <artifactId>spring-amqp</artifactId>
-                <version>1.6.6.RELEASE</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.amqp</groupId>
-                <artifactId>spring-rabbit</artifactId>
-                <version>1.6.6.RELEASE</version>
-            </dependency>
 
 
     </dependencies>

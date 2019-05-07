@@ -12,7 +12,7 @@
     <context:component-scan base-package="services,com.dcits.aops,com.dcits.brave.tracers"></context:component-scan>
 
 
-    <rabbit:connection-factory id="connectionFactory" host="10.88.2.112" username="guest" password="guest" />
+    <!--<rabbit:connection-factory id="connectionFactory" host="10.88.2.112" username="guest" password="guest" />
 
     <rabbit:template id="amqpTemplate" connection-factory="connectionFactory"
                      exchange="myExchange" routing-key="foo.bar" />
@@ -26,14 +26,20 @@
             <rabbit:binding queue="myQueue" pattern="foo.*" />
         </rabbit:bindings>
     </rabbit:topic-exchange>
+-->
+    <!--<bean id="rabbitListenerContainerFactory"
+          class="org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="concurrentConsumers" value="3"/>
+        <property name="maxConcurrentConsumers" value="10"/>
+    </bean>-->
 
-
-    <rabbit:listener-container
+    <!--<rabbit:listener-container
             connection-factory="connectionFactory">
         <rabbit:listener ref="consumer" method="listen"
-                         queue-names="myQueue" />
-    </rabbit:listener-container>
+                         queue-names="kxwQueue" />
+    </rabbit:listener-container>-->
 
-    <bean id="consumer" class="services.RabbitConsumer" />
-
+    <!--<bean id="consumer" class="services.RabbitConsumer" />
+    <bean id="consumer2" class="services.RabbitConsumer2" />-->
 </beans>
