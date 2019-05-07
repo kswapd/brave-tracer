@@ -41,5 +41,5 @@
     </rabbit:listener-container>-->
 
     <!--<bean id="consumer" class="services.RabbitConsumerMain" />
-    <bean id="consumer2" class="services.RabbitConsumer2" />-->
+    <bean id="consumer2" class="services.RabbitConsumer" />-->
 </beans>

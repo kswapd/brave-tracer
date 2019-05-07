@@ -1,23 +1,15 @@
-package services;
-
-import brave.spring.rabbit.SpringRabbitTracing;
-import com.rabbitmq.client.Consumer;
+import com.dcits.models.RabbitConsumer;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.AbstractMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 @Configuration
-public class RabbitProducer {
+public class RabbitConsumerMain {
 
     public static void main(String[] args) throws InterruptedException {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[]{"classpath*:META-INF/spring/brave-context.xml","rabbit.xml"});
@@ -54,7 +46,7 @@ public class RabbitProducer {
 
         container.setQueueNames("myQueue");
 
-        RabbitConsumer2 c2 = new RabbitConsumer2();
+        RabbitConsumer c2 = new RabbitConsumer();
         MessageListenerAdapter listener = new MessageListenerAdapter(c2);
         listener.setDefaultListenerMethod("listen");
         container.setMessageListener(listener);
@@ -79,7 +71,7 @@ public class RabbitProducer {
         container.setQueueNames("kxwQueue");
        // Queue queue = ctx.getBean(Queue.class);
        // container.setQueues(queue);
-        RabbitConsumer2 c2 = new RabbitConsumer2();
+        RabbitConsumer c2 = new RabbitConsumer();
 
         MessageListenerAdapter listener = new MessageListenerAdapter(c2,"listen");
         //listener.setDefaultListenerMethod("listen");
@@ -90,16 +82,10 @@ public class RabbitProducer {
 
 
         Thread.sleep(1000);
-        template.convertAndSend("kxwExchange","foo.bar","Hello, world!");
+       // ctx.destroy();
 
-       // template.convertAndSend("Hello, world!");
 
-        System.out.println("111");
-        Thread.sleep(1000);
-        System.out.println("222");
-        Thread.sleep(10000);
-        ctx.destroy();
-
+        System.out.println("consumer finished");
 
     }
 

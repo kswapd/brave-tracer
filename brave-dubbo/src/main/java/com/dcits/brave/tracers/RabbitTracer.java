@@ -41,20 +41,22 @@ public class RabbitTracer {
 	@PostConstruct
 	public void init()
 	{
-		logger.info("initialing rabbit tracer:{}", appName);
+		logger.info("initialing rabbit tracer:{}", rabbitServiceName);
 	}
 
-	@Value("${zipkin.address}")
+	@Value("${zipkin.address:127.0.0.1}")
 	private String zipkinAddress;
-	@Value("${zipkin.port}")
+	@Value("${zipkin.port:9411}")
 	private String zipkinPort;
-	@Value("${zipkin.sampleRate}")
+	@Value("${zipkin.sampleRate:1.0}")
 	private String zipkinSampleRate;
 
 
-	@Value("${zipkin.service.name}")
+	@Value("${zipkin.service.name:myApp}")
 	private String appName;
 
+	@Value("${zipkin.rabbit.service.name:rabbitService}")
+	private String rabbitServiceName;
 
 	@Bean
 	public ConnectionFactory connectionFactory() {
@@ -77,7 +79,9 @@ public class RabbitTracer {
 
 	@Bean
 	public Queue queue() {
+		Queue q;
 		return new Queue("kxwQueue");
+
 	}
 	/*@Bean(name="rabbitListenerContainerFactory")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerlistenerFactory(ConnectionFactory connectionFactory){
@@ -89,10 +93,10 @@ public class RabbitTracer {
 	@Bean
 	public SpringRabbitTracing springRabbitTracing(Tracing tracing) {
 
-		logger.info("building springRabbitTracing");
+		logger.info("building springRabbitTracing,{}.",rabbitServiceName);
 		return SpringRabbitTracing.newBuilder(tracing)
 				//.writeB3SingleFormat(true) // for more efficient propagation
-				.remoteServiceName("my-mq-service")
+				.remoteServiceName(rabbitServiceName)
 				.build();
 	}
 
