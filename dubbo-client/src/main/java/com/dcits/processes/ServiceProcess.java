@@ -18,8 +18,8 @@ public class ServiceProcess {
 		logger.info(service.sayHello("hello"));
 
 
-		DemoTraceService tservice = (DemoTraceService) context.getBean("demoTraceService");
-		logger.info(tservice.sayParent("hello"));
+		//DemoTraceService tservice = (DemoTraceService) context.getBean("demoTraceService");
+		//logger.info(tservice.sayParent("hello"));
 	}
 
 	public ClassPathXmlApplicationContext getContext() {

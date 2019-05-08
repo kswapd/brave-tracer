@@ -63,6 +63,9 @@ public class RabbitConsumerMain {
         System.out.println("333");*/
 
         SimpleRabbitListenerContainerFactory listenerFactory = (SimpleRabbitListenerContainerFactory)ctx.getBean(SimpleRabbitListenerContainerFactory.class);
+
+
+
         SimpleMessageListenerContainer container = listenerFactory.createListenerContainer();
 
         //SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();

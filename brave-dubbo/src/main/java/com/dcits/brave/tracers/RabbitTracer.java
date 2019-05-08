@@ -58,37 +58,25 @@ public class RabbitTracer {
 	@Value("${zipkin.rabbit.service.name:rabbitService}")
 	private String rabbitServiceName;
 
+	@Value("${zipkin.rabbit.service.address:127.0.0.1}")
+	private String rabbitServiceAddress;
+
+	@Value("${zipkin.rabbit.service.user.name:guest}")
+	private String rabbitServiceUserName;
+
+	@Value("${zipkin.rabbit.service.user.password:guest}")
+	private String rabbitServiceUserPassword;
+
 	@Bean
 	public ConnectionFactory connectionFactory() {
-		CachingConnectionFactory connectionFactory = new CachingConnectionFactory("10.88.2.112");
-		connectionFactory.setUsername("guest");
-		connectionFactory.setPassword("guest");
+		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
+		connectionFactory.setUsername(rabbitServiceUserName);
+		connectionFactory.setPassword(rabbitServiceUserPassword);
 
 		return connectionFactory;
 	}
 
-	@Bean
-	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
-		return new RabbitAdmin(connectionFactory);
-	}
 
-	/*@Bean
-	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-		return new RabbitTemplate(connectionFactory);
-	}*/
-
-	@Bean
-	public Queue queue() {
-		Queue q;
-		return new Queue("kxwQueue");
-
-	}
-	/*@Bean(name="rabbitListenerContainerFactory")
-	public SimpleRabbitListenerContainerFactory rabbitListenerContainerlistenerFactory(ConnectionFactory connectionFactory){
-		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-		factory.setConnectionFactory(connectionFactory);
-		return factory;
-	}*/
 
 	@Bean
 	public SpringRabbitTracing springRabbitTracing(Tracing tracing) {
@@ -101,12 +89,46 @@ public class RabbitTracer {
 	}
 
 
-/*	 <rabbit:topic-exchange name="myExchange">
-        <rabbit:bindings>
-            <rabbit:binding queue="myQueue" pattern="foo.*" />
-        </rabbit:bindings>
-    </rabbit:topic-exchange>*/
+	@Bean(name="rabbitListenerContainerFactory")
+	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+			ConnectionFactory connectionFactory,
+			SpringRabbitTracing springRabbitTracing
+	) {
 
+		//MessageListenerAdapter listener = new MessageListenerAdapter(somePojo);
+		//listener.setDefaultListenerMethod("myMethod");
+		logger.info("building simpleRabbitListenerContainerFactory");
+		SimpleRabbitListenerContainerFactory fact;
+		//fact.setC
+		fact = springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
+		fact.setConcurrentConsumers(3);
+		fact.setMaxConcurrentConsumers(10);
+		return fact;
+		//return springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
+	}
+
+	@Bean(name="rabbitTemplateTracing")
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
+										 SpringRabbitTracing springRabbitTracing) {
+		logger.info("building rabbitTemplate");
+		RabbitTemplate rabbitTemplate = springRabbitTracing.newRabbitTemplate(connectionFactory);
+		//RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+		rabbitTemplate.setRoutingKey("foo.bar");
+		// other customizations as required
+		return rabbitTemplate;
+	}
+
+
+	@Bean
+	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+		return new RabbitAdmin(connectionFactory);
+	}
+
+
+	@Bean
+	public Queue queue() {
+		return new Queue("kxwQueue");
+	}
 
 	@Bean(name="topicExchange")
 	public TopicExchange topicExchange(
@@ -128,36 +150,9 @@ public class RabbitTracer {
 	}
 
 
-	@Bean(name="rabbitTemplateTracing")
-	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
-										 SpringRabbitTracing springRabbitTracing) {
-		logger.info("building rabbitTemplate");
-		RabbitTemplate rabbitTemplate = springRabbitTracing.newRabbitTemplate(connectionFactory);
-		//RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-		rabbitTemplate.setRoutingKey("foo.bar");
-		// other customizations as required
-		return rabbitTemplate;
-	}
 
-	//@Bean(name="simpleRabbitListenerContainerFactory")
 
-	@Bean(name="rabbitListenerContainerFactory")
-	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-			ConnectionFactory connectionFactory,
-			SpringRabbitTracing springRabbitTracing
-	) {
 
-		//MessageListenerAdapter listener = new MessageListenerAdapter(somePojo);
-		//listener.setDefaultListenerMethod("myMethod");
-		logger.info("building simpleRabbitListenerContainerFactory");
-		SimpleRabbitListenerContainerFactory fact;
-		//fact.setC
-		fact = springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
-		fact.setConcurrentConsumers(3);
-		fact.setMaxConcurrentConsumers(10);
-		return fact;
-		//return springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
-	}
 
 
 
