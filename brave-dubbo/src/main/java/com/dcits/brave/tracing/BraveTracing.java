@@ -1,4 +1,4 @@
-package com.dcits.brave.tracers;
+package com.dcits.brave.tracing;
 
 import brave.Tracing;
 import brave.propagation.B3Propagation;
@@ -22,12 +22,12 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
 @Configuration
 //@EnableRabbit
 //@ComponentScan(basePackages="services")
-public class BraveTracer {
-	private static final Logger logger = LoggerFactory.getLogger(BraveTracer.class);
+public class BraveTracing {
+	private static final Logger logger = LoggerFactory.getLogger(BraveTracing.class);
 
 	@PostConstruct
 	public void init() {
-		logger.info("initialing brave tracer:{}", appName);
+		logger.info("brave tracing:{}", appName);
 	}
 
 	@Value("${zipkin.address}")

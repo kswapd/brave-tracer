@@ -16,7 +16,7 @@
 		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://code.alibabatech.com/schema/dubbo 
         http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
-    <context:component-scan base-package="com.dcits.brave.aops,com.dcits.brave.tracers,com.dcits.brave.dubbo,com.dcits.brave.filters"></context:component-scan>
-    <!-- <context:component-scan base-package="models,com.dcits.brave.tracers"></context:component-scan>-->
+    <context:component-scan base-package="com.dcits.brave"></context:component-scan>
+    <!-- <context:component-scan dubbo-package="models,com.dcits.brave.tracers"></context:component-scan>-->
     <aop:aspectj-autoproxy/>
 </beans>

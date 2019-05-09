@@ -30,7 +30,7 @@ public class RabbitTracer {
 
 	@PostConstruct
 	public void init() {
-		logger.info("initialing rabbit tracer:{}", rabbitServiceName);
+		logger.info("rabbit tracing:{}", rabbitServiceName);
 	}
 
 	@Value("${zipkin.address:127.0.0.1}")

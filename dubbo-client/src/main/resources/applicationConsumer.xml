@@ -18,7 +18,7 @@
 
     <context:component-scan base-package="com.dcits.processes"></context:component-scan>
 
-   <!-- <context:component-scan base-package="models,com.dcits.brave.tracers"></context:component-scan>-->
+   <!-- <context:component-scan dubbo-package="models,com.dcits.brave.tracers"></context:component-scan>-->
 
     <!--<aop:aspectj-autoproxy/>-->
 
