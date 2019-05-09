@@ -3,6 +3,7 @@ package com.dcits.brave.tracing;
 import brave.Tracing;
 import brave.propagation.B3Propagation;
 import brave.propagation.ExtraFieldPropagation;
+import brave.propagation.StrictCurrentTraceContext;
 import brave.sampler.Sampler;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -41,27 +42,47 @@ public class BraveTracing {
 	@Value("${zipkin.service.name}")
 	private String appName;
 
+	private static Tracing tracing = null;
+
+
+
+	
+
+
 
 	@Bean(name = "tracing")
-	public Tracing getTracing() {
+	public Tracing tracing() {
 
-		String zipkinAddr = "http://" + zipkinAddress + ":" + zipkinPort + "/";
-		Sender sender = OkHttpSender.create(zipkinAddr + "api/v2/spans");
+		if(tracing == null) {
+			String zipkinAddr = "http://" + zipkinAddress + ":" + zipkinPort + "/";
+			Sender sender = OkHttpSender.create(zipkinAddr + "api/v2/spans");
 
-		logger.info("setting zipkin address:{}", zipkinAddr);
+			logger.info("tracing setting zipkin address:{}", zipkinAddr);
 
 
-		AsyncReporter asyncReporter = AsyncReporter.builder(sender)
-				.closeTimeout(5000, TimeUnit.MILLISECONDS)
-				.build(SpanBytesEncoder.JSON_V2);
+			AsyncReporter asyncReporter = AsyncReporter.builder(sender)
+					.closeTimeout(5000, TimeUnit.MILLISECONDS)
 
-		Tracing gw_tracing = Tracing.newBuilder()
-				.localServiceName(appName)
-				.spanReporter(asyncReporter)
-				.sampler(Sampler.create(1.0f))
-				.propagationFactory(ExtraFieldPropagation.newFactory(B3Propagation.FACTORY, "user-name"))
-				.build();
-		return gw_tracing;
+					.build(SpanBytesEncoder.JSON_V2);
+
+			tracing = Tracing.newBuilder()
+					.localServiceName(appName)
+					.spanReporter(asyncReporter)
+					.currentTraceContext(new StrictCurrentTraceContext())
+					//.sampler(Sampler.create(1.0f))
+					.propagationFactory(ExtraFieldPropagation.newFactory(B3Propagation.FACTORY, "user-name"))
+					.build();
+
+		}
+		return tracing;
+	}
+
+
+
+
+
+	public static Tracing tracingInst(){
+		return tracing;
 	}
 
 

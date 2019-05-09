@@ -36,14 +36,14 @@ public class DemoServiceImpl implements DemoService, ApplicationContextAware {
 		//String barStr = bar.sayBar("bar");
 
 
-		AmqpTemplate template = (AmqpTemplate)ctx.getBean("rabbitTemplateTracing");
+		/*AmqpTemplate template = (AmqpTemplate)ctx.getBean("rabbitTemplateTracing");
 
 
 		template.convertAndSend("kxwExchange","foo.bar","Hello, world!");
 
 		// template.convertAndSend("Hello, world!");
 
-		System.out.println("producer finished");
+		System.out.println("producer finished");*/
 
 		return "hello from dubbo provider "  +  name;
 	}

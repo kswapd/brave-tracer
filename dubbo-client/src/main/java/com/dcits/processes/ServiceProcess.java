@@ -15,7 +15,7 @@ public class ServiceProcess {
 	public void Process()
 	{
 		DemoService service = (DemoService) context.getBean("demoService");
-		logger.info(service.sayHello("hello"));
+		logger.info(service.sayHello("hello") + "-----------");
 
 
 		//DemoTraceService tservice = (DemoTraceService) context.getBean("demoTraceService");
