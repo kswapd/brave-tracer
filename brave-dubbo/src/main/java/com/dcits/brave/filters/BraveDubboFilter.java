@@ -344,9 +344,14 @@ public final class BraveDubboFilter implements Filter {
 
 			logger.debug("tracing server:{},{}", RpcContext.getContext().getMethodName(),Thread.currentThread().getId());
 			TraceContextOrSamplingFlags extracted = extractor.extract(invocation.getAttachments());
-			span = extracted.context() != null
+			/*span = extracted.context() != null
 					? tracer.joinSpan(extracted.context())
-					: tracer.nextSpan(extracted);
+					: tracer.nextSpan(extracted);*/
+			if(extracted.context() != null){
+				span = tracer.joinSpan(extracted.context());
+			}else{
+				span = tracer.nextSpan(extracted);
+			}
 		}
 
 		if (!span.isNoop()) {

@@ -103,15 +103,10 @@
 
 
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>dubbo</artifactId>
-            <version>2.5.3-gz-bank</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.dcits.galaxy</groupId>
+            <artifactId>galaxy-dubbo</artifactId>
+            <version>2.3.2</version>
+
         </dependency>
 
         <dependency>

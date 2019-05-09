@@ -17,7 +17,7 @@
 
     <dubbo:reference id="demoService"
                      interface="interfaces.DemoService"
-                     protocol="dubbo"/>
+                     protocol="dubbo" scope="remote"/>
 
     <dubbo:reference id="fooService"
                      interface="interfaces.FooService"

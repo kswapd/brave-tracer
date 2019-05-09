@@ -31,7 +31,7 @@
     <!-- 暴露服务地址,该服务的实现类是demoService的引用 -->
     <dubbo:service ref="demoService"
                    interface="interfaces.DemoService"
-                   protocol="dubbo"/>
+                   protocol="dubbo" scope="remote"/>
 
     <!--<dubbo:service ref="fooService"
                    interface="interfaces.FooService"
