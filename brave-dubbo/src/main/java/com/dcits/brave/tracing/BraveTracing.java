@@ -4,7 +4,11 @@ import brave.Tracing;
 import brave.propagation.B3Propagation;
 import brave.propagation.ExtraFieldPropagation;
 import brave.propagation.StrictCurrentTraceContext;
-import brave.sampler.Sampler;
+//import brave.sampler.Sampler;
+import com.github.kristofa.brave.Brave;
+import com.github.kristofa.brave.EmptySpanCollectorMetricsHandler;
+import com.github.kristofa.brave.Sampler;
+import com.github.kristofa.brave.http.HttpSpanCollector;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -44,9 +48,29 @@ public class BraveTracing {
 
 	private static Tracing tracing = null;
 
+	private static Tracing serverTracing = null;
 
 
-	
+
+	@Bean(name="brave")
+	public Brave getBrave()
+	{
+		Brave.Builder builder = new Brave.Builder(appName);
+		String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
+		//if (this.zipkinHost != null && !"".equals(zipkinAddr))
+		{
+			builder.spanCollector(HttpSpanCollector.create(zipkinAddr, new EmptySpanCollectorMetricsHandler())).traceSampler(Sampler.create(Float.parseFloat(zipkinSampleRate))).build();
+
+		}
+		Brave br = builder.build();
+
+
+		logger.info("setting zipkin address:{}", zipkinAddr);
+
+		return br;
+
+	}
+
 
 
 
@@ -77,6 +101,33 @@ public class BraveTracing {
 		return tracing;
 	}
 
+	@Bean(name = "serverTracing")
+	public Tracing serverTracing() {
+
+		if(serverTracing == null) {
+			String zipkinAddr = "http://" + zipkinAddress + ":" + zipkinPort + "/";
+			Sender sender = OkHttpSender.create(zipkinAddr + "api/v2/spans");
+
+			logger.info("tracing server setting zipkin address:{}", zipkinAddr);
+
+
+			AsyncReporter asyncReporter = AsyncReporter.builder(sender)
+					.closeTimeout(5000, TimeUnit.MILLISECONDS)
+
+					.build(SpanBytesEncoder.JSON_V2);
+
+			serverTracing = Tracing.newBuilder()
+					.localServiceName(appName)
+					.spanReporter(asyncReporter)
+					.currentTraceContext(new StrictCurrentTraceContext())
+					//.sampler(Sampler.create(1.0f))
+					.propagationFactory(ExtraFieldPropagation.newFactory(B3Propagation.FACTORY, "user-name"))
+					.build();
+
+		}
+		return serverTracing;
+	}
+
 
 
 
@@ -85,6 +136,8 @@ public class BraveTracing {
 		return tracing;
 	}
 
-
+	public static Tracing serverTracingInst(){
+		return serverTracing;
+	}
 
 }

@@ -110,15 +110,33 @@ public final class BraveDubboFilter implements Filter {
 	public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 		//if (tracer == null) return invoker.invoke(invocation);
 
-		if (tracer == null) {
+		/*if (tracer == null) {
 			Tracing tracing = BraveTracing.tracingInst();
 			//setTracing(BraveTracing.tracingInst());
 			tracer = tracing.tracer();
 			extractor = tracing.propagation().extractor(GETTER);
 			injector = tracing.propagation().injector(SETTER);
-		}
+		}*/
 		RpcContext rpcContext = RpcContext.getContext();
 		Kind kind = rpcContext.isProviderSide() ? Kind.SERVER : Kind.CLIENT;
+
+		if (kind.equals(Kind.CLIENT) && tracer == null) {
+			Tracing tracing = BraveTracing.tracingInst();
+			//setTracing(BraveTracing.tracingInst());
+			tracer = tracing.tracer();
+			extractor = tracing.propagation().extractor(GETTER);
+			injector = tracing.propagation().injector(SETTER);
+		}else if (kind.equals(Kind.SERVER) && tracer == null){
+
+			Tracing tracing = BraveTracing.serverTracingInst();
+			//setTracing(BraveTracing.tracingInst());
+			tracer = tracing.tracer();
+			extractor = tracing.propagation().extractor(GETTER);
+			injector = tracing.propagation().injector(SETTER);
+
+		}
+
+
 		final Span span;
 		if (kind.equals(Kind.CLIENT)) {
 			span = tracer.nextSpan();
