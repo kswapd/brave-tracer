@@ -1,12 +1,7 @@
 package com.dcits.brave.tracers;
 
 import brave.Tracing;
-import brave.propagation.B3Propagation;
-import brave.propagation.ExtraFieldPropagation;
 import brave.spring.rabbit.SpringRabbitTracing;
-import com.dcits.brave.dubbo.BraveFactoryBean;
-import com.github.kristofa.brave.Brave;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +11,6 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -24,12 +18,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import zipkin2.codec.SpanBytesEncoder;
-import zipkin2.reporter.AsyncReporter;
-import zipkin2.reporter.Sender;
-import zipkin2.reporter.okhttp3.OkHttpSender;
 
 /**
  * Created by kongxiangwen on 7/12/18 w:28.
@@ -38,9 +27,9 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
 @EnableRabbit
 public class RabbitTracer {
 	private static final Logger logger = LoggerFactory.getLogger(RabbitTracer.class);
+
 	@PostConstruct
-	public void init()
-	{
+	public void init() {
 		logger.info("initialing rabbit tracer:{}", rabbitServiceName);
 	}
 
@@ -75,6 +64,7 @@ public class RabbitTracer {
 
 	@Value("${zipkin.rabbit.service.exchange:exchangeTracing}")
 	private String rabbitServiceExchangeName;
+
 	@Bean
 	public ConnectionFactory connectionFactory() {
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
@@ -85,11 +75,10 @@ public class RabbitTracer {
 	}
 
 
-
 	@Bean
 	public SpringRabbitTracing springRabbitTracing(Tracing tracing) {
 
-		logger.info("building springRabbitTracing,{}.",rabbitServiceName);
+		logger.info("building springRabbitTracing,{}.", rabbitServiceName);
 		return SpringRabbitTracing.newBuilder(tracing)
 				//.writeB3SingleFormat(true) // for more efficient propagation
 				.remoteServiceName(rabbitServiceName)
@@ -97,7 +86,7 @@ public class RabbitTracer {
 	}
 
 
-	@Bean(name="simpleRabbitListenerContainerFactoryTracing")
+	@Bean(name = "simpleRabbitListenerContainerFactoryTracing")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
 			ConnectionFactory connectionFactory,
 			SpringRabbitTracing springRabbitTracing
@@ -115,7 +104,7 @@ public class RabbitTracer {
 		//return springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
 	}
 
-	@Bean(name="rabbitTemplateTracing")
+	@Bean(name = "rabbitTemplateTracing")
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
 										 SpringRabbitTracing springRabbitTracing) {
 		logger.info("building rabbitTemplate");
@@ -127,8 +116,6 @@ public class RabbitTracer {
 		// other customizations as required
 		return rabbitTemplate;
 	}
-
-
 
 
 	@Bean
@@ -145,7 +132,7 @@ public class RabbitTracer {
 
 	@Bean
 	public TopicExchange topicExchange(
-										) {
+	) {
 		logger.info("building topicExchange");
 		TopicExchange exchange = new TopicExchange(rabbitServiceExchangeName);
 
@@ -156,20 +143,11 @@ public class RabbitTracer {
 
 	@Bean
 	public Binding bindings(TopicExchange topicExchange,
-							 Queue queue) {
+							Queue queue) {
 		return BindingBuilder.bind(queue)
 				.to(topicExchange)
 				.with(rabbitServiceRoutingKey);
 	}
-
-
-
-
-
-
-
-
-
 
 
 }
