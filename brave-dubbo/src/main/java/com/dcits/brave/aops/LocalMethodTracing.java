@@ -85,7 +85,7 @@ public class LocalMethodTracing {
 				.build();
 
 
-		logger.debug("initing new monitor collector ");
+		logger.debug("chain monitor start local method tracing.{}", zipkinAddr);
 
 
 	}

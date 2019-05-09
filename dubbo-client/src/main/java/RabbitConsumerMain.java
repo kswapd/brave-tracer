@@ -1,11 +1,15 @@
 import com.dcits.models.RabbitConsumer;
+import java.io.IOException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.ResourcePropertySource;
 
 
 @Configuration
@@ -13,7 +17,14 @@ public class RabbitConsumerMain {
 
     public static void main(String[] args) throws InterruptedException {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[]{"classpath*:META-INF/spring/brave-context.xml","rabbit.xml"});
-
+        ResourcePropertySource ps = null; // handle exception
+        try {
+            ps = new ResourcePropertySource(new ClassPathResource("commons.properties"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        ctx.getEnvironment().getPropertySources().addFirst(ps);
         //AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("rabbit.xml");
         //AmqpTemplate template = (AmqpTemplate)ctx.getBean("amqpTemplate");
         AmqpTemplate template = (AmqpTemplate)ctx.getBean("rabbitTemplateTracing");
@@ -71,7 +82,7 @@ public class RabbitConsumerMain {
         //SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         ConnectionFactory connectionFactory = (ConnectionFactory)ctx.getBean(ConnectionFactory.class);
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames("kxwQueue");
+        container.setQueueNames(ctx.getEnvironment().getProperty("zipkin.rabbit.service.queue"));
        // Queue queue = ctx.getBean(Queue.class);
        // container.setQueues(queue);
         RabbitConsumer c2 = new RabbitConsumer();

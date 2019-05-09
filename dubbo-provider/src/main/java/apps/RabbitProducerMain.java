@@ -1,20 +1,8 @@
 package apps;
 
-import brave.spring.rabbit.SpringRabbitTracing;
-import com.rabbitmq.client.Consumer;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.AbstractMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import services.RabbitConsumer2;
 
 
 @Configuration
@@ -94,9 +82,9 @@ public class RabbitProducerMain {
 
 
         Thread.sleep(1000);
-        template.convertAndSend("kxwExchange","foo.bar","Hello, world!");
+       //template.convertAndSend("kxwExchange","foo.bar","Hello, world!");
 
-       // template.convertAndSend("Hello, world!");
+        template.convertAndSend("Hello, world!");
         Thread.sleep(1000);
         System.out.println("producer finished");
         ctx.destroy();

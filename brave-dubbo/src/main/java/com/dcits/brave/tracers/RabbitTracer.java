@@ -67,6 +67,14 @@ public class RabbitTracer {
 	@Value("${zipkin.rabbit.service.user.password:guest}")
 	private String rabbitServiceUserPassword;
 
+	@Value("${zipkin.rabbit.service.routingkey:routingKeyTracing}")
+	private String rabbitServiceRoutingKey;
+
+	@Value("${zipkin.rabbit.service.queue:queueTracing}")
+	private String rabbitServiceQueueName;
+
+	@Value("${zipkin.rabbit.service.exchange:exchangeTracing}")
+	private String rabbitServiceExchangeName;
 	@Bean
 	public ConnectionFactory connectionFactory() {
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
@@ -89,7 +97,7 @@ public class RabbitTracer {
 	}
 
 
-	@Bean(name="rabbitListenerContainerFactory")
+	@Bean(name="simpleRabbitListenerContainerFactoryTracing")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
 			ConnectionFactory connectionFactory,
 			SpringRabbitTracing springRabbitTracing
@@ -97,7 +105,7 @@ public class RabbitTracer {
 
 		//MessageListenerAdapter listener = new MessageListenerAdapter(somePojo);
 		//listener.setDefaultListenerMethod("myMethod");
-		logger.info("building simpleRabbitListenerContainerFactory");
+		logger.info("building tracingRabbitListenerContainerFactory");
 		SimpleRabbitListenerContainerFactory fact;
 		//fact.setC
 		fact = springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
@@ -113,10 +121,14 @@ public class RabbitTracer {
 		logger.info("building rabbitTemplate");
 		RabbitTemplate rabbitTemplate = springRabbitTracing.newRabbitTemplate(connectionFactory);
 		//RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-		rabbitTemplate.setRoutingKey("foo.bar");
+		rabbitTemplate.setRoutingKey(rabbitServiceRoutingKey);
+		rabbitTemplate.setExchange(rabbitServiceExchangeName);
+
 		// other customizations as required
 		return rabbitTemplate;
 	}
+
+
 
 
 	@Bean
@@ -127,14 +139,15 @@ public class RabbitTracer {
 
 	@Bean
 	public Queue queue() {
-		return new Queue("kxwQueue");
+		return new Queue(rabbitServiceQueueName);
 	}
 
-	@Bean(name="topicExchange")
+
+	@Bean
 	public TopicExchange topicExchange(
 										) {
 		logger.info("building topicExchange");
-		TopicExchange exchange = new TopicExchange("kxwExchange");
+		TopicExchange exchange = new TopicExchange(rabbitServiceExchangeName);
 
 		// other customizations as required
 		return exchange;
@@ -146,7 +159,7 @@ public class RabbitTracer {
 							 Queue queue) {
 		return BindingBuilder.bind(queue)
 				.to(topicExchange)
-				.with("foo.*");
+				.with(rabbitServiceRoutingKey);
 	}
 
 
