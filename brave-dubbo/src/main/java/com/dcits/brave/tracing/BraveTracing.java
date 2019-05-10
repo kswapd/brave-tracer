@@ -1,21 +1,6 @@
 package com.dcits.brave.tracing;
 
 import brave.Tracing;
-import brave.context.slf4j.MDCScopeDecorator;
-import brave.propagation.B3Propagation;
-import brave.propagation.CurrentTraceContext.ScopeDecorator;
-import brave.propagation.ExtraFieldPropagation;
-import brave.propagation.StrictCurrentTraceContext;
-//import brave.sampler.Sampler;
-import brave.sampler.Sampler;
-import brave.spring.beans.CurrentTraceContextFactoryBean;
-import brave.spring.beans.TracingFactoryBean;
-import com.github.kristofa.brave.Brave;
-import com.github.kristofa.brave.EmptySpanCollectorMetricsHandler;
-import com.github.kristofa.brave.http.HttpSpanCollector;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +8,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-import zipkin2.codec.SpanBytesEncoder;
-import zipkin2.reporter.AsyncReporter;
-import zipkin2.reporter.Sender;
-import zipkin2.reporter.okhttp3.OkHttpSender;
+
+//import brave.sampler.Sampler;
 
 /**
  * Created by kongxiangwen on 7/12/18 w:28.
@@ -40,6 +21,7 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
 public class BraveTracing implements ApplicationContextAware {
 	private static final Logger logger = LoggerFactory.getLogger(BraveTracing.class);
 	private static ApplicationContext context;
+
 	@PostConstruct
 	public void init() {
 		logger.info("brave tracing:{}", appName);
@@ -59,7 +41,6 @@ public class BraveTracing implements ApplicationContextAware {
 	private static Tracing tracing = null;
 
 	//private static Tracing serverTracing = null;
-
 
 
 	//@Bean(name="brave")
@@ -82,12 +63,10 @@ public class BraveTracing implements ApplicationContextAware {
 	}*/
 
 
-
-
 	//@Bean(name = "tracing")
 	private static Tracing braveTracing() {
 
-		if(tracing == null) {
+		if (tracing == null) {
 			//String zipkinAddr = "http://" + zipkinAddress + ":" + zipkinPort + "/";
 			//Sender sender = OkHttpSender.create(zipkinAddr + "api/v2/spans");
 
@@ -146,12 +125,7 @@ public class BraveTracing implements ApplicationContextAware {
 	}
 
 
-
-
-
-
-
-	public static Tracing tracingInst(){
+	public static Tracing tracingInst() {
 		//return context.getBean(Tracing.class);
 		return braveTracing();
 	}
@@ -159,6 +133,6 @@ public class BraveTracing implements ApplicationContextAware {
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-			context = applicationContext;
+		context = applicationContext;
 	}
 }

@@ -25,10 +25,10 @@
 
 
 
-        <dependency>
+        <!--<dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-core</artifactId>
-            <!-- <version>3.9.1</version>-->
+            &lt;!&ndash; <version>3.9.1</version>&ndash;&gt;
             <version>4.13.4</version>
             <exclusions>
                 <exclusion>
@@ -49,7 +49,7 @@
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-spancollector-http</artifactId>
             <version>4.13.4</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>io.zipkin.brave</groupId>

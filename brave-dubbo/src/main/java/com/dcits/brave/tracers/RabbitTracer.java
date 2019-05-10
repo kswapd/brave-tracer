@@ -76,8 +76,9 @@ public class RabbitTracer {
 
 
 	@Bean
-	public SpringRabbitTracing springRabbitTracing(Tracing tracing) {
+	public SpringRabbitTracing springRabbitTracing() {
 
+		Tracing tracing = Tracing.current();
 		logger.info("building springRabbitTracing,{}.", rabbitServiceName);
 		return SpringRabbitTracing.newBuilder(tracing)
 				//.writeB3SingleFormat(true) // for more efficient propagation
