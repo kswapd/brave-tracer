@@ -16,7 +16,37 @@
 		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://code.alibabatech.com/schema/dubbo 
         http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+
     <context:component-scan base-package="com.dcits.brave"></context:component-scan>
     <!-- <context:component-scan dubbo-package="models,com.dcits.brave.tracers"></context:component-scan>-->
+    <bean id="sender" class="zipkin2.reporter.beans.OkHttpSenderFactoryBean">
+        <property name="endpoint" value="http://${oms.zipkin-server:127.0.0.1}:${zipkin.port:9411}/api/v2/spans"/>
+    </bean>
+
+    <bean id="tracing" class="brave.spring.beans.TracingFactoryBean">
+        <property name="localServiceName" value="${zipkin.service.name:zipkin-service}"/>
+        <property name="spanReporter">
+            <bean class="zipkin2.reporter.beans.AsyncReporterFactoryBean">
+                <property name="sender" ref="sender"/>
+                <!-- wait up to half a second for any in-flight spans on close -->
+                <property name="closeTimeout" value="5000"/>
+            </bean>
+        </property>
+        <property name="sampler">
+            <bean class="brave.sampler.Sampler" factory-method="create">
+                <constructor-arg value="${zipkin.sampleRate:1.0}" />
+            </bean>
+        </property>
+        <property name="currentTraceContext">
+            <bean class="brave.spring.beans.CurrentTraceContextFactoryBean">
+                <property name="scopeDecorators">
+                    <bean class="brave.context.slf4j.MDCScopeDecorator" factory-method="create"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
     <aop:aspectj-autoproxy/>
 </beans>

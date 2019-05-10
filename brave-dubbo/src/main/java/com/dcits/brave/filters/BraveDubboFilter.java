@@ -120,20 +120,12 @@ public final class BraveDubboFilter implements Filter {
 		RpcContext rpcContext = RpcContext.getContext();
 		Kind kind = rpcContext.isProviderSide() ? Kind.SERVER : Kind.CLIENT;
 
-		if (kind.equals(Kind.CLIENT) && tracer == null) {
+		if (tracer == null) {
 			Tracing tracing = BraveTracing.tracingInst();
 			//setTracing(BraveTracing.tracingInst());
 			tracer = tracing.tracer();
 			extractor = tracing.propagation().extractor(GETTER);
 			injector = tracing.propagation().injector(SETTER);
-		}else if (kind.equals(Kind.SERVER) && tracer == null){
-
-			Tracing tracing = BraveTracing.serverTracingInst();
-			//setTracing(BraveTracing.tracingInst());
-			tracer = tracing.tracer();
-			extractor = tracing.propagation().extractor(GETTER);
-			injector = tracing.propagation().injector(SETTER);
-
 		}
 
 
@@ -355,6 +347,7 @@ public final class BraveDubboFilter implements Filter {
 		}
 
 		if (!span.isNoop()) {
+			logger.info("tracing start------");
 			span.kind(kind).start();
 			String service = invoker.getInterface().getSimpleName();
 			String method = RpcUtils.getMethodName(invocation);
@@ -447,10 +440,13 @@ public final class BraveDubboFilter implements Filter {
 			throw e;
 		}
 		finally {
+
+			logger.info("tracing stopping------");
 			if (isOneway) {
 				span.flush();
 			}
 			else if (!deferFinish) {
+				logger.info("tracing finishing------{}.", Thread.currentThread().getId());
 				span.finish();
 			}
 		}
