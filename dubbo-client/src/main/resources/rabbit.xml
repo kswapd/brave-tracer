@@ -9,7 +9,7 @@
     http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd">
 
     <context:property-placeholder location="classpath*:commons.properties" />
-    <context:component-scan base-package="services,com.dcits.aops,com.dcits.brave.tracers"></context:component-scan>
+    <context:component-scan base-package="services,com.dcits"></context:component-scan>
 
 
     <!--<rabbit:connection-factory id="connectionFactory" host="10.88.2.112" username="guest" password="guest" />

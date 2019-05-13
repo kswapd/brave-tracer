@@ -137,7 +137,7 @@ public final class BraveDubboFilter implements Filter {
 
 			String methodName = RpcContext.getContext().getMethodName();
 			logger.debug("tracing client {},{}", methodName,Thread.currentThread().getId());
-			/*if (methodName.equals("process")) {
+			if (methodName.equals("process")) {
 
 
 				if (RpcContext.getContext().getArguments() != null && RpcContext.getContext().getArguments()[0] != null) {
@@ -327,7 +327,7 @@ public final class BraveDubboFilter implements Filter {
 					}
 				}
 
-			}*/
+			}
 
 
 		}
@@ -353,7 +353,7 @@ public final class BraveDubboFilter implements Filter {
 			String method = RpcUtils.getMethodName(invocation);
 			span.kind(kind);
 			span.name(service + "." + method);
-			//parseRemoteAddress(rpcContext, span);
+			parseRemoteAddress(rpcContext, span);
 
 		}
 
@@ -374,7 +374,7 @@ public final class BraveDubboFilter implements Filter {
 				((FutureAdapter) future).getFuture().setCallback(new FinishSpanCallback(span));
 			}
 
-			/*if (kind.equals(Kind.CLIENT)) {
+			if (kind.equals(Kind.CLIENT)) {
 				if (invocation != null && invocation.getMethodName() != null && invocation.getMethodName().equals("process")) {
 					String jsonStr = getObjectJsonStr(result.getResult());
 					if (jsonStr != null) {
@@ -430,7 +430,7 @@ public final class BraveDubboFilter implements Filter {
 				else {
 					span.tag("status", "success");
 				}
-			}*/
+			}
 
 
 			return result;
