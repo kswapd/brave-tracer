@@ -6,7 +6,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 
-//@Component
+@Component
 //@EnableRabbit
 //@RabbitListener(queues = "kxwQueue", containerFactory = "rabbitListenerContainerFactory")
 public class RabbitConsumerAnnotation {
