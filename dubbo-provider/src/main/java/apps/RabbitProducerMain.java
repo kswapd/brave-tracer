@@ -1,8 +1,12 @@
 package apps;
 
+import java.io.IOException;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.ResourcePropertySource;
 
 
 @Configuration
@@ -13,8 +17,15 @@ public class RabbitProducerMain {
 
         //AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("rabbit.xml");
         //AmqpTemplate template = (AmqpTemplate)ctx.getBean("amqpTemplate");
-        AmqpTemplate template = (AmqpTemplate)ctx.getBean("rabbitTemplateTracing");
-
+        RabbitTemplate template = (RabbitTemplate)ctx.getBean("rabbitTemplateTracing");
+        ResourcePropertySource ps = null; // handle exception
+        try {
+            ps = new ResourcePropertySource(new ClassPathResource("commons.properties"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        ctx.getEnvironment().getPropertySources().addFirst(ps);
        // SpringRabbitTracing rabbitTracing = (SpringRabbitTracing) ctx.getBean(SpringRabbitTracing.class);
         //rabbitTracing.decorateRabbitTemplate((RabbitTemplate)template);
       //  SimpleRabbitListenerContainerFactory  listenerContainerFactory = (SimpleRabbitListenerContainerFactory )ctx.getBean("simpleRabbitListenerContainerFactoryTracing");
@@ -82,9 +93,16 @@ public class RabbitProducerMain {
 
 
         Thread.sleep(1000);
-       //template.convertAndSend("kxwExchange","foo.bar","Hello, world!");
+        String exchangeName = ctx.getEnvironment().getProperty("zipkin.rabbit.service.exchange");
+        String routingKey = ctx.getEnvironment().getProperty("zipkin.rabbit.service.routingkey");
 
-        template.convertAndSend("Hello, world!");
+        //template.setRoutingKey(routingKey);
+        //template.setExchange(exchangeName);
+        //template.convertAndSend("Hello!");
+        //template.convertAndSend(exchangeName,routingKey,"Hello, rabbit!");
+        template.convertAndSend(exchangeName,"second","Hello,second!");
+        template.convertAndSend(exchangeName,"hello","Hello,hello!");
+        //template.convertAndSend("Hello, world!");
         Thread.sleep(1000);
         System.out.println("producer finished");
         ctx.destroy();

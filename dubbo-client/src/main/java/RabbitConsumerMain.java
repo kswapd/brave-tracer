@@ -82,7 +82,11 @@ public class RabbitConsumerMain {
         //SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         ConnectionFactory connectionFactory = (ConnectionFactory)ctx.getBean(ConnectionFactory.class);
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(ctx.getEnvironment().getProperty("zipkin.rabbit.service.queue"));
+        //container.setQueueNames("queue1"/*ctx.getEnvironment().getProperty("zipkin.rabbit.service.queue")*/);
+        container.setQueueNames("queue-second","queue-hello");
+
+        //container.setQueueNames("queue-second");
+        //container.setQueueNames("queue1");
        // Queue queue = ctx.getBean(Queue.class);
        // container.setQueues(queue);
         RabbitConsumer c2 = new RabbitConsumer();

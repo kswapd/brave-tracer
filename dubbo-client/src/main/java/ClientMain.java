@@ -1,7 +1,4 @@
-import com.dcits.processes.ServiceProcess;
-import interfaces.DemoService;
-import interfaces.DemoTraceService;
-import javax.annotation.Resource;
+import com.dcits.services.ServiceProcess;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**

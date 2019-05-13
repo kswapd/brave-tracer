@@ -1,7 +1,6 @@
-package com.dcits.processes;
+package com.dcits.services;
 
 import interfaces.DemoService;
-import interfaces.DemoTraceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

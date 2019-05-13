@@ -16,7 +16,7 @@
 
     <context:property-placeholder location="classpath*:commons.properties" />
 
-    <context:component-scan base-package="com.dcits.processes"></context:component-scan>
+    <context:component-scan base-package="com.dcits.services"></context:component-scan>
 
    <!-- <context:component-scan dubbo-package="models,com.dcits.brave.tracers"></context:component-scan>-->
 

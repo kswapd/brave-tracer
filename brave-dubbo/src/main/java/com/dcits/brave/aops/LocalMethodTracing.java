@@ -93,7 +93,7 @@ public class LocalMethodTracing {
 	//@Pointcut("execution(public * com.oumyye.service..*.add(..))")
 	//@Pointcut("execution(* get*(..))")
 	//com.sishuok.common.BaseService+.*()
-	//@Pointcut("execution(* com.dcits.processes..*.Process(..))")
+	//@Pointcut("execution(* com.dcits.services..*.Process(..))")
 	//@Pointcut("execution(* com.dcits.orion.api.IProcess+.process(..))")
 	//@Pointcut("execution(* com.dcits.orion.api.IProcess+.process(..))")
 	@Pointcut("@annotation(com.dcits.brave.annotations.ChainMonitor)")

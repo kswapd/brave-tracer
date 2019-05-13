@@ -2,6 +2,8 @@ package com.dcits.brave.tracers;
 
 import brave.Tracing;
 import brave.spring.rabbit.SpringRabbitTracing;
+import java.util.Arrays;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,9 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -111,15 +115,15 @@ public class RabbitTracer {
 		logger.info("building rabbitTemplate");
 		RabbitTemplate rabbitTemplate = springRabbitTracing.newRabbitTemplate(connectionFactory);
 		//RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-		rabbitTemplate.setRoutingKey(rabbitServiceRoutingKey);
-		rabbitTemplate.setExchange(rabbitServiceExchangeName);
+		//rabbitTemplate.setRoutingKey(rabbitServiceRoutingKey);
+		//rabbitTemplate.setExchange(rabbitServiceExchangeName);
 
 		// other customizations as required
 		return rabbitTemplate;
 	}
 
 
-	@Bean
+	/*@Bean
 	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
 		return new RabbitAdmin(connectionFactory);
 	}
@@ -148,7 +152,64 @@ public class RabbitTracer {
 		return BindingBuilder.bind(queue)
 				.to(topicExchange)
 				.with(rabbitServiceRoutingKey);
+	}*/
+
+
+
+	/*@Bean
+	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+		return new RabbitAdmin(connectionFactory);
 	}
+
+
+	@Bean
+	public Queue queue1() {
+		return new Queue("queue1");
+	}
+
+
+	@Bean
+	public Queue queue2() {
+		return new Queue("queue2");
+	}
+
+	@Bean
+	public Queue queue3() {
+		return new Queue("queue3");
+	}
+
+	@Bean
+	public TopicExchange topicExchange(
+	) {
+		logger.info("building topicExchange");
+		TopicExchange exchange = new TopicExchange(rabbitServiceExchangeName);
+
+		// other customizations as required
+		return exchange;
+	}
+
+
+	@Bean
+	public List<Binding> bindingsTopicExchange (TopicExchange topicExchange
+			*//*Queue queue*//*) {
+		*//*return BindingBuilder.bind(queue)
+				.to(topicExchange)
+				.with(rabbitServiceRoutingKey);*//*
+
+		Queue q1 = (Queue)context.getBean("queue1");
+
+		Queue q2 = (Queue)context.getBean("queue2");
+		Queue q3 = (Queue)context.getBean("queue3");
+		return Arrays.asList(
+				//BindingBuilder.bind(q1).to(topicExchange).with("abc"),
+				BindingBuilder.bind(q2).to(topicExchange).with(rabbitServiceRoutingKey)
+		);
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.context = applicationContext;
+	}*/
 
 
 }
