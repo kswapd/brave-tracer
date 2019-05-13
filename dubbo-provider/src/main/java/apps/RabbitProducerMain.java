@@ -102,6 +102,8 @@ public class RabbitProducerMain {
         //template.convertAndSend(exchangeName,routingKey,"Hello, rabbit!");
         template.convertAndSend(exchangeName,"second","Hello,second!");
         template.convertAndSend(exchangeName,"hello","Hello,hello!");
+
+        template.convertAndSend("fanout-exchange","","Hello,fanout!");
         //template.convertAndSend("Hello, world!");
         Thread.sleep(1000);
         System.out.println("producer finished");

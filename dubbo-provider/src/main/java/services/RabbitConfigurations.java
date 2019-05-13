@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -72,6 +73,25 @@ public class RabbitConfigurations implements ApplicationContextAware {
 	}
 
 
+	@Bean(name="q1")
+	public Queue queue1() {
+		return new Queue("queue-hello");
+	}
+
+	@Bean
+	public Binding bindings1(TopicExchange topicExchange) {
+
+
+
+		Queue q = (Queue)context.getBean("q1");
+		return BindingBuilder.bind(q)
+				.to(topicExchange)
+				.with("hello");
+
+
+	}
+
+
 	@Bean(name="q2")
 	public Queue queue2() {
 		return new Queue("queue-second");
@@ -90,24 +110,36 @@ public class RabbitConfigurations implements ApplicationContextAware {
 
 	}
 
+	@Bean(name="q3")
+	public Queue queue3() {
+		return new Queue("queue-fanout1");
+	}
 
-	@Bean(name="q1")
-	public Queue queue1() {
-		return new Queue("queue-hello");
+	@Bean(name="q4")
+	public Queue queue4() {
+		return new Queue("queue-fanout2");
+	}
+
+
+
+	@Bean
+	public FanoutExchange fanout() {
+		return new FanoutExchange("fanout-exchange");
+	}
+
+
+	@Bean
+	public Binding binding3(FanoutExchange fanout) {
+		Queue q = (Queue)context.getBean("q3");
+		return BindingBuilder.bind(q).to(fanout);
 	}
 
 	@Bean
-	public Binding bindings1(TopicExchange topicExchange) {
-
-
-
-		Queue q = (Queue)context.getBean("q1");
-		return BindingBuilder.bind(q)
-				.to(topicExchange)
-				.with("hello");
-
-
+	public Binding binding4(FanoutExchange fanout) {
+		Queue q = (Queue)context.getBean("q4");
+		return BindingBuilder.bind(q).to(fanout);
 	}
+
 	/*@Bean
 	public List<Binding> bindings(TopicExchange topicExchange, Queue queue) {
 
