@@ -21,7 +21,10 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import zipkin2.codec.SpanBytesEncoder;
 import zipkin2.reporter.AsyncReporter;
@@ -31,7 +34,8 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
 
 @Aspect
 @Component
-public class LocalMethodTracing {
+public class LocalMethodTracing implements ApplicationContextAware {
+
 
 
 	@Value("${zipkin.address}")
@@ -44,6 +48,8 @@ public class LocalMethodTracing {
 
 	@Value("${zipkin.service.name}")
 	private String appName;
+
+	private ApplicationContext context;
 
 	private static final Logger logger = LoggerFactory.getLogger(LocalMethodTracing.class);
 
@@ -78,11 +84,15 @@ public class LocalMethodTracing {
 				.closeTimeout(5000, TimeUnit.MILLISECONDS)
 				.build(SpanBytesEncoder.JSON_V2);
 
-		tracing = Tracing.newBuilder()
+		//Tracing.current();
+
+		/*tracing = Tracing.newBuilder()
 				.localServiceName(appName)
 				.spanReporter(asyncReporter)
 				.propagationFactory(ExtraFieldPropagation.newFactory(B3Propagation.FACTORY, "user-name"))
-				.build();
+				.build();*/
+
+		tracing = context.getBean(Tracing.class);
 
 
 		logger.debug("chain monitor start local method tracing.{}", zipkinAddr);
@@ -210,4 +220,8 @@ public class LocalMethodTracing {
 		return result;
 	}
 
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.context = applicationContext;
+	}
 }

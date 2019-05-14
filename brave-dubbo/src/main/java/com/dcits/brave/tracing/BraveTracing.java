@@ -118,7 +118,7 @@ public class BraveTracing implements ApplicationContextAware {
                                        .build();
 			 */
 
-			tracing = Tracing.current();
+			tracing = context.getBean(Tracing.class);//Tracing.current();
 
 		}
 		return tracing;

@@ -1,6 +1,7 @@
 package com.dcits.brave.tracers;
 
 import brave.Tracing;
+import brave.spring.beans.TracingFactoryBean;
 import brave.spring.rabbit.SpringRabbitTracing;
 import java.util.Arrays;
 import java.util.List;
@@ -21,56 +22,68 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by kongxiangwen on 7/12/18 w:28.
  */
+//@Component
 @Configuration
 @EnableRabbit
-public class RabbitTracer {
+public class RabbitTracer implements ApplicationContextAware {
 	private static final Logger logger = LoggerFactory.getLogger(RabbitTracer.class);
 
+	private ApplicationContext context;
 	@PostConstruct
 	public void init() {
 		logger.info("rabbit tracing:{}", rabbitServiceName);
 	}
 
-	@Value("${zipkin.address:127.0.0.1}")
+	@Value("${zipkin.address}")
 	private String zipkinAddress;
-	@Value("${zipkin.port:9411}")
+	@Value("${zipkin.port}")
 	private String zipkinPort;
-	@Value("${zipkin.sampleRate:1.0}")
+	@Value("${zipkin.sampleRate}")
 	private String zipkinSampleRate;
 
 
-	@Value("${zipkin.service.name:myApp}")
+	@Value("${zipkin.service.name}")
 	private String appName;
 
-	@Value("${zipkin.rabbit.service.name:rabbitService}")
+	@Value("${zipkin.rabbit.service.name}")
 	private String rabbitServiceName;
 
-	@Value("${zipkin.rabbit.service.address:127.0.0.1}")
+	@Value("${zipkin.rabbit.service.address}")
 	private String rabbitServiceAddress;
 
-	@Value("${zipkin.rabbit.service.user.name:guest}")
+	@Value("${zipkin.rabbit.service.user.name}")
 	private String rabbitServiceUserName;
 
-	@Value("${zipkin.rabbit.service.user.password:guest}")
+	@Value("${zipkin.rabbit.service.user.password}")
 	private String rabbitServiceUserPassword;
 
-	@Value("${zipkin.rabbit.service.routingkey:routingKeyTracing}")
+	@Value("${zipkin.rabbit.service.routingkey}")
 	private String rabbitServiceRoutingKey;
 
-	@Value("${zipkin.rabbit.service.queue:queueTracing}")
+	@Value("${zipkin.rabbit.service.queue}")
 	private String rabbitServiceQueueName;
 
-	@Value("${zipkin.rabbit.service.exchange:exchangeTracing}")
+	@Value("${zipkin.rabbit.service.exchange}")
 	private String rabbitServiceExchangeName;
 
+
+
+	/*@Bean
+	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}*/
 	@Bean
 	public ConnectionFactory connectionFactory() {
+		logger.info("building connectionFactory,{},{}.", rabbitServiceAddress,zipkinPort);
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
 		connectionFactory.setUsername(rabbitServiceUserName);
 		connectionFactory.setPassword(rabbitServiceUserPassword);
@@ -80,11 +93,11 @@ public class RabbitTracer {
 
 
 	@Bean
-	public SpringRabbitTracing springRabbitTracing() {
+	public SpringRabbitTracing springRabbitTracing(Tracing tracing) {
 
-		Tracing tracing = Tracing.current();
+		Tracing currentTracing = tracing;
 		logger.info("building springRabbitTracing,{}.", rabbitServiceName);
-		return SpringRabbitTracing.newBuilder(tracing)
+		return SpringRabbitTracing.newBuilder(currentTracing)
 				//.writeB3SingleFormat(true) // for more efficient propagation
 				.remoteServiceName(rabbitServiceName)
 				.build();
@@ -210,6 +223,11 @@ public class RabbitTracer {
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.context = applicationContext;
 	}*/
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		context = applicationContext;
+	}
 
 
 }
