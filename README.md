@@ -91,3 +91,19 @@ you will get dubbo rpc monitor data.
 ## Other resource
 
 * [Google Dapper](http://research.google.com/pubs/pub36356.html)
+
+
+## 使用说明
+1. 将压缩包内的jar包放在工程lib目录里。
+2. 在工程properties文件里增加配置：
+```
+zipkin.service.name=rabbit-provider
+zipkin.address=${your-zipkin-server-address}
+zipkin.port=9411
+zipkin.sampleRate=1.0
+
+zipkin.rabbit.service.name=rabbitmq
+zipkin.rabbit.service.address=${your-rabbit-server-address}
+zipkin.rabbit.service.user.name=guest
+zipkin.rabbit.service.user.password=guest
+```

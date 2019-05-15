@@ -1,31 +1,22 @@
 package com.dcits.brave.tracers;
 
 import brave.Tracing;
-import brave.spring.beans.TracingFactoryBean;
 import brave.spring.rabbit.SpringRabbitTracing;
-import java.util.Arrays;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
 /**
@@ -66,14 +57,14 @@ public class RabbitTracer implements ApplicationContextAware {
 	@Value("${zipkin.rabbit.service.user.password}")
 	private String rabbitServiceUserPassword;
 
-	@Value("${zipkin.rabbit.service.routingkey}")
+	/*@Value("${zipkin.rabbit.service.routingkey}")
 	private String rabbitServiceRoutingKey;
 
 	@Value("${zipkin.rabbit.service.queue}")
 	private String rabbitServiceQueueName;
 
 	@Value("${zipkin.rabbit.service.exchange}")
-	private String rabbitServiceExchangeName;
+	private String rabbitServiceExchangeName;*/
 
 
 
@@ -81,7 +72,10 @@ public class RabbitTracer implements ApplicationContextAware {
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}*/
+
+
 	@Bean
+	@Conditional(CheckRabbitConnectionFactory.class)
 	public ConnectionFactory connectionFactory() {
 		logger.info("building connectionFactory,{},{}.", rabbitServiceAddress,zipkinPort);
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
@@ -104,6 +98,7 @@ public class RabbitTracer implements ApplicationContextAware {
 	}
 
 
+	@Conditional(CheckRabbitListener.class)
 	@Bean(name = "simpleRabbitListenerContainerFactoryTracing")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
 			ConnectionFactory connectionFactory,
@@ -122,6 +117,7 @@ public class RabbitTracer implements ApplicationContextAware {
 		//return springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
 	}
 
+	@Conditional(CheckRabbitTemplate.class)
 	@Bean(name = "rabbitTemplateTracing")
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
 										 SpringRabbitTracing springRabbitTracing) {
