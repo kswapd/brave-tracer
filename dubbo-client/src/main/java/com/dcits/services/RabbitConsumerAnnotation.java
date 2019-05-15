@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 //@EnableRabbit
 //@RabbitListener(queues = "kxwQueue", containerFactory = "rabbitListenerContainerFactory")
 public class RabbitConsumerAnnotation {
-    @RabbitListener(containerFactory = "simpleRabbitListenerContainerFactoryTracing", queues="queue-second")
+    //@RabbitListener(containerFactory = "simpleRabbitListenerContainerFactoryTracing", queues="queue-second")
+    @RabbitListener(queues="queue-second")
     public void listen(@Payload String foo) {
         System.out.println(foo+"----------=======");
     }

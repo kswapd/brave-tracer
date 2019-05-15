@@ -27,7 +27,7 @@ public class RabbitConsumerMain {
         ctx.getEnvironment().getPropertySources().addFirst(ps);
         //AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("rabbit.xml");
         //AmqpTemplate template = (AmqpTemplate)ctx.getBean("amqpTemplate");
-        AmqpTemplate template = (AmqpTemplate)ctx.getBean("rabbitTemplateTracing");
+        //AmqpTemplate template = (AmqpTemplate)ctx.getBean("rabbitTemplateTracing");
 
        // SpringRabbitTracing rabbitTracing = (SpringRabbitTracing) ctx.getBean(SpringRabbitTracing.class);
         //rabbitTracing.decorateRabbitTemplate((RabbitTemplate)template);

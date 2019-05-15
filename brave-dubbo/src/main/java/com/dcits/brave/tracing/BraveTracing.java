@@ -1,13 +1,18 @@
 package com.dcits.brave.tracing;
 
 import brave.Tracing;
+import brave.spring.rabbit.SpringRabbitTracing;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 //import brave.sampler.Sampler;
@@ -18,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 //@EnableRabbit
 //@ComponentScan(basePackages="services")
-public class BraveTracing implements ApplicationContextAware {
+public class BraveTracing implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
 	private static final Logger logger = LoggerFactory.getLogger(BraveTracing.class);
 	private static ApplicationContext context;
 
@@ -134,5 +139,25 @@ public class BraveTracing implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		context = applicationContext;
+
+
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+		logger.info("Decorate user rabbit utils.");
+
+		SpringRabbitTracing springRabbitTracing = context.getBean(SpringRabbitTracing.class);
+
+		RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+		if(rabbitTemplate != null){
+			logger.info("Decorate RabbitTemplate.");
+			springRabbitTracing.decorateRabbitTemplate(rabbitTemplate);
+		}
+			SimpleRabbitListenerContainerFactory fact = context.getBean(SimpleRabbitListenerContainerFactory.class);
+		if(fact != null) {
+			logger.info("Decorate SimpleRabbitListenerContainerFactory.");
+			springRabbitTracing.decorateSimpleRabbitListenerContainerFactory(fact);
+		}
 	}
 }

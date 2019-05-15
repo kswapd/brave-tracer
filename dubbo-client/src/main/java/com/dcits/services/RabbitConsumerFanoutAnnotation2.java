@@ -15,7 +15,8 @@ public class RabbitConsumerFanoutAnnotation2 {
     }
 */
 
-    @RabbitListener(containerFactory = "simpleRabbitListenerContainerFactoryTracing", queues="queue-fanout2")
+    //@RabbitListener(containerFactory = "simpleRabbitListenerContainerFactoryTracing", queues="queue-fanout2")
+    @RabbitListener(queues="queue-fanout2")
     public void listen2(@Payload String foo) {
         System.out.println("fanout listener 2 msg:"+foo);
     }

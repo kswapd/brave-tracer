@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 //@EnableRabbit
 //@RabbitListener(queues = "kxwQueue", containerFactory = "rabbitListenerContainerFactory")
 public class RabbitConsumerFanoutAnnotation {
-    @RabbitListener(containerFactory = "simpleRabbitListenerContainerFactoryTracing", queues="queue-fanout1")
+    //@RabbitListener(containerFactory = "simpleRabbitListenerContainerFactoryTracing", queues="queue-fanout1")
+    @RabbitListener(queues="queue-fanout1")
     public void listen(@Payload String foo) {
         System.out.println("fanout listener 1 msg:"+foo);
     }

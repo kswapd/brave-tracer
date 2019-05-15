@@ -1,5 +1,8 @@
 package services;
 
+import brave.spring.rabbit.SpringRabbitTracing;
+import com.dcits.brave.tracers.CheckRabbitConnectionFactory;
+import com.dcits.brave.tracers.CheckRabbitListener;
 import com.rabbitmq.client.Channel;
 import java.util.Arrays;
 import java.util.List;
@@ -12,13 +15,17 @@ import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
@@ -61,6 +68,52 @@ public class RabbitConfigurations implements ApplicationContextAware {
 
 
 
+	@Bean
+	//@Conditional(CheckRabbitConnectionFactory.class)
+	public ConnectionFactory connectionFactory() {
+		logger.info("user building connectionFactory,{}.", rabbitServiceAddress);
+		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
+		connectionFactory.setUsername(rabbitServiceUserName);
+		connectionFactory.setPassword(rabbitServiceUserPassword);
+
+		return connectionFactory;
+	}
+
+
+	//@Bean(name = "rabbitTemplateTracing")
+	@Bean
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
+										 SpringRabbitTracing springRabbitTracing) {
+		logger.info("user building rabbitTemplate");
+		//RabbitTemplate rabbitTemplate = springRabbitTracing.newRabbitTemplate(connectionFactory);
+		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+		//rabbitTemplate.setRoutingKey(rabbitServiceRoutingKey);
+		//rabbitTemplate.setExchange(rabbitServiceExchangeName);
+
+		// other customizations as required
+		return rabbitTemplate;
+	}
+
+
+
+	//@Bean(name = "simpleRabbitListenerContainerFactoryTracing")
+	@Bean
+	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+			ConnectionFactory connectionFactory,
+			SpringRabbitTracing springRabbitTracing
+	) {
+
+		//MessageListenerAdapter listener = new MessageListenerAdapter(somePojo);
+		//listener.setDefaultListenerMethod("myMethod");
+		logger.info("user building tracingRabbitListenerContainerFactory");
+		SimpleRabbitListenerContainerFactory fact;
+		//fact.setC
+		fact = springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
+		fact.setConcurrentConsumers(3);
+		fact.setMaxConcurrentConsumers(10);
+		return fact;
+		//return springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
+	}
 
 	@Bean
 	public TopicExchange topicExchange(

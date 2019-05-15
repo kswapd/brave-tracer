@@ -17,7 +17,7 @@ public class RabbitProducerMain {
 
         //AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("rabbit.xml");
         //AmqpTemplate template = (AmqpTemplate)ctx.getBean("amqpTemplate");
-        RabbitTemplate template = (RabbitTemplate)ctx.getBean("rabbitTemplateTracing");
+        RabbitTemplate template = (RabbitTemplate)ctx.getBean(RabbitTemplate.class);
         ResourcePropertySource ps = null; // handle exception
         try {
             ps = new ResourcePropertySource(new ClassPathResource("commons.properties"));
