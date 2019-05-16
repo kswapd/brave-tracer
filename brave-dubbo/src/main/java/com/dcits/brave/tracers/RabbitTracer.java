@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by kongxiangwen on 7/12/18 w:28.
@@ -29,6 +27,7 @@ public class RabbitTracer implements ApplicationContextAware {
 	private static final Logger logger = LoggerFactory.getLogger(RabbitTracer.class);
 
 	private ApplicationContext context;
+
 	@PostConstruct
 	public void init() {
 		logger.info("rabbit tracing:{}", rabbitServiceName);
@@ -73,10 +72,10 @@ public class RabbitTracer implements ApplicationContextAware {
 		return new PropertySourcesPlaceholderConfigurer();
 	}*/
 
-	@Conditional(CheckRabbitConnectionFactory.class)
+	//@Conditional(CheckRabbitConnectionFactory.class)
 	@Bean
 	public ConnectionFactory connectionFactory() {
-		logger.info("building connectionFactory,{},{}.", rabbitServiceAddress,zipkinPort);
+		logger.info("building connectionFactory,{},{}.", rabbitServiceAddress, zipkinPort);
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
 		connectionFactory.setUsername(rabbitServiceUserName);
 		connectionFactory.setPassword(rabbitServiceUserPassword);
@@ -97,7 +96,7 @@ public class RabbitTracer implements ApplicationContextAware {
 	}
 
 	//@Bean(name = "simpleRabbitListenerContainerFactoryTracing")
-	@Conditional(CheckRabbitListener.class)
+	//@Conditional(CheckRabbitListener.class)
 	@Bean
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
 			ConnectionFactory connectionFactory,
@@ -117,7 +116,7 @@ public class RabbitTracer implements ApplicationContextAware {
 	}
 
 	//@Bean(name = "rabbitTemplateTracing")
-	@Conditional(CheckRabbitTemplate.class)
+	//@Conditional(CheckRabbitTemplate.class)
 	@Bean
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
 										 SpringRabbitTracing springRabbitTracing) {
@@ -201,7 +200,7 @@ public class RabbitTracer implements ApplicationContextAware {
 	@Bean
 	public List<Binding> bindingsTopicExchange (TopicExchange topicExchange
 			*//*Queue queue*//*) {
-		*//*return BindingBuilder.bind(queue)
+	 *//*return BindingBuilder.bind(queue)
 				.to(topicExchange)
 				.with(rabbitServiceRoutingKey);*//*
 

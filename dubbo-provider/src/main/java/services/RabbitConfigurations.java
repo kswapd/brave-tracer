@@ -1,11 +1,6 @@
 package services;
 
 import brave.spring.rabbit.SpringRabbitTracing;
-import com.dcits.brave.tracers.CheckRabbitConnectionFactory;
-import com.dcits.brave.tracers.CheckRabbitListener;
-import com.rabbitmq.client.Channel;
-import java.util.Arrays;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -25,7 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
@@ -59,13 +53,10 @@ public class RabbitConfigurations implements ApplicationContextAware {
 	private String rabbitServiceExchangeName;
 
 
-
 	@Bean
 	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
 		return new RabbitAdmin(connectionFactory);
 	}
-
-
 
 
 	@Bean
@@ -93,7 +84,6 @@ public class RabbitConfigurations implements ApplicationContextAware {
 		// other customizations as required
 		return rabbitTemplate;
 	}
-
 
 
 	//@Bean(name = "simpleRabbitListenerContainerFactoryTracing")
@@ -126,7 +116,7 @@ public class RabbitConfigurations implements ApplicationContextAware {
 	}
 
 
-	@Bean(name="q1")
+	@Bean(name = "q1")
 	public Queue queue1() {
 		return new Queue("queue-hello");
 	}
@@ -135,8 +125,7 @@ public class RabbitConfigurations implements ApplicationContextAware {
 	public Binding bindings1(TopicExchange topicExchange) {
 
 
-
-		Queue q = (Queue)context.getBean("q1");
+		Queue q = (Queue) context.getBean("q1");
 		return BindingBuilder.bind(q)
 				.to(topicExchange)
 				.with("hello");
@@ -145,7 +134,7 @@ public class RabbitConfigurations implements ApplicationContextAware {
 	}
 
 
-	@Bean(name="q2")
+	@Bean(name = "q2")
 	public Queue queue2() {
 		return new Queue("queue-second");
 	}
@@ -154,8 +143,7 @@ public class RabbitConfigurations implements ApplicationContextAware {
 	public Binding bindings2(TopicExchange topicExchange) {
 
 
-
-		Queue q = (Queue)context.getBean("q2");
+		Queue q = (Queue) context.getBean("q2");
 		return BindingBuilder.bind(q)
 				.to(topicExchange)
 				.with("second");
@@ -163,16 +151,15 @@ public class RabbitConfigurations implements ApplicationContextAware {
 
 	}
 
-	@Bean(name="q3")
+	@Bean(name = "q3")
 	public Queue queue3() {
 		return new Queue("queue-fanout1");
 	}
 
-	@Bean(name="q4")
+	@Bean(name = "q4")
 	public Queue queue4() {
 		return new Queue("queue-fanout2");
 	}
-
 
 
 	@Bean
@@ -183,13 +170,13 @@ public class RabbitConfigurations implements ApplicationContextAware {
 
 	@Bean
 	public Binding binding3(FanoutExchange fanout) {
-		Queue q = (Queue)context.getBean("q3");
+		Queue q = (Queue) context.getBean("q3");
 		return BindingBuilder.bind(q).to(fanout);
 	}
 
 	@Bean
 	public Binding binding4(FanoutExchange fanout) {
-		Queue q = (Queue)context.getBean("q4");
+		Queue q = (Queue) context.getBean("q4");
 		return BindingBuilder.bind(q).to(fanout);
 	}
 
@@ -242,7 +229,7 @@ public class RabbitConfigurations implements ApplicationContextAware {
 	@Bean
 	public List<Binding> bindingsTopicExchange (TopicExchange topicExchange
 							*//*Queue queue*//*) {
-		*//*return BindingBuilder.bind(queue)
+	 *//*return BindingBuilder.bind(queue)
 				.to(topicExchange)
 				.with(rabbitServiceRoutingKey);*//*
 
@@ -258,6 +245,6 @@ public class RabbitConfigurations implements ApplicationContextAware {
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-			this.context = applicationContext;
+		this.context = applicationContext;
 	}
 }
