@@ -16,75 +16,47 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.1.3.RELEASE</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.8.10</version>
         </dependency>
 
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.8.10</version>
         </dependency>
         <!-- 注册中心zookeeper begin -->
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
-            <version>3.3.6</version>
         </dependency>
         <!-- 注册中心zookeeper end -->
 
-        <!-- log begin -->
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.15</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.jdmk</groupId>
-                    <artifactId>jmxtools</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jmx</groupId>
-                    <artifactId>jmxri</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jms</artifactId>
-                    <groupId>javax.jms</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>mail</artifactId>
-                    <groupId>javax.mail</groupId>
-                </exclusion>
-            </exclusions>
-
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
-        <!-- log end -->
+
 
         <!-- other begin -->
         <dependency>
             <groupId>com.101tec</groupId>
             <artifactId>zkclient</artifactId>
-            <version>0.8</version>
         </dependency>
 
         <!-- other end -->
       <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-dubbo</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
 
         <dependency>
             <artifactId>commons</artifactId>
             <groupId>dcits</groupId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
 
 
