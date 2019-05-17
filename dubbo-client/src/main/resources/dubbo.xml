@@ -10,7 +10,7 @@
     <dubbo:application name="helloworld-consumer" />
     <!-- 声明服务注册中心 -->
 
-    <dubbo:registry protocol="zookeeper" address="${zookeeper.address}:${zookeeper.port}" />
+    <dubbo:registry protocol="zookeeper" address="${zookeeper.address}:2181" />
     <!-- 引用服务,demoService仅用于根据接口生成动态代理，默认使用javassist生成代理对象 -->
 
     <dubbo:protocol name="dubbo" host="${host.address}" />

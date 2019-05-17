@@ -6,6 +6,7 @@ import interfaces.FooService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -36,14 +37,13 @@ public class DemoServiceImpl implements DemoService, ApplicationContextAware {
 		//String barStr = bar.sayBar("bar");
 
 
-		/*AmqpTemplate template = (AmqpTemplate)ctx.getBean("rabbitTemplateTracing");
+		RabbitTemplate template = (RabbitTemplate)ctx.getBean(RabbitTemplate.class);
 
 
-		template.convertAndSend("kxwExchange","foo.bar","Hello, world!");
-
+		template.convertAndSend("exchangeTracing","hello","Hello,hello!");
 		// template.convertAndSend("Hello, world!");
 
-		System.out.println("producer finished");*/
+		System.out.println("producer finished");
 
 		return "hello from dubbo provider "  +  name;
 	}

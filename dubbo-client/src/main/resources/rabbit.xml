@@ -3,15 +3,44 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
        xmlns:c="http://www.springframework.org/schema/c" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-    http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd">
+    http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd
+http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
     <context:property-placeholder location="classpath*:commons.properties" />
     <context:component-scan base-package="services,com.dcits"></context:component-scan>
 
 
+
+
+    <dubbo:application name="helloworld-consumer" />
+    <!-- 声明服务注册中心 -->
+
+    <dubbo:registry protocol="zookeeper" address="10.88.2.113:2181" />
+    <!-- 引用服务,demoService仅用于根据接口生成动态代理，默认使用javassist生成代理对象 -->
+
+    <dubbo:protocol name="dubbo" host="10.88.2.112" />
+
+    <dubbo:reference id="demoService"
+                     interface="interfaces.DemoService"
+                     protocol="dubbo" scope="remote"/>
+
+    <dubbo:reference id="fooService"
+                     interface="interfaces.FooService"
+                     protocol="dubbo" />
+
+
+    <dubbo:reference id="barService"
+                     interface="interfaces.BarService"
+                     protocol="dubbo" />
+
+    <dubbo:reference id="demoTraceService"
+                     interface="interfaces.DemoTraceService"
+                     protocol="dubbo"/>
     <!--<rabbit:connection-factory id="connectionFactory" host="10.88.2.112" username="guest" password="guest" />
 
     <rabbit:template id="amqpTemplate" connection-factory="connectionFactory"

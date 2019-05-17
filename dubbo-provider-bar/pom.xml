@@ -24,12 +24,7 @@
         <!-- spring end -->
 
 
-        <!-- dubbo begin -->
-        <dependency>
-            <groupId>com.dcits.galaxy</groupId>
-            <artifactId>galaxy-dubbo</artifactId>
-        </dependency>
-        <!-- dubbo end -->
+
 
         <!-- 注册中心zookeeper begin -->
         <dependency>
@@ -39,15 +34,6 @@
         <!-- 注册中心zookeeper end -->
 
 
-        <dependency>
-            <groupId>org.jboss.netty</groupId>
-            <artifactId>netty</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.101tec</groupId>
-            <artifactId>zkclient</artifactId>
-        </dependency>
-        <!-- other end -->
 
 
        <dependency>

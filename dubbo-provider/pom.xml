@@ -45,16 +45,7 @@
         </dependency>-->
         <!-- dubbo end -->
 
-        <!-- 注册中心zookeeper begin -->
-        <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-        </dependency>
-        <!-- 注册中心zookeeper end -->
-        <dependency>
-            <groupId>com.dcits.galaxy</groupId>
-            <artifactId>galaxy-dubbo</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -66,11 +57,7 @@
             <artifactId>log4j</artifactId>
         </dependency>
 
-        <!-- other begin -->
-        <dependency>
-            <groupId>org.jboss.netty</groupId>
-            <artifactId>netty</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.101tec</groupId>
             <artifactId>zkclient</artifactId>

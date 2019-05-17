@@ -12,7 +12,6 @@ import brave.propagation.TraceContextOrSamplingFlags;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
-import com.alibaba.dubbo.config.spring.ServiceBean;
 import com.alibaba.dubbo.config.spring.extension.SpringExtensionFactory;
 import com.alibaba.dubbo.remoting.exchange.ResponseCallback;
 import com.alibaba.dubbo.rpc.Filter;
@@ -25,19 +24,14 @@ import com.alibaba.dubbo.rpc.protocol.dubbo.FutureAdapter;
 import com.alibaba.dubbo.rpc.support.RpcUtils;
 import com.alibaba.fastjson.JSON;
 import com.dcits.brave.tracing.BraveTracing;
-import com.dcits.galaxy.base.data.BaseRequest;
-import com.dcits.galaxy.base.data.ISysHead;
 import com.google.common.collect.Maps;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.springframework.cglib.beans.BeanMap;
-import org.springframework.context.ApplicationContext;
-import org.springframework.util.StringUtils;
 
 //@Activate(group = {Constants.PROVIDER, Constants.CONSUMER}, value = "tracing")
 // http://dubbo.apache.org/en-us/docs/dev/impls/filter.html
@@ -68,8 +62,6 @@ public final class BraveDubboFilter implements Filter {
 		extractor = tracing.propagation().extractor(GETTER);
 		injector = tracing.propagation().injector(SETTER);
 	}*/
-
-
 	public static String getObjectJsonStr(Object obj) {
 		String jsonStr = null;
 		BeanMap beanMap = BeanMap.create(obj);
@@ -136,8 +128,8 @@ public final class BraveDubboFilter implements Filter {
 
 
 			String methodName = RpcContext.getContext().getMethodName();
-			logger.debug("tracing client {},{}", methodName,Thread.currentThread().getId());
-			if (methodName.equals("process")) {
+			logger.debug("tracing client {},{}", methodName, Thread.currentThread().getId());
+			/*if (methodName.equals("process")) {
 
 
 				if (RpcContext.getContext().getArguments() != null && RpcContext.getContext().getArguments()[0] != null) {
@@ -327,21 +319,22 @@ public final class BraveDubboFilter implements Filter {
 					}
 				}
 
-			}
+			}*/
 
 
 		}
 		else {
 
 
-			logger.debug("tracing server:{},{}", RpcContext.getContext().getMethodName(),Thread.currentThread().getId());
+			logger.debug("tracing server:{},{}", RpcContext.getContext().getMethodName(), Thread.currentThread().getId());
 			TraceContextOrSamplingFlags extracted = extractor.extract(invocation.getAttachments());
 			/*span = extracted.context() != null
 					? tracer.joinSpan(extracted.context())
 					: tracer.nextSpan(extracted);*/
-			if(extracted.context() != null){
+			if (extracted.context() != null) {
 				span = tracer.joinSpan(extracted.context());
-			}else{
+			}
+			else {
 				span = tracer.nextSpan(extracted);
 			}
 		}
@@ -375,7 +368,7 @@ public final class BraveDubboFilter implements Filter {
 			}
 
 			if (kind.equals(Kind.CLIENT)) {
-				if (invocation != null && invocation.getMethodName() != null && invocation.getMethodName().equals("process")) {
+				/*if (invocation != null && invocation.getMethodName() != null && invocation.getMethodName().equals("process")) {
 					String jsonStr = getObjectJsonStr(result.getResult());
 					if (jsonStr != null) {
 						span.tag("RESPONSE_INFO", jsonStr);
@@ -421,7 +414,7 @@ public final class BraveDubboFilter implements Filter {
 							span.tag("RET_STATUS", matcher.group(1));
 						}
 					}
-				}
+				}*/
 				if (result.hasException() && result.getException().getMessage() != null) {
 					span.tag("exception", result.getException().getMessage());
 					span.tag("status", "failed");
