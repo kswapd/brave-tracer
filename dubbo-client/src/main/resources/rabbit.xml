@@ -20,10 +20,10 @@ http://code.alibabatech.com/schema/dubbo
     <dubbo:application name="helloworld-consumer" />
     <!-- 声明服务注册中心 -->
 
-    <dubbo:registry protocol="zookeeper" address="10.88.2.113:2181" />
+    <dubbo:registry protocol="zookeeper" address="10.88.2.116:2181" />
     <!-- 引用服务,demoService仅用于根据接口生成动态代理，默认使用javassist生成代理对象 -->
 
-    <dubbo:protocol name="dubbo" host="10.88.2.112" />
+    <dubbo:protocol name="dubbo" host="10.88.2.115" />
 
     <dubbo:reference id="demoService"
                      interface="interfaces.DemoService"

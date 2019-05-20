@@ -17,8 +17,6 @@ public class ServerMain{
 			System.out.println("输入任意按键退出 ~ ");
 			System.in.read();
 
-
-
 			//context.close();
 		}
 
