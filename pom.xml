@@ -117,17 +117,17 @@
                 <artifactId>zookeeper</artifactId>
                 <version>3.4.13</version>
             </dependency>
-            <!--<dependency>
+            <dependency>
                 <groupId>com.dcits.galaxy</groupId>
                 <artifactId>galaxy-dubbo</artifactId>
-                <version>${galaxy-dubbo.version}</version>sdfsdf
-            </dependency>-->
+                <version>${galaxy-dubbo.version}</version>
+            </dependency>
 
-                <dependency>
+                <!--<dependency>
                     <groupId>com.alibaba</groupId>
                     <artifactId>dubbo</artifactId>
                     <version>${dubbo.version}</version>
-                </dependency>
+                </dependency>-->
 
 
             <dependency>

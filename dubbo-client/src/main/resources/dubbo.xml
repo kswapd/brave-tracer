@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dcits="http://code.alibabatech.com/schema/dubbo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://code.alibabatech.com/schema/dubbo
     http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
     <!-- 指定web应用名字 -->
-    <dubbo:application name="helloworld-consumer" />
+    <dcits:application name="helloworld-consumer" />
     <!-- 声明服务注册中心 -->
 
-    <dubbo:registry protocol="zookeeper" address="${zookeeper.address}:2181" />
+    <dcits:registry protocol="zookeeper" address="${zookeeper.address}:2181" />
     <!-- 引用服务,demoService仅用于根据接口生成动态代理，默认使用javassist生成代理对象 -->
 
-    <dubbo:protocol name="dubbo" host="${host.address}" />
+    <dcits:protocol name="dubbo" host="${host.address}" />
 
-    <dubbo:reference id="demoService"
+    <dcits:reference id="demoService"
                      interface="interfaces.DemoService"
                      protocol="dubbo" scope="remote"/>
 
-    <dubbo:reference id="fooService"
+    <dcits:reference id="fooService"
                      interface="interfaces.FooService"
                      protocol="dubbo" />
 
 
-    <dubbo:reference id="barService"
+    <dcits:reference id="barService"
                       interface="interfaces.BarService"
                       protocol="dubbo" />
 
-    <dubbo:reference id="demoTraceService"
+    <dcits:reference id="demoTraceService"
                      interface="interfaces.DemoTraceService"
                      protocol="dubbo"/>
 

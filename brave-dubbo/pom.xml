@@ -67,6 +67,12 @@
         <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave-instrumentation-dubbo-rpc</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>dubbo</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.zipkin.brave</groupId>
@@ -113,15 +119,15 @@
         </dependency>
 
 
-        <!--<dependency>
+        <dependency>
             <groupId>com.dcits.galaxy</groupId>
             <artifactId>galaxy-dubbo</artifactId>
-        </dependency>-->
+        </dependency>
 
-            <dependency>
+           <!-- <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>dubbo</artifactId>
-            </dependency>
+            </dependency>-->
 
         <dependency>
             <groupId>io.netty</groupId>

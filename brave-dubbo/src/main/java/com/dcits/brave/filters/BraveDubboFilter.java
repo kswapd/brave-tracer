@@ -24,14 +24,18 @@ import com.alibaba.dubbo.rpc.protocol.dubbo.FutureAdapter;
 import com.alibaba.dubbo.rpc.support.RpcUtils;
 import com.alibaba.fastjson.JSON;
 import com.dcits.brave.tracing.BraveTracing;
+import com.dcits.galaxy.base.data.BaseRequest;
+import com.dcits.galaxy.base.data.ISysHead;
 import com.google.common.collect.Maps;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cglib.beans.BeanMap;
+import org.springframework.util.StringUtils;
 
 //@Activate(group = {Constants.PROVIDER, Constants.CONSUMER}, value = "tracing")
 // http://dubbo.apache.org/en-us/docs/dev/impls/filter.html
@@ -129,7 +133,7 @@ public final class BraveDubboFilter implements Filter {
 
 			String methodName = RpcContext.getContext().getMethodName();
 			logger.debug("tracing client {},{}", methodName, Thread.currentThread().getId());
-			/*if (methodName.equals("process")) {
+			if (methodName.equals("process")) {
 
 
 				if (RpcContext.getContext().getArguments() != null && RpcContext.getContext().getArguments()[0] != null) {
@@ -319,7 +323,7 @@ public final class BraveDubboFilter implements Filter {
 					}
 				}
 
-			}*/
+			}
 
 
 		}
@@ -368,7 +372,7 @@ public final class BraveDubboFilter implements Filter {
 			}
 
 			if (kind.equals(Kind.CLIENT)) {
-				/*if (invocation != null && invocation.getMethodName() != null && invocation.getMethodName().equals("process")) {
+				if (invocation != null && invocation.getMethodName() != null && invocation.getMethodName().equals("process")) {
 					String jsonStr = getObjectJsonStr(result.getResult());
 					if (jsonStr != null) {
 						span.tag("RESPONSE_INFO", jsonStr);
@@ -414,7 +418,7 @@ public final class BraveDubboFilter implements Filter {
 							span.tag("RET_STATUS", matcher.group(1));
 						}
 					}
-				}*/
+				}
 				if (result.hasException() && result.getException().getMessage() != null) {
 					span.tag("exception", result.getException().getMessage());
 					span.tag("status", "failed");
