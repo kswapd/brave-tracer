@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RabbitListener(bindings = @QueueBinding(
         value = @Queue(value="queue-hello", durable = "true"),
         exchange = @Exchange(value="exchangeTracing",durable = "true", type= ExchangeTypes.TOPIC),
-        key = "hellos"
+        key = "hello"
 
 ))
 //@RabbitListener(queues="queue-hello")
