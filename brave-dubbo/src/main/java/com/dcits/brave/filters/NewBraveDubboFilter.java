@@ -317,7 +317,7 @@ public final class NewBraveDubboFilter implements Filter {
 				}
 
 			}
-			
+
 
 		} else {
 			logger.debug("tracing server:{},{}", RpcContext.getContext().getMethodName(),Thread.currentThread().getId());
