@@ -5,7 +5,6 @@ import brave.Span;
 import brave.Span.Kind;
 import brave.Tracer;
 import brave.Tracing;
-import brave.internal.Platform;
 import brave.propagation.Propagation;
 import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
@@ -24,14 +23,15 @@ import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.protocol.dubbo.FutureAdapter;
 import com.alibaba.dubbo.rpc.support.RpcUtils;
 import com.alibaba.fastjson.JSON;
-import com.dcits.brave.dubbo.support.ClientRequestCommonData;
+import com.dcits.brave.tracers.BraveTracer;
 import com.dcits.galaxy.base.data.BaseRequest;
 import com.dcits.galaxy.base.data.ISysHead;
-import com.github.kristofa.brave.KeyValueAnnotation;
 import com.google.common.collect.Maps;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.Future;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
 // public constructor permitted to allow dubbo to instantiate this
 @Activate(group = {Constants.PROVIDER, Constants.CONSUMER})
 public final class NewBraveDubboFilter implements Filter {
+	private static final Logger logger = LoggerFactory.getLogger(NewBraveDubboFilter.class);
 
 
 	Tracing tracing = null;
@@ -61,9 +62,7 @@ public final class NewBraveDubboFilter implements Filter {
 	}
 
 
-
-	public static String getObjectJsonStr(Object obj)
-	{
+	public static String getObjectJsonStr(Object obj) {
 		String jsonStr = null;
 		BeanMap beanMap = BeanMap.create(obj);
 		Map<String, Object> map = Maps.newHashMap();
@@ -78,10 +77,9 @@ public final class NewBraveDubboFilter implements Filter {
 		return jsonStr;
 	}
 
-	public static String getObjectMapStr(Object obj)
-	{
+	public static String getObjectMapStr(Object obj) {
 		String jsonStr = null;
-		Map map = (Map)obj;
+		Map map = (Map) obj;
 
 		if (map.size() > 0) {
 			jsonStr = JSON.toJSONString(map);
@@ -94,14 +92,24 @@ public final class NewBraveDubboFilter implements Filter {
 	public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 		//if (tracer == null) return invoker.invoke(invocation);
 
-		if(tracer == null) {
+		/*if (tracer == null) {
 			ApplicationContext context = ServiceBean.getSpringContext();
 			Tracing tracing = (Tracing) context.getBean("tracing");
+			setTracing(tracing);
+		}
+*/
+
+		if (tracer == null) {
+			logger.debug("apm monitor setting tracer.");
+			Tracing tracing = BraveTracer.getTracingInst();
+			//setTracing(BraveTracing.tracingInst());
+			tracer = tracing.tracer();
 			setTracing(tracing);
 		}
 		RpcContext rpcContext = RpcContext.getContext();
 		Kind kind = rpcContext.isProviderSide() ? Kind.SERVER : Kind.CLIENT;
 		final Span span;
+
 		if (kind.equals(Kind.CLIENT)) {
 			span = tracer.nextSpan();
 			injector.inject(span.context(), invocation.getAttachments());
@@ -109,7 +117,7 @@ public final class NewBraveDubboFilter implements Filter {
 
 			String methodName = RpcContext.getContext().getMethodName();
 
-			if(methodName.equals("process")){
+			if (methodName.equals("process")) {
 
 
 				if (RpcContext.getContext().getArguments() != null && RpcContext.getContext().getArguments()[0] != null) {
@@ -169,77 +177,76 @@ public final class NewBraveDubboFilter implements Filter {
 					}
 				}
 
-			}else if(methodName.equals("$invoke")){
+			}
+			else if (methodName.equals("$invoke")) {
 				Map<String, Object> map = Maps.newHashMap();
 				if (RpcContext.getContext().getArguments() != null && RpcContext.getContext().getArguments()[2] != null) {
 					//br = (BaseRequest) RpcContext.getContext().getArguments()[0];
-					String jsonStr = getObjectMapStr(((Object[])(RpcContext.getContext().getArguments()[2]))[0]);
-					if(jsonStr != null){
+					String jsonStr = getObjectMapStr(((Object[]) (RpcContext.getContext().getArguments()[2]))[0]);
+					if (jsonStr != null) {
 						span.tag("REQUEST_INFO", jsonStr);
 					}
 
-					Map params = (Map)((Object[])(RpcContext.getContext().getArguments()[2]))[0];
+					Map params = (Map) ((Object[]) (RpcContext.getContext().getArguments()[2]))[0];
 					Map sysHead = null;
-					if(params.get("sysHead") != null){
-						sysHead = (Map)params.get("sysHead");
+					if (params.get("sysHead") != null) {
+						sysHead = (Map) params.get("sysHead");
 					}
 
 
 					if (!StringUtils.isEmpty(sysHead.get("threadNo"))) {
-						span.tag("THREAD_NO", (String)sysHead.get("threadNo"));
+						span.tag("THREAD_NO", (String) sysHead.get("threadNo"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("tranTimestamp"))) {
-						span.tag("TRAN_TIMESTAMP", (String)sysHead.get("threadNo"));
+						span.tag("TRAN_TIMESTAMP", (String) sysHead.get("tranTimestamp"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("userLang"))) {
-						span.tag("USER_LANG", (String)sysHead.get("userLang"));
+						span.tag("USER_LANG", (String) sysHead.get("userLang"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("seqNo"))) {
-						span.tag("SEQ_NO", (String)sysHead.get("seqNo"));
+						span.tag("SEQ_NO", (String) sysHead.get("seqNo"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("programId"))) {
-						span.tag("PROGRAM_ID", (String)sysHead.get("programId"));
+						span.tag("PROGRAM_ID", (String) sysHead.get("programId"));
 					}
 
 					if (!StringUtils.isEmpty(sysHead.get("sourceBranchNo"))) {
-						span.tag("SOURCE_BRANCH_NO", (String)sysHead.get("sourceBranchNo"));
+						span.tag("SOURCE_BRANCH_NO", (String) sysHead.get("sourceBranchNo"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("destBranchNo"))) {
-						span.tag("DEST_BRANCH_NO", (String)sysHead.get("destBranchNo"));
+						span.tag("DEST_BRANCH_NO", (String) sysHead.get("destBranchNo"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("serviceCode"))) {
-						span.tag("SERVICE_CODE", (String)sysHead.get("serviceCode"));
+						span.tag("SERVICE_CODE", (String) sysHead.get("serviceCode"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("messageType"))) {
-						span.tag("MESSAGE_TYPE", (String)sysHead.get("messageType"));
+						span.tag("MESSAGE_TYPE", (String) sysHead.get("messageType"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("messageCode"))) {
-						span.tag("MESSAGE_CODE", (String)sysHead.get("messageCode"));
+						span.tag("MESSAGE_CODE", (String) sysHead.get("messageCode"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("tranMode"))) {
-						span.tag("TRAN_MODE", (String)sysHead.get("tranMode"));
+						span.tag("TRAN_MODE", (String) sysHead.get("tranMode"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("sourceType"))) {
-						span.tag("SOURCE_TYPE", (String)sysHead.get("sourceType"));
+						span.tag("SOURCE_TYPE", (String) sysHead.get("sourceType"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("branchId"))) {
-						span.tag("BRANCH_ID", (String)sysHead.get("branchId"));
+						span.tag("BRANCH_ID", (String) sysHead.get("branchId"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("userId"))) {
-						span.tag("USER_ID", (String)sysHead.get("userId"));
+						span.tag("USER_ID", (String) sysHead.get("userId"));
 					}
 					if (!StringUtils.isEmpty(sysHead.get("tranDate"))) {
-						span.tag("TRAN_DATE", (String)sysHead.get("tranDate"));
+						span.tag("TRAN_DATE", (String) sysHead.get("tranDate"));
 					}
 				}
 
 			}
 
 
-
-
-
-		} else {
+		}
+		else {
 			TraceContextOrSamplingFlags extracted = extractor.extract(invocation.getAttachments());
 			span = extracted.context() != null
 					? tracer.joinSpan(extracted.context())
@@ -285,22 +292,26 @@ public final class NewBraveDubboFilter implements Filter {
 						span.tag("RESPONSE_INFO", jsonStr);
 					}
 				}
-				if(result.hasException()){
-					span.tag("exception",	result.getException().getMessage());
-				}else{
-					span.tag("status","success");
+				if (result.hasException()) {
+					span.tag("exception", result.getException().getMessage());
+				}
+				else {
+					span.tag("status", "success");
 				}
 			}
 
 
 			return result;
-		} catch (Error | RuntimeException e) {
+		}
+		catch (Error | RuntimeException e) {
 			onError(e, span);
 			throw e;
-		} finally {
+		}
+		finally {
 			if (isOneway) {
 				span.flush();
-			} else if (!deferFinish) {
+			}
+			else if (!deferFinish) {
 				span.finish();
 			}
 		}
@@ -353,11 +364,13 @@ public final class NewBraveDubboFilter implements Filter {
 			this.span = span;
 		}
 
-		@Override public void done(Object response) {
+		@Override
+		public void done(Object response) {
 			span.finish();
 		}
 
-		@Override public void caught(Throwable exception) {
+		@Override
+		public void caught(Throwable exception) {
 			onError(exception, span);
 			span.finish();
 		}

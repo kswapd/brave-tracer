@@ -39,6 +39,9 @@ public class BraveTracer {
 	@Value("${zipkin.service.name}")
 	private String appName;
 
+
+	private static Tracing sTracing = null;
+
 	@Bean(name="brave")
 	public Brave getBrave()
 	{
@@ -65,20 +68,28 @@ public class BraveTracer {
 
 	@Bean(name="tracing")
 	public Tracing getTracing() {
+
+
 		String zipkinAddr = "http://"+zipkinAddress+":"+zipkinPort+"/";
 		Sender sender = OkHttpSender.create(zipkinAddr+"api/v2/spans");
-
+		logger.info("setting brave tracer:{}", zipkinAddr);
 
 		AsyncReporter asyncReporter = AsyncReporter.builder(sender)
 				.closeTimeout(5000, TimeUnit.MILLISECONDS)
 				.build(SpanBytesEncoder.JSON_V2);
 
-		Tracing gw_tracing = Tracing.newBuilder()
+		sTracing = Tracing.newBuilder()
 				.localServiceName(appName)
 				.spanReporter(asyncReporter)
 				.propagationFactory(ExtraFieldPropagation.newFactory(B3Propagation.FACTORY, "user-name"))
 				.build();
-		return gw_tracing;
+		return sTracing;
+	}
+
+	public static Tracing getTracingInst()
+	{
+		return sTracing;
+
 	}
 
 
