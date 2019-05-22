@@ -73,7 +73,7 @@ public class RabbitTracer implements ApplicationContextAware {
 		return new PropertySourcesPlaceholderConfigurer();
 	}*/
 
-	@Conditional(CheckRabbitConnectionFactory.class)
+	//@Conditional(CheckRabbitConnectionFactory.class)
 	@Bean
 	public ConnectionFactory connectionFactory() {
 		logger.info("building connectionFactory,{},{}.", rabbitServiceAddress,zipkinPort);
@@ -97,7 +97,7 @@ public class RabbitTracer implements ApplicationContextAware {
 	}
 
 	//@Bean(name = "simpleRabbitListenerContainerFactoryTracing")
-	@Conditional(CheckRabbitListener.class)
+	//@Conditional(CheckRabbitListener.class)
 	@Bean
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
 			ConnectionFactory connectionFactory,
@@ -112,12 +112,13 @@ public class RabbitTracer implements ApplicationContextAware {
 		fact = springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
 		fact.setConcurrentConsumers(3);
 		fact.setMaxConcurrentConsumers(10);
+
 		return fact;
 		//return springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
 	}
 
 	//@Bean(name = "rabbitTemplateTracing")
-	@Conditional(CheckRabbitTemplate.class)
+	//@Conditional(CheckRabbitTemplate.class)
 	@Bean
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
 										 SpringRabbitTracing springRabbitTracing) {

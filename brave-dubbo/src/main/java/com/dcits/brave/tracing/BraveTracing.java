@@ -156,8 +156,14 @@ public class BraveTracing implements ApplicationContextAware, ApplicationListene
 		}
 			SimpleRabbitListenerContainerFactory fact = context.getBean(SimpleRabbitListenerContainerFactory.class);
 		if(fact != null) {
+			//if(fact.getAdviceChain() == null){
+				//TracingRabbitListenerAdvice.class
+			//}
+
 			logger.info("Decorate SimpleRabbitListenerContainerFactory.");
+			//fact.setAdviceChain(new TracingRabbitListenerAdvice(this));
 			springRabbitTracing.decorateSimpleRabbitListenerContainerFactory(fact);
+
 		}
 	}
 }
