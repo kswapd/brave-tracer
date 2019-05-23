@@ -23,7 +23,7 @@ http://code.alibabatech.com/schema/dubbo
     <dubbo:registry protocol="zookeeper" address="10.88.2.116:2181" />
     <!-- 引用服务,demoService仅用于根据接口生成动态代理，默认使用javassist生成代理对象 -->
 
-    <dubbo:protocol name="dubbo" host="10.88.2.115" />
+    <dubbo:protocol name="dubbo" host="10.88.2.106" />
 
     <dubbo:reference id="demoService"
                      interface="interfaces.DemoService"
