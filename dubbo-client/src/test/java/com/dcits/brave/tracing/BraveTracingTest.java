@@ -1,6 +1,7 @@
 package com.dcits.brave.tracing;
 
 import com.dcits.services.ServiceProcess;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,6 +44,11 @@ class BraveTracingTest {
 	@org.junit.jupiter.api.Test
 	void tracingInst() {
 		BraveTracing.tracingInst();
+	}
+
+	@Test
+	void tracerEnable() {
+
 	}
 
 	@org.junit.jupiter.api.Test
