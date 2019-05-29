@@ -37,7 +37,7 @@ class BraveTracingTest {
 	@org.junit.jupiter.api.Test
 	void init() {
 		assertEquals(5, 5);
-		
+
 		bt.init();
 
 	}

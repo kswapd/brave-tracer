@@ -12,7 +12,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 
-@Component
+//@Component
 @RabbitListener(bindings = @QueueBinding(
         value = @Queue(value="queue-hello", durable = "true"),
         exchange = @Exchange(value="exchangeTracing",durable = "true", type= ExchangeTypes.TOPIC),

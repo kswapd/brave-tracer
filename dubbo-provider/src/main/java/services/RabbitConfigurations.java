@@ -68,7 +68,7 @@ public class RabbitConfigurations implements ApplicationContextAware {
 
 
 
-	@Bean
+	//@Bean
 	//@Conditional(CheckRabbitConnectionFactory.class)
 	public ConnectionFactory connectionFactory() {
 		logger.info("user building connectionFactory,{}.", rabbitServiceAddress);

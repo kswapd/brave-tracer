@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /**
  * Created by kongxiangwen on 7/12/18 w:28.
@@ -48,14 +49,25 @@ public class RabbitTracer implements ApplicationContextAware {
 	@Value("${zipkin.rabbit.service.name}")
 	private String rabbitServiceName;
 
-	@Value("${zipkin.rabbit.service.address}")
+	@Value("${zipkin.rabbit.service.address:#{null}}")
 	private String rabbitServiceAddress;
 
-	@Value("${zipkin.rabbit.service.user.name}")
+	@Value("${zipkin.rabbit.service.user.name:#{null}}")
 	private String rabbitServiceUserName;
 
-	@Value("${zipkin.rabbit.service.user.password}")
+	@Value("${zipkin.rabbit.service.user.password:#{null}}")
 	private String rabbitServiceUserPassword;
+
+
+
+	@Value("${spring.rabbitmq.addresses:#{null}}")
+	private String rabbitOriginServiceAddresses;
+
+	@Value("${spring.rabbitmq.username:#{null}}")
+	private String rabbitOriginServiceUserName;
+
+	@Value("${spring.rabbitmq.password:#{null}}")
+	private String rabbitOriginServiceUserPassword;
 
 	/*@Value("${zipkin.rabbit.service.routingkey}")
 	private String rabbitServiceRoutingKey;
@@ -76,10 +88,19 @@ public class RabbitTracer implements ApplicationContextAware {
 	//@Conditional(CheckRabbitConnectionFactory.class)
 	@Bean
 	public ConnectionFactory connectionFactory() {
-		logger.info("building connectionFactory,{},{}.", rabbitServiceAddress,zipkinPort);
-		CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
-		connectionFactory.setUsername(rabbitServiceUserName);
-		connectionFactory.setPassword(rabbitServiceUserPassword);
+		CachingConnectionFactory connectionFactory = null;
+		if(StringUtils.isEmpty(rabbitOriginServiceAddresses)) {
+			logger.info("building connectionFactory,{},{}.", rabbitServiceAddress, zipkinPort);
+			connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
+			connectionFactory.setUsername(rabbitServiceUserName);
+			connectionFactory.setPassword(rabbitServiceUserPassword);
+		}else{
+			logger.info("building connectionFactory by original info,{},{}.", rabbitOriginServiceAddresses, rabbitOriginServiceUserName);
+			connectionFactory = new CachingConnectionFactory();
+			connectionFactory.setAddresses(rabbitOriginServiceAddresses);
+			connectionFactory.setUsername(rabbitOriginServiceUserName);
+			connectionFactory.setPassword(rabbitOriginServiceUserPassword);
+		}
 
 		return connectionFactory;
 	}

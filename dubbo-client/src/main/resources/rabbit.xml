@@ -17,11 +17,11 @@ http://code.alibabatech.com/schema/dubbo
 
 
 
-    <dubbo:application name="helloworld-consumer" />
-    <!-- 声明服务注册中心 -->
+   <!-- <dubbo:application name="helloworld-consumer" />
+    &lt;!&ndash; 声明服务注册中心 &ndash;&gt;
 
     <dubbo:registry protocol="zookeeper" address="10.88.2.116:2181" />
-    <!-- 引用服务,demoService仅用于根据接口生成动态代理，默认使用javassist生成代理对象 -->
+    &lt;!&ndash; 引用服务,demoService仅用于根据接口生成动态代理，默认使用javassist生成代理对象 &ndash;&gt;
 
     <dubbo:protocol name="dubbo" host="10.88.2.106" />
 
@@ -40,7 +40,7 @@ http://code.alibabatech.com/schema/dubbo
 
     <dubbo:reference id="demoTraceService"
                      interface="interfaces.DemoTraceService"
-                     protocol="dubbo"/>
+                     protocol="dubbo"/>-->
     <!--<rabbit:connection-factory id="connectionFactory" host="10.88.2.112" username="guest" password="guest" />
 
     <rabbit:template id="amqpTemplate" connection-factory="connectionFactory"
