@@ -78,10 +78,10 @@ public class RabbitTracer implements ApplicationContextAware {
 	@Value("${zipkin.rabbit.service.exchange}")
 	private String rabbitServiceExchangeName;*/
 
-	@Value("${spring.rabbitmq.listener.concurrency:#{5}}")
+	@Value("${spring.rabbitmq.listener.simple.concurrency:#{5}}")
 	private Integer rabbitConsumerConcurrency;
 
-	@Value("${spring.rabbitmq.listener.max-concurrency:#{50}}")
+	@Value("${spring.rabbitmq.listener.simple.max-concurrency:#{50}}")
 	private Integer rabbitConsumerMaxConcurrency;
 	/*@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
