@@ -1,8 +1,7 @@
 package com.dcits.brave.tracers;
 
-import brave.Tracing;
-import brave.spring.rabbit.SpringRabbitTracing;
 import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -15,10 +14,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import brave.Tracing;
+import brave.spring.rabbit.SpringRabbitTracing;
 
 /**
  * Created by kongxiangwen on 7/12/18 w:28.
@@ -78,8 +78,11 @@ public class RabbitTracer implements ApplicationContextAware {
 	@Value("${zipkin.rabbit.service.exchange}")
 	private String rabbitServiceExchangeName;*/
 
+	@Value("${spring.rabbitmq.listener.concurrency:#{5}}")
+	private Integer rabbitConsumerConcurrency;
 
-
+	@Value("${spring.rabbitmq.listener.max-concurrency:#{50}}")
+	private Integer rabbitConsumerMaxConcurrency;
 	/*@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
@@ -90,12 +93,12 @@ public class RabbitTracer implements ApplicationContextAware {
 	public ConnectionFactory connectionFactory() {
 		CachingConnectionFactory connectionFactory = null;
 		if(StringUtils.isEmpty(rabbitOriginServiceAddresses)) {
-			logger.info("building connectionFactory,{},{}.", rabbitServiceAddress, zipkinPort);
+			logger.info("building connectionFactory,{},{},{},{}.", rabbitServiceAddress, zipkinPort,rabbitConsumerConcurrency,rabbitConsumerMaxConcurrency);
 			connectionFactory = new CachingConnectionFactory(rabbitServiceAddress);
 			connectionFactory.setUsername(rabbitServiceUserName);
 			connectionFactory.setPassword(rabbitServiceUserPassword);
 		}else{
-			logger.info("building connectionFactory by original info,{},{}.", rabbitOriginServiceAddresses, rabbitOriginServiceUserName);
+			logger.info("building connectionFactory by original info,{},{},{},{}.", rabbitOriginServiceAddresses, rabbitOriginServiceUserName,rabbitConsumerConcurrency,rabbitConsumerMaxConcurrency);
 			connectionFactory = new CachingConnectionFactory();
 			connectionFactory.setAddresses(rabbitOriginServiceAddresses);
 			connectionFactory.setUsername(rabbitOriginServiceUserName);
@@ -110,7 +113,7 @@ public class RabbitTracer implements ApplicationContextAware {
 	public SpringRabbitTracing springRabbitTracing(Tracing tracing) {
 
 		Tracing currentTracing = tracing;
-		logger.info("building springRabbitTracing,{}.", rabbitServiceName);
+		logger.info("building springRabbitTracing,{},{},{}.", rabbitServiceName,rabbitConsumerConcurrency,rabbitConsumerMaxConcurrency);
 		return SpringRabbitTracing.newBuilder(currentTracing)
 				//.writeB3SingleFormat(true) // for more efficient propagation
 				.remoteServiceName(rabbitServiceName)
@@ -131,8 +134,8 @@ public class RabbitTracer implements ApplicationContextAware {
 		SimpleRabbitListenerContainerFactory fact;
 		//fact.setC
 		fact = springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
-		fact.setConcurrentConsumers(3);
-		fact.setMaxConcurrentConsumers(10);
+		fact.setConcurrentConsumers(rabbitConsumerConcurrency);
+		fact.setMaxConcurrentConsumers(rabbitConsumerMaxConcurrency);
 
 		return fact;
 		//return springRabbitTracing.newSimpleRabbitListenerContainerFactory(connectionFactory);
