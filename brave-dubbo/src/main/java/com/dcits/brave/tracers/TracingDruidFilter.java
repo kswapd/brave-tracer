@@ -1,4 +1,4 @@
-package com.dcits.brave.filters;
+package com.dcits.brave.tracers;
 
 import brave.Span;
 import brave.Span.Kind;
@@ -233,7 +233,7 @@ public class TracingDruidFilter extends FilterEventAdapter {
 				}
 			}
 			setZipkinServiceName(zipkinServiceName);
-			Kind kind = Kind.CLIENT;
+			//Kind kind = Kind.CLIENT;
 			Endpoint ep = Endpoint.newBuilder().serviceName(zipkinServiceName).build();
 			span.remoteEndpoint(ep);
 			String host = url.getHost();
